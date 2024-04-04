@@ -100,3 +100,7 @@ def get_income_statement(symbol, freq='quarterly'):
     dates = [financials_data['endDate'] for financials_data in financials_data]
     ic = [financials_data['report']['ic'] for financials_data in financials_data]
     return dates, ic
+
+@st.cache_data
+def get_revenue(symbol):
+    return finnhub_client.stock_revenue_breakdown(symbol)

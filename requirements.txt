@@ -1,13 +1,9 @@
 streamlit
 streamlit_plotly_events
-
 yfinance
 finnhub-python
-
 pandas
 datetime
-
 plotly
-
 numpy
 scipy

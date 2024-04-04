@@ -35,6 +35,8 @@ Your role is pivotal in equipping traders and investors with critical insights, 
 
 
 def run():
+    st.title("Trading Hero Stock Analysis")
+
     col1, col2 = st.columns(2)
     with col1:
         exchange_names = data_retriever.get_exchange_code_names()
@@ -59,7 +61,7 @@ def run():
     st.json(market_status)
 
     company_basic = status.get_basic(symbol)
-    st.json(company_basic)
+    # st.json(company_basic)
 
     with col2:
         # max time period
@@ -82,6 +84,8 @@ def run():
     # symbol candlestick graph
     candleFigure = make_subplots(rows=1, cols=1)
     ui.create_candlestick(candleFigure, dates, symbol_prices, symbol, 'Price')
+
+    st.dataframe(symbol_prices)
 
     # plot all
     candleFigure.update_layout(title="Symbol Ticker",
@@ -152,7 +156,7 @@ def run():
 
         st.markdown('''<ol><li>if the trend intersects SMA, then reset.</li>
                         <li>when the trend intersects the price, place a bid. if the previous intercept is lower, then buy.</li></ol>''')
-
+    
     if st.checkbox('Sector Trends'):
         # plot the trend of the market as a candlestick graph.
         fig2 = make_subplots(rows=1, cols=1)
@@ -177,7 +181,10 @@ def run():
     if symbol:
         recommendations = recommend.get_rec(symbol)
         st.bar_chart(recommendations)
-    
-    if st.checkbox('AI'):
-        ai_data = genai.generate_gemini_response(input_prompt,symbol,symbol_prices,company_basic)
-        st.write(ai_data)
+
+    with st.spinner("Model is working to generate."):
+        if st.checkbox("AI Analysis", key="show_ai"):
+            company_basic = data_retriever.get_current_basics(symbol, data_retriever.today())
+            prices = symbol_prices.loc[:,"Adj Close"]
+            ai_data = genai.generate_gemini_response(input_prompt,symbol,prices,company_basic)
+            st.markdown(ai_data)
