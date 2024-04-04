@@ -12,6 +12,27 @@ import bidder
 import get_news
 import status
 import recommend
+import genai
+
+input_prompt = """
+As a seasoned market analyst with an uncanny ability to decipher the language of price charts, your expertise is crucial in navigating the turbulent seas of financial markets. You will be presented with static images of historical stock charts, where your keen eye will dissect the intricate dance of candlesticks, trendlines, and technical indicators. Armed with this visual intelligence, you will unlock the secrets hidden within these graphs, predicting the future trajectory of the depicted stock with remarkable accuracy.
+
+I have provided you couple information of one stock, form ticker, prices, company fundamental information, news and analysts recommendation.
+
+Analysis Guidelines:
+
+Company Overview: Begin with a brief overview of the company whose stock chart you are analyzing. Understand its market position, recent news, financial health, and sector performance to contextualize your technical analysis.
+
+Pattern Recognition: Diligently examine the chart to pinpoint critical candlestick formations, trendlines, and a comprehensive set of technical indicators, including Moving Averages (e.g., SMA, EMA), Momentum Indicators (e.g., RSI, MACD), Volume Indicators (e.g., OBV, VWAP), and Volatility Indicators (e.g., Bollinger Bands, ATR), relevant to the timeframe and instrument in question.
+
+Technical Analysis: Leverage your in-depth knowledge of technical analysis principles to decode the identified patterns and indicators. Extract nuanced insights into market dynamics, identifying key levels of support and resistance, and gauge potential price movements in the near future.
+
+Sentiment Prediction: Drawing from your technical analysis, predict the likely direction of the stock price. Determine whether the stock is poised for a bullish upswing or a bearish downturn. Assess the likelihood of a breakout versus consolidation phase, taking into account the confluence of technical signals.
+
+Confidence Level: Evaluate the robustness and reliability of your prediction. Assign a confidence level based on the coherence and convergence of the technical evidence at hand.Disclaimer: Remember, your insights are a powerful tool for informed decision-making, but not a guarantee of future performance. Always practice prudent risk management and seek professional financial advice before making any investment decisions.
+
+Your role is pivotal in equipping traders and investors with critical insights, enabling them to navigate the market with confidence. Embark on your analysis of the provided chart, decoding its mysteries with the acumen and assurance of a seasoned technical analyst."""
+
 
 def run():
     col1, col2 = st.columns(2)
@@ -132,21 +153,6 @@ def run():
         st.markdown('''<ol><li>if the trend intersects SMA, then reset.</li>
                         <li>when the trend intersects the price, place a bid. if the previous intercept is lower, then buy.</li></ol>''')
 
-    # if st.checkbox('Tests'):
-    #     deltas = [cur - symbol_prices['Close'][max(0, idx - 1)] for idx, cur in enumerate(symbol_prices['Close'])]
-    #     testFigure2 = make_subplots(rows=1, cols=1)
-    #     ui.create_line(testFigure2, dates, deltas, "Deltas")
-    #     ui.add_mouse_indicator(testFigure2, selected_points, min=np.min(deltas),
-    #                            max=np.max(deltas))
-    #     testFigure2.update_layout(title="Deltas")
-
-    #     ui.create_heatmap(dates, deltas, title="Deltas heatmap")
-
-    #     # sma
-    #     sma_dates, deltas_sma = trends.sma(dates, deltas)
-    #     ui.create_line(testFigure2, sma_dates, deltas_sma, "Deltas SMA")
-    #     test_id = st.plotly_chart(testFigure2, use_container_width=True, key='test2')
-
     if st.checkbox('Sector Trends'):
         # plot the trend of the market as a candlestick graph.
         fig2 = make_subplots(rows=1, cols=1)
@@ -164,10 +170,14 @@ def run():
         st.write(basics_data)
     
     if st.checkbox('Latest News'):
-        basics_data = get_news.get_stock_news(symbol)
-        st.write(basics_data)
+        news_data = get_news.get_stock_news(symbol)
+        st.write(news_data)
 
     st.title("Stock Analyst Recommendations")
     if symbol:
         recommendations = recommend.get_rec(symbol)
         st.bar_chart(recommendations)
+    
+    if st.checkbox('AI'):
+        ai_data = genai.generate_gemini_response(input_prompt,symbol,symbol_prices,company_basic)
+        st.write(ai_data)
