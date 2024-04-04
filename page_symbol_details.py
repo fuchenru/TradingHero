@@ -10,6 +10,7 @@ import trends
 import ui
 import bidder
 import get_news
+import status
 
 def run():
     col1, col2 = st.columns(2)
@@ -31,6 +32,12 @@ def run():
             index=symbols.index('AAPL')
         )
         symbol = symbols_selectbox
+    
+    market_status = status.get_status(exchange)
+    st.json(market_status)
+
+    company_basic = status.get_basic(symbol)
+    st.json(company_basic)
 
     with col2:
         # max time period
@@ -62,7 +69,7 @@ def run():
 
     # use this to add markers on other graphs for click points on this graph
     selected_points = []
-    # selected_points = plotly_events(candleFigure, click_event=True, hover_event=False, select_event=False, key='3', override_height=800)
+
 
     st.plotly_chart(candleFigure, use_container_width=True)
 
@@ -71,14 +78,6 @@ def run():
 
         indicatorFigure = make_subplots(rows=1, cols=1)
         ui.create_line(indicatorFigure, dates, symbol_prices['Close'], "Close price", color="red")
-
-        # # indicators
-        # indicator_datasets = indicators.create_indicators(dates, symbol_prices)
-        # ui.create_indicators(fig1, indicator_datasets)
-        # trend lines
-        # sigma_multiplier = st.slider(label='min trend deviation', min_value=1.0, max_value=10.0, value=3.0, step=0.1)
-        # sigma_dates, sigma_values = trends.trend_line(symbol_prices_backtest.index, np.array(symbol_prices_backtest['Close']), min_trend_size=21, sigma_multiplier=sigma_multiplier)
-        # ui.create_markers(candleFigure, sigma_dates, sigma_values, f"{sigma_multiplier} Deviations from regression line", 'Deviations')
 
         # vwap
         vwap = trends.vwap(symbol_prices_backtest)
@@ -131,29 +130,21 @@ def run():
 
         st.markdown('''<ol><li>if the trend intersects SMA, then reset.</li>
                         <li>when the trend intersects the price, place a bid. if the previous intercept is lower, then buy.</li></ol>''')
-        # volumeFig = make_subplots(rows=1, cols=1)
-        # ui.create_line(volumeFig, dates, symbol_prices['Volume'], "Volume")
-        # st.plotly_chart(volumeFig, use_container_width=True)
-        # st.markdown(
-        #     "Trade Volume: a measure of investor belief. "
-        #     "A high volume means that investors have a strong belief that the price will change. "
-        #     "The volume does not indicate whether the price will go up or down.")
 
+    # if st.checkbox('Tests'):
+    #     deltas = [cur - symbol_prices['Close'][max(0, idx - 1)] for idx, cur in enumerate(symbol_prices['Close'])]
+    #     testFigure2 = make_subplots(rows=1, cols=1)
+    #     ui.create_line(testFigure2, dates, deltas, "Deltas")
+    #     ui.add_mouse_indicator(testFigure2, selected_points, min=np.min(deltas),
+    #                            max=np.max(deltas))
+    #     testFigure2.update_layout(title="Deltas")
 
-    if st.checkbox('Tests'):
-        deltas = [cur - symbol_prices['Close'][max(0, idx - 1)] for idx, cur in enumerate(symbol_prices['Close'])]
-        testFigure2 = make_subplots(rows=1, cols=1)
-        ui.create_line(testFigure2, dates, deltas, "Deltas")
-        ui.add_mouse_indicator(testFigure2, selected_points, min=np.min(deltas),
-                               max=np.max(deltas))
-        testFigure2.update_layout(title="Deltas")
+    #     ui.create_heatmap(dates, deltas, title="Deltas heatmap")
 
-        ui.create_heatmap(dates, deltas, title="Deltas heatmap")
-
-        # sma
-        sma_dates, deltas_sma = trends.sma(dates, deltas)
-        ui.create_line(testFigure2, sma_dates, deltas_sma, "Deltas SMA")
-        test_id = st.plotly_chart(testFigure2, use_container_width=True, key='test2')
+    #     # sma
+    #     sma_dates, deltas_sma = trends.sma(dates, deltas)
+    #     ui.create_line(testFigure2, sma_dates, deltas_sma, "Deltas SMA")
+    #     test_id = st.plotly_chart(testFigure2, use_container_width=True, key='test2')
 
     if st.checkbox('Sector Trends'):
         # plot the trend of the market as a candlestick graph.
@@ -171,6 +162,6 @@ def run():
         basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
         st.write(basics_data)
     
-    if st.checkbox('News'):
-        basics_data = get_news.get_stock_data(symbol)
+    if st.checkbox('Latest News'):
+        basics_data = get_news.get_stock_news(symbol)
         st.write(basics_data)

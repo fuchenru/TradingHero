@@ -1,6 +1,12 @@
-import yfinance as yf
+# import yfinance as yf
 
-def get_stock_data(ticker_symbol):
-    stock = yf.Ticker(ticker_symbol)
-    news = stock.get_news()
-    return news
+# def get_stock_data(ticker_symbol):
+#     stock = yf.Ticker(ticker_symbol)
+#     news = stock.get_news()
+#     return news
+
+import finnhub
+finnhub_client = finnhub.Client(api_key="co6v709r01qj6a5mgco0co6v709r01qj6a5mgcog")
+
+def get_stock_news(ticker_symbol):
+    return finnhub_client.company_news(ticker_symbol, _from="2024-04-01", to="2024-04-30")[0:5]
