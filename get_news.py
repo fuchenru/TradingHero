@@ -1,10 +1,3 @@
-# import yfinance as yf
-
-# def get_stock_data(ticker_symbol):
-#     stock = yf.Ticker(ticker_symbol)
-#     news = stock.get_news()
-#     return news
-
 import finnhub
 finnhub_client = finnhub.Client(api_key="co6v709r01qj6a5mgco0co6v709r01qj6a5mgcog")
 

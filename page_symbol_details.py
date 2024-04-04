@@ -11,6 +11,7 @@ import ui
 import bidder
 import get_news
 import status
+import recommend
 
 def run():
     col1, col2 = st.columns(2)
@@ -165,3 +166,8 @@ def run():
     if st.checkbox('Latest News'):
         basics_data = get_news.get_stock_news(symbol)
         st.write(basics_data)
+
+    st.title("Stock Analyst Recommendations")
+    if symbol:
+        recommendations = recommend.get_rec(symbol)
+        st.bar_chart(recommendations)
