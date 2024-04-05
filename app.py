@@ -1,8 +1,7 @@
 import streamlit
 
-import page_symbol_details
+import TradingHero
 
-# test
 import calculator
 from scipy.io import wavfile
 import ui
@@ -13,10 +12,7 @@ from streamlit_plotly_events import plotly_events
 import plotly.express as px
 import streamlit as st
 
-# test end
-
-
 
 if __name__ == '__main__':
     st.set_page_config(layout="wide")
-    page_symbol_details.run()
+    TradingHero.run()
