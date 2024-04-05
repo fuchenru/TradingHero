@@ -23,7 +23,7 @@ Analysis Guidelines:
 
 Company Overview: Begin with a brief overview of the company whose stock chart you are analyzing. Understand its market position, recent news, financial health, and sector performance to contextualize your technical analysis.
 
-Pattern Recognition: Diligently examine the chart to pinpoint critical candlestick formations, trendlines, and a comprehensive set of technical indicators, including Moving Averages (e.g., SMA, EMA), Momentum Indicators (e.g., RSI, MACD), Volume Indicators (e.g., OBV, VWAP), and Volatility Indicators (e.g., Bollinger Bands, ATR), relevant to the timeframe and instrument in question.
+Pattern Recognition: Diligently examine the chart to pinpoint critical candlestick formations, trendlines, and a comprehensive set of technical indicators, including Moving Averages (e.g., SMA, EMA), Momentum Indicators (e.g., RSI, MACD), Volume Indicators (e.g., OBV, VWAP), and Volatility Indicators (e.g., Bollinger Bands, ATR), relevant to the timeframe and instrument in question, Especially talk about recent prices(year 2024).
 
 Technical Analysis: Leverage your in-depth knowledge of technical analysis principles to decode the identified patterns and indicators. Extract nuanced insights into market dynamics, identifying key levels of support and resistance, and gauge potential price movements in the near future.
 
@@ -31,8 +31,12 @@ Sentiment Prediction: Drawing from your technical analysis, predict the likely d
 
 Confidence Level: Evaluate the robustness and reliability of your prediction. Assign a confidence level based on the coherence and convergence of the technical evidence at hand.Disclaimer: Remember, your insights are a powerful tool for informed decision-making, but not a guarantee of future performance. Always practice prudent risk management and seek professional financial advice before making any investment decisions.
 
-Your role is pivotal in equipping traders and investors with critical insights, enabling them to navigate the market with confidence. Embark on your analysis of the provided chart, decoding its mysteries with the acumen and assurance of a seasoned technical analyst."""
+Your role is pivotal in equipping traders and investors with critical insights, enabling them to navigate the market with confidence. Embark on your analysis of the provided chart, decoding its mysteries with the acumen and assurance of a seasoned technical analyst.
 
+Finally, give me final suggestions about Buy, Hold, Sell, Strong Buy, Strong Sell"""
+
+# WIP
+# Fundamental Analysis: Before delving into the technical aspects, conduct a thorough fundamental analysis. Assess the company's financial statements, including income statements, balance sheets, and cash flow statements. Evaluate key financial ratios (e.g., P/E ratio, debt-to-equity, ROE) and consider the company's growth prospects, management effectiveness, competitive positioning, and market conditions. This step is crucial for understanding the underlying value and potential of the company.
 
 def run():
     st.title("Trading Hero Stock Analysis")
@@ -172,7 +176,7 @@ def run():
     if st.checkbox('Symbol Basics'):
         basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
         st.write(basics_data)
-    
+
     if st.checkbox('Latest News'):
         news_data = get_news.get_stock_news(symbol)
         st.write(news_data)
