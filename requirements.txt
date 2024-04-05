@@ -7,3 +7,4 @@ datetime
 plotly
 numpy
 scipy
+google.generativeai
