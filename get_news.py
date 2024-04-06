@@ -7,4 +7,7 @@ today = date.today()
 formatted_today = today.strftime('%Y-%m-%d')
 
 def get_stock_news(ticker_symbol):
-    return finnhub_client.company_news(ticker_symbol, _from=formatted_today, to=formatted_today)[0:5]
+    news = finnhub_client.company_news(ticker_symbol, _from=formatted_today, to=formatted_today)[0:5]
+    df = pd.DataFrame.from_records(json_data, columns=['headline', 'summary'])
+    df_first_five = df.head(5)
+    return df_first_five
