@@ -16,6 +16,7 @@ import status
 import recommend
 import genai
 import predict
+import get_earnings
 
 input_prompt = """
 As a seasoned market analyst with an uncanny ability to decipher the language of price charts, your expertise is crucial in navigating the turbulent seas of financial markets. You will be presented with static images of historical stock charts, where your keen eye will dissect the intricate dance of candlesticks, trendlines, and technical indicators. Armed with this visual intelligence, you will unlock the secrets hidden within these graphs, predicting the future trajectory of the depicted stock with remarkable accuracy.
@@ -179,10 +180,78 @@ def run():
     if st.checkbox('Symbol Basics'):
         basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
         st.write(basics_data)
+        
+    if True:
+        data = get_earnings.get_earnings(symbol)
+        actuals = [item['actual'] for item in data]
+        estimates = [item['estimate'] for item in data]
+        periods = [item['period'] for item in data]
+        surprisePercents = [item['surprisePercent'] for item in data]
+        surpriseText = ['Beat: {:.2f}'.format(item['surprise']) if item['surprise'] > 0 else 'Missed: {:.2f}'.format(item['surprise']) for item in data]
+
+        # Create the bubble chart
+        fig = go.Figure()
+
+        # Add actual EPS values with marker sizes based on surprise
+        fig.add_trace(go.Scatter(
+            x=periods,
+            y=actuals,
+            mode='markers+text',
+            name='Actual',
+            text=surpriseText,
+            textposition="bottom center",
+            marker=dict(
+                size=30,
+                #size=[abs(s) * 10 for s in surprisePercents], # Scale factor for visualization
+                color='LightSkyBlue',
+                line=dict(
+                    color='MediumPurple',
+                    width=2
+                ),
+                sizemode='diameter'
+            )
+        ))
+
+        # Add estimated EPS values as smaller, semi-transparent markers
+        fig.add_trace(go.Scatter(
+            x=periods,
+            y=estimates,
+            mode='markers',
+            name='Estimate',
+            marker=dict(
+                size=30, # Fixed size for all estimate markers
+                color='MediumPurple',
+                opacity=0.5,
+                line=dict(
+                    color='MediumPurple',
+                    width=2
+                )
+            )
+        ))
+
+        # Customize the layout
+        fig.update_layout(
+            title= 'Historical EPS Surprises',
+            xaxis_title='Period',
+            yaxis_title='Quarterly EPS',
+            xaxis=dict(
+                title='Period',
+                type='category', # Setting x-axis to category to display periods exactly
+                tickmode='array',
+                tickvals=periods,
+                ticktext=periods
+            ),
+            yaxis=dict(showgrid=False),
+            plot_bgcolor='rgba(0,0,0,0)'
+        )
+
+        # Render the plot in Streamlit
+        st.plotly_chart(fig)
+        
 
     if st.checkbox('Latest News'):
         news_data = get_news.get_stock_news(symbol)
-        st.write(news_data)
+        st.dataframe(news_data)
 
     st.title("Stock Analyst Recommendations")
     if symbol:

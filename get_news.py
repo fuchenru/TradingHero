@@ -14,11 +14,11 @@ def classify_sentiment(text):
     polarity = blob.sentiment.polarity
     
     if polarity > 0:
-        return 'positive'
+        return 'Positive 🙂'
     elif polarity < 0:
-        return 'negative'
+        return 'Negative ☹️'
     else:
-        return 'neutral'
+        return 'Neutral 😐'
 
 def get_stock_news(ticker_symbol):
     news = finnhub_client.company_news(ticker_symbol, _from="2024-04-01", to="2024-04-01")
