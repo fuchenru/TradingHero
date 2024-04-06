@@ -1,8 +1,10 @@
 import numpy as np
+import pandas as pd
 import streamlit as st
 from plotly.subplots import make_subplots
 from streamlit_plotly_events import plotly_events
 import plotly.graph_objects as go
+from prophet.plot import plot_plotly, plot_components_plotly
 
 import calculator
 import data_retriever
@@ -13,6 +15,7 @@ import get_news
 import status
 import recommend
 import genai
+import predict
 
 input_prompt = """
 As a seasoned market analyst with an uncanny ability to decipher the language of price charts, your expertise is crucial in navigating the turbulent seas of financial markets. You will be presented with static images of historical stock charts, where your keen eye will dissect the intricate dance of candlesticks, trendlines, and technical indicators. Armed with this visual intelligence, you will unlock the secrets hidden within these graphs, predicting the future trajectory of the depicted stock with remarkable accuracy.
@@ -192,3 +195,34 @@ def run():
             prices = symbol_prices.loc[:,"Adj Close"]
             ai_data = genai.generate_gemini_response(input_prompt,symbol,prices,company_basic)
             st.markdown(ai_data)
+
+
+    forecast_days = int(st.session_state.years_back) * 365
+    if st.checkbox('Forecast Stock Prices'):
+        with st.spinner('Fetching data...'):
+            df = predict.transform_price(symbol_prices)
+
+        with st.spinner('Training model...'):
+            model = predict.train_prophet_model(df)
+            forecast = predict.make_forecast(model, forecast_days)
+
+        st.subheader('Forecast Plot')
+        st.write('The plot below visualizes the predicted stock prices with their confidence intervals.')
+        fig1 = plot_plotly(model, forecast)
+        fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
+        st.plotly_chart(fig1)
+
+        actual = df['y']
+        predicted = forecast['yhat'][:len(df)]
+        metrics = predict.calculate_performance_metrics(actual, predicted)
+        st.subheader('Performance Metrics')
+        st.write('The metrics below provide a quantitative measure of the model’s accuracy. They include Mean Absolute Error (MAE), Mean Squared Error (MSE), and Root Mean Squared Error (RMSE), with lower values indicating better performance.')
+
+        metrics_data = {
+            "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
+            "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
+        }
+
+        metrics_df = pd.DataFrame(metrics_data)
+        metrics_df.set_index("Metric", inplace = True)
+        st.table(metrics_df)
