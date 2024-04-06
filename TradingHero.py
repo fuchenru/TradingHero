@@ -74,7 +74,7 @@ def run():
         # max time period
         st.text_input('No. of years look-back:', value=1, key="years_back")
         years_back = int(st.session_state.years_back)
-        weeks_back = years_back * 12 * 4
+        weeks_back = years_back * 13 * 4
 
         symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
         if not any(symbol_prices):
