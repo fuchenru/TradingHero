@@ -5,6 +5,7 @@ from plotly.subplots import make_subplots
 from streamlit_plotly_events import plotly_events
 import plotly.graph_objects as go
 from prophet.plot import plot_plotly, plot_components_plotly
+from datetime import datetime
 
 import calculator
 import data_retriever
@@ -49,7 +50,7 @@ def run():
     with col1:
         exchange_names = data_retriever.get_exchange_code_names()
         exchanges_selectbox = st.selectbox(
-            'Exchange:',
+            'Exchange (Currently only support US market):',
             exchange_names,
             index=exchange_names.index('US exchanges (NYSE, Nasdaq)')
         )
@@ -59,18 +60,29 @@ def run():
 
         symbols = data_retriever.get_symbols(exchange)
         symbols_selectbox = st.selectbox(
-            'Stock:',
+            'Stock Ticker:',
             symbols,
             index=symbols.index('AAPL')
         )
         symbol = symbols_selectbox
     
     market_status = status.get_status(exchange)
-    st.json(market_status)
+    st.write("**Market Status Summary:**")
+    if market_status["isOpen"]:
+        st.write("🟢 The US market is currently open for trading.")
+    else:
+        st.write("🔴 The US market is currently closed.")
+        if market_status["holiday"]:
+            st.write(f"Reason: {market_status['holiday']}")
+        else:
+            st.write("🌃 It is currently outside of regular trading hours.")
 
     company_basic = status.get_basic(symbol)
-    # st.json(company_basic)
-
+    if st.checkbox('Company Basics'):
+        basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
+        metrics = data_retriever.get_basic_detail(basics_data)
+        st.dataframe(metrics[['Explanation', 'Value']], width=3000)
+        
     with col2:
         # max time period
         st.text_input('No. of years look-back:', value=1, key="years_back")
@@ -93,10 +105,8 @@ def run():
     candleFigure = make_subplots(rows=1, cols=1)
     ui.create_candlestick(candleFigure, dates, symbol_prices, symbol, 'Price')
 
-    st.dataframe(symbol_prices)
-
     # plot all
-    candleFigure.update_layout(title="Symbol Ticker",
+    candleFigure.update_layout(title="Candle Chart",
                                xaxis_title='Date',
                                yaxis_title="Price per Share",
                                template='plotly_dark')
@@ -106,6 +116,85 @@ def run():
 
 
     st.plotly_chart(candleFigure, use_container_width=True)
+
+    # st.dataframe(symbol_prices, width=3000)
+        
+    if True:
+        data = get_earnings.get_earnings(symbol)
+        actuals = [item['actual'] for item in data]
+        estimates = [item['estimate'] for item in data]
+        periods = [item['period'] for item in data]
+        surprisePercents = [item['surprisePercent'] for item in data]
+        surpriseText = ['Beat: {:.2f}'.format(item['surprise']) if item['surprise'] > 0 else 'Missed: {:.2f}'.format(item['surprise']) for item in data]
+
+        # Create the bubble chart
+        fig = go.Figure()
+
+        # Add actual EPS values with marker sizes based on surprise
+        fig.add_trace(go.Scatter(
+            x=periods,
+            y=actuals,
+            mode='markers+text',
+            name='Actual',
+            text=surpriseText,
+            textposition="bottom center",
+            marker=dict(
+                size=30,
+                #size=[abs(s) * 10 for s in surprisePercents], # Scale factor for visualization
+                color='LightSkyBlue',
+                line=dict(
+                    color='MediumPurple',
+                    width=2
+                ),
+                sizemode='diameter'
+            )
+        ))
+
+        # Add estimated EPS values as smaller, semi-transparent markers
+        fig.add_trace(go.Scatter(
+            x=periods,
+            y=estimates,
+            mode='markers',
+            name='Estimate',
+            marker=dict(
+                size=30, # Fixed size for all estimate markers
+                color='MediumPurple',
+                opacity=0.5,
+                line=dict(
+                    color='MediumPurple',
+                    width=2
+                )
+            )
+        ))
+
+        # Customize the layout
+        fig.update_layout(
+            title= 'Historical EPS Surprises',
+            xaxis_title='Period',
+            yaxis_title='Quarterly EPS',
+            xaxis=dict(
+                title='Period',
+                type='category', # Setting x-axis to category to display periods exactly
+                tickmode='array',
+                tickvals=periods,
+                ticktext=periods
+            ),
+            yaxis=dict(showgrid=False),
+            plot_bgcolor='rgba(0,0,0,0)'
+        )
+
+        # Render the plot in Streamlit
+        st.plotly_chart(fig)
+
+    st.write("**Stock Analyst Recommendations**")
+    if symbol:
+        recommendations = recommend.get_rec(symbol)
+        st.bar_chart(recommendations)
+        
+    if st.checkbox('Latest News'):
+        news_data = get_news.get_stock_news(symbol)
+        news_data.set_index("headline", inplace = True)
+        st.table(news_data)
 
     if st.checkbox('Trends'):
         period = st.slider(label='period', min_value=7, max_value=140, value=14, step=7)
@@ -177,89 +266,8 @@ def run():
         ui.create_lines(fig3, dates, relative_close_data, "Peer 'Close' Relative to Sector", 'Relative Close')
         st.plotly_chart(fig3, use_container_width=True)
 
-    if st.checkbox('Symbol Basics'):
-        basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
-        st.write(basics_data)
-        
-    if True:
-        data = get_earnings.get_earnings(symbol)
-        actuals = [item['actual'] for item in data]
-        estimates = [item['estimate'] for item in data]
-        periods = [item['period'] for item in data]
-        surprisePercents = [item['surprisePercent'] for item in data]
-        surpriseText = ['Beat: {:.2f}'.format(item['surprise']) if item['surprise'] > 0 else 'Missed: {:.2f}'.format(item['surprise']) for item in data]
-
-        # Create the bubble chart
-        fig = go.Figure()
-
-        # Add actual EPS values with marker sizes based on surprise
-        fig.add_trace(go.Scatter(
-            x=periods,
-            y=actuals,
-            mode='markers+text',
-            name='Actual',
-            text=surpriseText,
-            textposition="bottom center",
-            marker=dict(
-                size=30,
-                #size=[abs(s) * 10 for s in surprisePercents], # Scale factor for visualization
-                color='LightSkyBlue',
-                line=dict(
-                    color='MediumPurple',
-                    width=2
-                ),
-                sizemode='diameter'
-            )
-        ))
-
-        # Add estimated EPS values as smaller, semi-transparent markers
-        fig.add_trace(go.Scatter(
-            x=periods,
-            y=estimates,
-            mode='markers',
-            name='Estimate',
-            marker=dict(
-                size=30, # Fixed size for all estimate markers
-                color='MediumPurple',
-                opacity=0.5,
-                line=dict(
-                    color='MediumPurple',
-                    width=2
-                )
-            )
-        ))
-
-        # Customize the layout
-        fig.update_layout(
-            title= 'Historical EPS Surprises',
-            xaxis_title='Period',
-            yaxis_title='Quarterly EPS',
-            xaxis=dict(
-                title='Period',
-                type='category', # Setting x-axis to category to display periods exactly
-                tickmode='array',
-                tickvals=periods,
-                ticktext=periods
-            ),
-            yaxis=dict(showgrid=False),
-            plot_bgcolor='rgba(0,0,0,0)'
-        )
-
-        # Render the plot in Streamlit
-        st.plotly_chart(fig)
-        
-
-    if st.checkbox('Latest News'):
-        news_data = get_news.get_stock_news(symbol)
-        st.dataframe(news_data)
-
-    st.title("Stock Analyst Recommendations")
-    if symbol:
-        recommendations = recommend.get_rec(symbol)
-        st.bar_chart(recommendations)
-
     with st.spinner("Model is working to generate."):
-        if st.checkbox("AI Analysis", key="show_ai"):
+        if st.checkbox("Trading Hero AI Analysis", key="show_ai"):
             company_basic = data_retriever.get_current_basics(symbol, data_retriever.today())
             prices = symbol_prices.loc[:,"Adj Close"]
             ai_data = genai.generate_gemini_response(input_prompt,symbol,prices,company_basic)

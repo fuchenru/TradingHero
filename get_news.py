@@ -16,7 +16,7 @@ def classify_sentiment(text):
     if polarity > 0:
         return 'Positive 🙂'
     elif polarity < 0:
-        return 'Negative ☹️'
+        return 'Negative 😡'
     else:
         return 'Neutral 😐'
 
