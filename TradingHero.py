@@ -44,7 +44,10 @@ Finally, give me final suggestions about Buy, Hold, Sell, Strong Buy, Strong Sel
 # Fundamental Analysis: Before delving into the technical aspects, conduct a thorough fundamental analysis. Assess the company's financial statements, including income statements, balance sheets, and cash flow statements. Evaluate key financial ratios (e.g., P/E ratio, debt-to-equity, ROE) and consider the company's growth prospects, management effectiveness, competitive positioning, and market conditions. This step is crucial for understanding the underlying value and potential of the company.
 
 def run():
-    st.title("Trading Hero Stock Analysis")
+    # st.title("Trading Hero Stock Analysis")
+
+    image_url = "https://i.imgur.com/WQE6iLY.jpeg"
+    st.image(image_url, width=700)
 
     col1, col2 = st.columns(2)
     with col1:
