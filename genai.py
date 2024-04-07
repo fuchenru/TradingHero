@@ -8,8 +8,8 @@ genai.configure(api_key="AIzaSyDfwWZH59XOxiVnz6XRyXWIX47hF7BZ1jQ")
 model = genai.GenerativeModel(model_name="gemini-pro")
 
 
-def generate_gemini_response(prompt, symbol, symbol_prices, company_basic):
+def generate_gemini_response(prompt, symbol, symbol_prices, company_basic,news,recommendations):
     symbol_prices = symbol_prices.to_string()
-    basic = "Keys: {}, Values: {}".format(company_basic.keys(), company_basic.values())
-    response = model.generate_content([prompt, symbol, symbol_prices, basic])
+    company_basic = "Keys: {}, Values: {}".format(company_basic.keys(), company_basic.values())
+    response = model.generate_content([prompt, symbol, symbol_prices, company_basic, news,recommendations])
     return response.text

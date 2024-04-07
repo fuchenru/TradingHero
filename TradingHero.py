@@ -20,28 +20,16 @@ import predict
 import get_earnings
 
 input_prompt = """
-As a seasoned market analyst with an uncanny ability to decipher the language of price charts, your expertise is crucial in navigating the turbulent seas of financial markets. You will be presented with static images of historical stock charts, where your keen eye will dissect the intricate dance of candlesticks, trendlines, and technical indicators. Armed with this visual intelligence, you will unlock the secrets hidden within these graphs, predicting the future trajectory of the depicted stock with remarkable accuracy.
-
-I have provided you couple information of one stock, form ticker, prices, company fundamental information, news and analysts recommendation.
-
+As a seasoned market analyst with an uncanny ability to decipher the language of price charts, your expertise is crucial in navigating the turbulent seas of financial markets. I have provided you couple information of one stock, form ticker symbol, recent prices, company fundamental information, news, analyst recommendations. Especially talk about recent year (2024) and predict the future.
 Analysis Guidelines:
-
-Company Overview: Begin with a brief overview of the company whose stock chart you are analyzing. Understand its market position, recent news, financial health, and sector performance to contextualize your technical analysis.
-
-Pattern Recognition: Diligently examine the chart to pinpoint critical candlestick formations, trendlines, and a comprehensive set of technical indicators, including Moving Averages (e.g., SMA, EMA), Momentum Indicators (e.g., RSI, MACD), Volume Indicators (e.g., OBV, VWAP), and Volatility Indicators (e.g., Bollinger Bands, ATR), relevant to the timeframe and instrument in question, Especially talk about recent prices(year 2024).
-
+Company Overview: Begin with a brief overview of the company you are analyzing by the ticker I provided. Understand its market position, recent news, financial health, and sector performance to contextualize your technical analysis, analyst recommendations.
+Fundamental Analysis: Before delving into the technical aspects, conduct a thorough fundamental analysis. Assess the company's financial statements, including income statements, balance sheets, and cash flow statements. Evaluate key financial ratios (e.g., P/E ratio, debt-to-equity, ROE) and consider the company's growth prospects, management effectiveness, competitive positioning, and market conditions. This step is crucial for understanding the underlying value and potential of the company.
+Pattern Recognition: Diligently examine the chart to pinpoint critical candlestick formations, trendlines, and a comprehensive set of technical indicators, including Moving Averages (e.g., SMA, EMA), Momentum Indicators (e.g., RSI, MACD), and Volatility Indicators (e.g., Bollinger Bands, ATR), relevant to the timeframe and instrument in question, Especially talk about recent prices (year 2024).
 Technical Analysis: Leverage your in-depth knowledge of technical analysis principles to decode the identified patterns and indicators. Extract nuanced insights into market dynamics, identifying key levels of support and resistance, and gauge potential price movements in the near future.
+Sentiment Prediction: Drawing from your technical analysis, predict the likely direction of the stock price. Determine whether the stock is poised for a bullish upswing or a bearish downturn. Assess the likelihood of a breakout versus consolidation phase, taking into account the analyst recommendations.
+Confidence Level: Evaluate the robustness and reliability of your prediction. Assign a confidence level based on the coherence and convergence of the technical evidence at hand. 
+Finally, give me final suggestions about Buy, Hold, Sell, Strong Buy, Strong Sell in the future with percentage how sure you are."""
 
-Sentiment Prediction: Drawing from your technical analysis, predict the likely direction of the stock price. Determine whether the stock is poised for a bullish upswing or a bearish downturn. Assess the likelihood of a breakout versus consolidation phase, taking into account the confluence of technical signals.
-
-Confidence Level: Evaluate the robustness and reliability of your prediction. Assign a confidence level based on the coherence and convergence of the technical evidence at hand.Disclaimer: Remember, your insights are a powerful tool for informed decision-making, but not a guarantee of future performance. Always practice prudent risk management and seek professional financial advice before making any investment decisions.
-
-Your role is pivotal in equipping traders and investors with critical insights, enabling them to navigate the market with confidence. Embark on your analysis of the provided chart, decoding its mysteries with the acumen and assurance of a seasoned technical analyst.
-
-Finally, give me final suggestions about Buy, Hold, Sell, Strong Buy, Strong Sell"""
-
-# WIP
-# Fundamental Analysis: Before delving into the technical aspects, conduct a thorough fundamental analysis. Assess the company's financial statements, including income statements, balance sheets, and cash flow statements. Evaluate key financial ratios (e.g., P/E ratio, debt-to-equity, ROE) and consider the company's growth prospects, management effectiveness, competitive positioning, and market conditions. This step is crucial for understanding the underlying value and potential of the company.
 
 def run():
     # st.title("Trading Hero Stock Analysis")
@@ -120,74 +108,77 @@ def run():
 
     st.plotly_chart(candleFigure, use_container_width=True)
 
-    # st.dataframe(symbol_prices, width=3000)
-        
-    if True:
-        data = get_earnings.get_earnings(symbol)
-        actuals = [item['actual'] for item in data]
-        estimates = [item['estimate'] for item in data]
-        periods = [item['period'] for item in data]
-        surprisePercents = [item['surprisePercent'] for item in data]
-        surpriseText = ['Beat: {:.2f}'.format(item['surprise']) if item['surprise'] > 0 else 'Missed: {:.2f}'.format(item['surprise']) for item in data]
+    col3, col4 = st.columns(2)
+    with col3:
+        st.dataframe(symbol_prices, width=1000)
+    
+    with col4:
+        if True:
+            data = get_earnings.get_earnings(symbol)
+            actuals = [item['actual'] for item in data]
+            estimates = [item['estimate'] for item in data]
+            periods = [item['period'] for item in data]
+            surprisePercents = [item['surprisePercent'] for item in data]
+            surpriseText = ['Beat: {:.2f}'.format(item['surprise']) if item['surprise'] > 0 else 'Missed: {:.2f}'.format(item['surprise']) for item in data]
 
-        # Create the bubble chart
-        fig = go.Figure()
+            # Create the bubble chart
+            fig = go.Figure()
 
-        # Add actual EPS values with marker sizes based on surprise
-        fig.add_trace(go.Scatter(
-            x=periods,
-            y=actuals,
-            mode='markers+text',
-            name='Actual',
-            text=surpriseText,
-            textposition="bottom center",
-            marker=dict(
-                size=30,
-                #size=[abs(s) * 10 for s in surprisePercents], # Scale factor for visualization
-                color='LightSkyBlue',
-                line=dict(
-                    color='MediumPurple',
-                    width=2
-                ),
-                sizemode='diameter'
-            )
-        ))
-
-        # Add estimated EPS values as smaller, semi-transparent markers
-        fig.add_trace(go.Scatter(
-            x=periods,
-            y=estimates,
-            mode='markers',
-            name='Estimate',
-            marker=dict(
-                size=30, # Fixed size for all estimate markers
-                color='MediumPurple',
-                opacity=0.5,
-                line=dict(
-                    color='MediumPurple',
-                    width=2
+            # Add actual EPS values with marker sizes based on surprise
+            fig.add_trace(go.Scatter(
+                x=periods,
+                y=actuals,
+                mode='markers+text',
+                name='Actual',
+                text=surpriseText,
+                textposition="bottom center",
+                marker=dict(
+                    size=30,
+                    #size=[abs(s) * 10 for s in surprisePercents], # Scale factor for visualization
+                    color='LightSkyBlue',
+                    line=dict(
+                        color='MediumPurple',
+                        width=2
+                    ),
+                    sizemode='diameter'
                 )
+            ))
+
+            # Add estimated EPS values as smaller, semi-transparent markers
+            fig.add_trace(go.Scatter(
+                x=periods,
+                y=estimates,
+                mode='markers',
+                name='Estimate',
+                marker=dict(
+                    size=30, # Fixed size for all estimate markers
+                    color='MediumPurple',
+                    opacity=0.5,
+                    line=dict(
+                        color='MediumPurple',
+                        width=2
+                    )
+                )
+            ))
+
+            # Customize the layout
+            fig.update_layout(
+                title= 'Historical EPS Surprises',
+                xaxis_title='Period',
+                yaxis_title='Quarterly EPS',
+                xaxis=dict(
+                    title='Period',
+                    type='category', # Setting x-axis to category to display periods exactly
+                    tickmode='array',
+                    tickvals=periods,
+                    ticktext=periods
+                ),
+                yaxis=dict(showgrid=False),
+                plot_bgcolor='rgba(0,0,0,0)'
             )
-        ))
 
-        # Customize the layout
-        fig.update_layout(
-            title= 'Historical EPS Surprises',
-            xaxis_title='Period',
-            yaxis_title='Quarterly EPS',
-            xaxis=dict(
-                title='Period',
-                type='category', # Setting x-axis to category to display periods exactly
-                tickmode='array',
-                tickvals=periods,
-                ticktext=periods
-            ),
-            yaxis=dict(showgrid=False),
-            plot_bgcolor='rgba(0,0,0,0)'
-        )
-
-        # Render the plot in Streamlit
-        st.plotly_chart(fig)
+            # Render the plot in Streamlit
+            st.plotly_chart(fig)        
 
     st.write("**Stock Analyst Recommendations**")
     if symbol:
@@ -273,12 +264,15 @@ def run():
         if st.checkbox("Trading Hero AI Analysis", key="show_ai"):
             company_basic = data_retriever.get_current_basics(symbol, data_retriever.today())
             prices = symbol_prices.loc[:,"Adj Close"]
-            ai_data = genai.generate_gemini_response(input_prompt,symbol,prices,company_basic)
+            news_data = get_news.get_stock_news(symbol)["summary"].to_string()
+            analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
+            ai_data = genai.generate_gemini_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
             st.markdown(ai_data)
 
 
     forecast_days = int(st.session_state.years_back) * 365
-    if st.checkbox('Forecast Stock Prices'):
+    # if st.checkbox('Forecast Stock Prices'):
+    if True:
         with st.spinner('Fetching data...'):
             df = predict.transform_price(symbol_prices)
 
