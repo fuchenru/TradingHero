@@ -40,15 +40,15 @@ After launching the application, navigate through the intuitive interface to sel
 
 ## Features
 
-- **Market Status & Company Basics:**: Get real-time information about the market's open/closed status and essential company details, including market cap, volume, and P/E ratio.
-- **Interactive Charts:**: Visualize historical stock price movements with candlestick charts. Adjust the look-back period to analyze trends over different timeframes.
-- **Earnings Surprises:**: Explore historical earnings data and see how the company has performed relative to analyst expectations.
-- **Analyst Recommendations:**: Quickly gauge the overall sentiment towards the stock by viewing the distribution of analyst recommendations (buy, hold, sell).
-- **Latest News:**: Stay informed with the most recent news headlines related to the chosen stock.
-- **Trend Analysis:**: Utilize various technical indicators like VWAP, Bollinger Bands, trend lines, and moving averages to identify potential trading opportunities.
-- **Sector Trends:**: Compare the stock's performance against its peers within the sector and gain insights into overall sector trends.
-- **AI-Powered Analysis:**: Leverage the power of a large language model to generate insightful narratives and summaries of the stock's performance and prospects.
-- **Price Forecasting:**: Forecast future stock prices using the Prophet model and evaluate the model's accuracy with performance metrics.
+- **Market Status & Company Basics:** Get real-time information about the market's open/closed status and essential company details, including market cap, volume, and P/E ratio.
+- **Interactive Charts:** Visualize historical stock price movements with candlestick charts. Adjust the look-back period to analyze trends over different timeframes.
+- **Earnings Surprises:** Explore historical earnings data and see how the company has performed relative to analyst expectations.
+- **Analyst Recommendations:** Quickly gauge the overall sentiment towards the stock by viewing the distribution of analyst recommendations (buy, hold, sell).
+- **Latest News:** Stay informed with the most recent news headlines related to the chosen stock.
+- **Trend Analysis:** Utilize various technical indicators like VWAP, Bollinger Bands, trend lines, and moving averages to identify potential trading opportunities.
+- **Sector Trends:** Compare the stock's performance against its peers within the sector and gain insights into overall sector trends.
+- **AI-Powered Analysis:** Leverage the power of a large language model to generate insightful narratives and summaries of the stock's performance and prospects.
+- **Price Forecasting:** Forecast future stock prices using the Prophet model and evaluate the model's accuracy with performance metrics.
 
 ## Contributing
 
