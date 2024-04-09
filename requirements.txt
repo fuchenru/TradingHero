@@ -10,4 +10,4 @@ scipy
 google.generativeai
 prophet
 scikit-learn
-TextBlob
+transformers
