@@ -40,12 +40,21 @@ def run():
     col1, col2 = st.columns(2)
     with col1:
         exchange_names = data_retriever.get_exchange_code_names()
-        exchanges_selectbox = st.selectbox(
+        # check if there's only one exchange(right now limited with US Exchange)
+        if len(exchange_names) == 1:
+            # Directly display the exchange information
+            exchange_name = exchange_names[0]  
+            st.text(f"Exchange (Currently only support US market):")
+            st.markdown(f"**{exchange_name}**")
+        else:
+            # If there are multiple exchange options, let the user select
+            exchanges_selectbox = st.selectbox(
             'Exchange (Currently only support US market):',
             exchange_names,
-            index=exchange_names.index('US exchanges (NYSE, Nasdaq)')
-        )
-        exchange_name = exchanges_selectbox
+            index=exchange_names.index('US exchanges (NYSE, Nasdaq)'))
+            # user's selection
+            exchange_name = exchanges_selectbox 
+            
         exchange_index = exchange_names.index(exchange_name)
         exchange = data_retriever.get_exchange_codes()[exchange_index]
 
