@@ -123,6 +123,7 @@ def run():
     with col4:
         if True:
             data = get_earnings.get_earnings(symbol)
+            data = data[::-1] 
             actuals = [item['actual'] for item in data]
             estimates = [item['estimate'] for item in data]
             periods = [item['period'] for item in data]
@@ -134,7 +135,7 @@ def run():
 
             # Add actual EPS values with marker sizes based on surprise
             fig.add_trace(go.Scatter(
-                x=periods[::-1],  # Reverse the order of periods
+                x=periods,
                 y=actuals,
                 mode='markers+text',
                 name='Actual',
@@ -154,7 +155,7 @@ def run():
 
             # Add estimated EPS values as smaller, semi-transparent markers
             fig.add_trace(go.Scatter(
-                x=periods[::-1],  # Reverse the order of periods
+                x=periods,
                 y=estimates,
                 mode='markers',
                 name='Estimate',
@@ -178,15 +179,14 @@ def run():
                     title='Period',
                     type='category', # Setting x-axis to category to display periods exactly
                     tickmode='array',
-                    tickvals=periods[::-1],  # Reverse the order of periods
-                    ticktext=periods[::-1]  # Reverse the order of periods
+                    tickvals=periods,
+                    ticktext=periods
                 ),
                 yaxis=dict(showgrid=False),
                 plot_bgcolor='rgba(0,0,0,0)'
             )
 
-            # Render the plot in Streamlit
-            st.plotly_chart(fig)
+            st.plotly_chart(fig)  
 
     st.write('Stock Analyst Recommendations')
     if symbol:
