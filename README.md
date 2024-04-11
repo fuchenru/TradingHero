@@ -61,3 +61,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## Disclaimer
 
 Trading Hero is for educational and informational purposes only. It is not intended as financial advice. Please consult with a qualified professional before making any investment decisions.
+
+![Result](https://i.imgur.com/Lw9T6s9.png)

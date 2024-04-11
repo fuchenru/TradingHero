@@ -180,12 +180,13 @@ def run():
             # Render the plot in Streamlit
             st.plotly_chart(fig)        
 
-    st.write("**Stock Analyst Recommendations**")
+    st.write('Stock Analyst Recommendations')
     if symbol:
         recommendations = recommend.get_rec(symbol)
         st.bar_chart(recommendations)
         
-    if st.checkbox('Latest News'):
+    st.write('Latest News')
+    if True:
         news_data = get_news.get_stock_news(symbol)
         news_data.set_index("headline", inplace = True)
         st.table(news_data)
@@ -253,22 +254,12 @@ def run():
         fig2 = make_subplots(rows=1, cols=1)
         dates, close_data, relative_close_data, sector_normalized_avg = trends.sector_trends(symbol, weeks_back)
         ui.create_candlestick(fig2, dates, sector_normalized_avg, 'Sector Trend', 'Normalized Price')
-        st.plotly_chart(fig2, use_container_width=True)
+        # st.plotly_chart(fig2, use_container_width=True)
 
         # plot the difference between each peer and the sector trend
         fig3 = make_subplots(rows=1, cols=1)
         ui.create_lines(fig3, dates, relative_close_data, "Peer 'Close' Relative to Sector", 'Relative Close')
         st.plotly_chart(fig3, use_container_width=True)
-
-    with st.spinner("Model is working to generate."):
-        if st.checkbox("Trading Hero AI Analysis", key="show_ai"):
-            company_basic = data_retriever.get_current_basics(symbol, data_retriever.today())
-            prices = symbol_prices.loc[:,"Adj Close"]
-            news_data = get_news.get_stock_news(symbol)["summary"].to_string()
-            analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
-            ai_data = genai.generate_gemini_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
-            st.markdown(ai_data)
-
 
     forecast_days = int(st.session_state.years_back) * 365
     # if st.checkbox('Forecast Stock Prices'):
@@ -300,3 +291,15 @@ def run():
         metrics_df = pd.DataFrame(metrics_data)
         metrics_df.set_index("Metric", inplace = True)
         st.table(metrics_df)
+
+    with st.spinner("Model is working to generate."):
+        progress_bar = st.progress(0)
+        if st.button("Show Trading Hero AI Analysis"):
+            company_basic = data_retriever.get_current_basics(symbol, data_retriever.today())
+            prices = symbol_prices.loc[:,"Adj Close"]
+            news_data = get_news.get_stock_news(symbol)["summary"].to_string()
+            analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
+            ai_data = genai.generate_gemini_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
+            progress_bar.progress(50)
+            st.markdown(ai_data)
+            progress_bar.progress(100)
