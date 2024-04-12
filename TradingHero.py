@@ -22,6 +22,8 @@ import get_earnings
 input_prompt = """
 As a seasoned market analyst with an uncanny ability to decipher the language of price charts, your expertise is crucial in navigating the turbulent seas of financial markets. I have provided you with information about a specific stock, including its ticker symbol, recent prices, company fundamental information, news, and analyst recommendations. Your task is to analyze the stock and provide insights on its recent performance and future prospects.
 
+The first few characters you received is the company's ticker symbol. 
+
 Analysis Guidelines:
 1. Company Overview: Begin with a brief overview of the company you are analyzing. Understand its market position, recent news, financial health, and sector performance to provide context for your analysis.
 
@@ -34,6 +36,8 @@ Analysis Guidelines:
 5. Sentiment Prediction: Based on your technical analysis, predict the likely direction of the stock price. Determine whether the stock is poised for a bullish upswing or a bearish downturn. Assess the likelihood of a breakout versus a consolidation phase, taking into account the analyst recommendations.
 
 6. Confidence Level: Evaluate the robustness and reliability of your prediction. Assign a confidence level based on the coherence and convergence of the technical evidence at hand.
+
+Put more weight on the Pattern Recognition and the news.
 
 Finally, provide your recommendations on whether to Buy, Hold, Sell, Strong Buy, or Strong Sell the stock in the future, along with the percentage of confidence you have in your prediction.
 """
@@ -48,12 +52,20 @@ def run():
     col1, col2 = st.columns(2)
     with col1:
         exchange_names = data_retriever.get_exchange_code_names()
-        exchanges_selectbox = st.selectbox(
-            'Exchange (Currently only support US market):',
-            exchange_names,
-            index=exchange_names.index('US exchanges (NYSE, Nasdaq)')
-        )
-        exchange_name = exchanges_selectbox
+        # Right now only limit to 1 stock(US Exchange)
+        if len(exchange_names) == 1:
+            exchange_name = exchange_names[0]  
+            st.text("Exchange (Currently only support US market):")
+            st.markdown(f"**{exchange_name}**")
+        else:
+            # If there are multiple exchange options, let the user select
+            exchanges_selectbox = st.selectbox(
+                'Exchange (Currently only support US market):',
+                exchange_names,
+                index=exchange_names.index('US exchanges (NYSE, Nasdaq)')
+            )
+            exchange_name = exchanges_selectbox  # Use the user's selection
+    
         exchange_index = exchange_names.index(exchange_name)
         exchange = data_retriever.get_exchange_codes()[exchange_index]
 
