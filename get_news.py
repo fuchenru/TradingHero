@@ -23,10 +23,14 @@ def classify_sentiment(text):
     # Perform zero-shot classification
     result = classifier(text, candidate_labels)
 
-    if result['labels'][0] == 'Slight Negative' or result['labels'][0] == 'Very Negative':
-        return 'Negative 😡'
-    elif result['labels'][0] == 'Slight Positive' or result['labels'][0] == 'Very Negative':
-        return 'Positive 🙂'
+    if result['labels'][0] == 'Slight Negative': 
+        return 'Slight Negative 😟'
+    elif result['labels'][0] == 'Very Negative':
+        return 'Very Negative 😡'
+    elif result['labels'][0] == 'Slight Positive':
+        return 'Slight Positive 🙂'
+    elif result['labels'][0] == 'Very Positive':
+        return 'Very Positive 😁'
     elif result['labels'][0] == 'Neutral':
         return 'Neutral 😐'
 
