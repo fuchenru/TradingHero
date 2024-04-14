@@ -9,7 +9,7 @@ model = genai.GenerativeModel(model_name="gemini-pro")
 
 
 def generate_gemini_response(prompt, symbol, symbol_prices, company_basic,news,recommendations):
-    symbol_prices = symbol_prices.to_string()
-    company_basic = "Keys: {}, Values: {}".format(company_basic.keys(), company_basic.values())
+    symbol_prices = str(symbol_prices)
+    # company_basic = "Keys: {}, Values: {}".format(company_basic.keys(), company_basic.values())
     response = model.generate_content([prompt, symbol, symbol_prices, company_basic, news,recommendations])
     return response.text
