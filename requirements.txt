@@ -11,4 +11,4 @@ google.generativeai
 prophet
 scikit-learn
 transformers
-tf-keras
+torch
