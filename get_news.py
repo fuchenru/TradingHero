@@ -1,9 +1,14 @@
 import finnhub
 from datetime import date, timedelta
 from transformers import pipeline
+from transformers import BertTokenizer, BertForSequenceClassification
+
 import pandas as pd
 
 finnhub_client = finnhub.Client(api_key="co6v709r01qj6a5mgco0co6v709r01qj6a5mgcog")
+
+finbert = BertForSequenceClassification.from_pretrained('yiyanghkust/finbert-tone',num_labels=3)
+tokenizer = BertTokenizer.from_pretrained('yiyanghkust/finbert-tone')
 
 today = date.today()
 yesterday = today - timedelta(days=1)
@@ -15,23 +20,16 @@ formatted_yesterday = yesterday.strftime('%Y-%m-%d')
 def classify_sentiment(text):
 
     # Load the zero-shot classification pipeline
-    classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
-
-    # Custom labels for financial sentiment analysis
-    candidate_labels = ["Slight Negative", "Very Negative", "Slight Positive", "Very Positive", "Neutral"]
+    classifier = pipeline("sentiment-analysis", model=finbert, tokenizer=tokenizer)
     
     # Perform zero-shot classification
-    result = classifier(text, candidate_labels)
+    result = classifier(text)
 
-    if result['labels'][0] == 'Slight Negative': 
-        return 'Slight Negative 😟'
-    elif result['labels'][0] == 'Very Negative':
-        return 'Very Negative 😡'
-    elif result['labels'][0] == 'Slight Positive':
-        return 'Slight Positive 🙂'
-    elif result['labels'][0] == 'Very Positive':
-        return 'Very Positive 😁'
-    elif result['labels'][0] == 'Neutral':
+    if result[0]['label'] == 'Negative': 
+        return 'Negative 😡'
+    elif result[0]['label'] == 'Positive':
+        return 'Positive 😁'
+    elif result[0]['label'] == 'Neutral':
         return 'Neutral 😐'
 
 
