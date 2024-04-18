@@ -55,7 +55,7 @@ def run():
     st.markdown(
         """
         <style>
-        .css-1d391kg {width: 350px;}
+        .css-1d391kg {width: 358px;}
         </style>
         """,
         unsafe_allow_html=True,
