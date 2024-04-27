@@ -4,7 +4,7 @@ import streamlit as st
 from plotly.subplots import make_subplots
 from streamlit_plotly_events import plotly_events
 import plotly.graph_objects as go
-from prophet.plot import plot_plotly, plot_components_plotly
+from prophet.plot import plot_plotly, plot_components_plotly, plot
 from datetime import datetime
 
 import calculator
@@ -291,8 +291,12 @@ def run():
             model = predict.train_prophet_model(df)
             forecast = predict.make_forecast(model, forecast_days)
 
-        st.subheader('Forecast Plot')
-        st.write('The plot below visualizes the predicted stock prices with their confidence intervals.')
+        st.subheader('Trading Hero Forecasting')
+        st.write("""The plot below visualizes the forecasted stock prices using Trading Hero own time-series algorithm. 
+                 Our tool is designed to handle the complexities of time series data automatically, 
+                 such as seasonal variations and missing data. The plotted forecast includes trend lines and confidence intervals, 
+                 providing a clear visual representation of expected future values and the uncertainty around these predictions. """)
+
         fig1 = plot_plotly(model, forecast)
         fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
         st.plotly_chart(fig1)
@@ -301,7 +305,7 @@ def run():
         predicted = forecast['yhat'][:len(df)]
         metrics = predict.calculate_performance_metrics(actual, predicted)
         st.subheader('Performance Metrics')
-        st.write('The metrics below provide a quantitative measure of the model’s accuracy. They include Mean Absolute Error (MAE), Mean Squared Error (MSE), and Root Mean Squared Error (RMSE), with lower values indicating better performance.')
+        # st.write('The metrics below provide a quantitative measure of the model’s accuracy. They include Mean Absolute Error (MAE), Mean Squared Error (MSE), and Root Mean Squared Error (RMSE), with lower values indicating better performance.')
 
         metrics_data = {
             "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
@@ -311,6 +315,26 @@ def run():
         metrics_df = pd.DataFrame(metrics_data)
         metrics_df.set_index("Metric", inplace = True)
         st.table(metrics_df)
+
+        future_price = forecast.loc[:,"trend"]
+        metrics_data = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
+        tsprompt = """
+        You are provided with the following data for one company's stock:
+        - Future Price Trend: {}
+        - Performance Metrics:
+        - MAE: {:.2f}
+        - MSE: {:.2f}
+        - RMSE: {:.2f}
+
+        Based on this information, please provide insights into the company's future stock price trajectory and potential investment implications.
+        """
+        tsai_data = predict.generate_gemini_tsresponse(tsprompt,future_price,metrics_data)
+
+        progress_bar = st.progress(0)
+        if st.button("Show Trading Hero Time-Series AI Analysis"):
+            progress_bar.progress(50)
+            st.markdown(tsai_data)
+            progress_bar.progress(100)
 
     with st.spinner("Model is working to generate."):
         progress_bar = st.progress(0)
