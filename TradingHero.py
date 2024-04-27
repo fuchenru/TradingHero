@@ -319,14 +319,13 @@ def run():
         future_price = forecast.loc[:,"trend"]
         metrics_data = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
         tsprompt = """
-        You are provided with the following data for one company's stock:
-        - Future Price Trend: {}
+        You are provided with the following data for one company's future stock:
         - Performance Metrics:
-        - MAE: {:.2f}
-        - MSE: {:.2f}
-        - RMSE: {:.2f}
+        - MAE: 
+        - MSE: 
+        - RMSE: 
 
-        Based on this information, please provide insights into the company's future stock price trajectory and potential investment implications.
+        Based on this information, please provide insights into the company's potential investment implications.
         """
         tsai_data = predict.generate_gemini_tsresponse(tsprompt,future_price,metrics_data)
 
