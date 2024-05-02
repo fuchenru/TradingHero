@@ -1,8 +1,9 @@
 import finnhub
-from datetime import date
+from datetime import date, timedelta
 import pandas as pd
 import numpy as np
 import warnings
+import re
 warnings.filterwarnings('ignore')
 
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
@@ -13,7 +14,10 @@ nlp = pipeline("text-classification", model=model, tokenizer=tokenizer)
 finnhub_client = finnhub.Client(api_key="co6v709r01qj6a5mgco0co6v709r01qj6a5mgcog")
 
 today = date.today()
+prev_date = today - timedelta(weeks=3)
+
 formatted_today = today.strftime('%Y-%m-%d')
+formatted_prevdate = prev_date.strftime('%Y-%m-%d')
 
 def classify_sentiment(text):
     result = nlp(text)
@@ -35,23 +39,29 @@ def prediction_score(text):
     return(f"{score:.2f}%")
 
 
-# def get_stock_news(ticker_symbol):
-#     news = finnhub_client.company_news(ticker_symbol, _from="2024-04-01", to=formatted_today)
-#     df = pd.DataFrame.from_records(news, columns=['headline', 'summary'])
-#     top_5_news = df.head(5)
-#     top_5_news['Sentiment Analysis'] = top_5_news['summary'].apply(classify_sentiment) 
-#     top_5_news['Score'] = top_5_news['summary'].apply(prediction_score)
-#     top_5_news = top_5_news.reset_index(drop=True)
-#     return top_5_news
+def count_related_words(text, ticker_symbol):
+    # Find all occurrences of the AI-related keywords in the text
+    matches = re.findall(ticker_symbol, text, flags=re.IGNORECASE)
+    # Return the number of matches
+    return len(matches)
 
 def get_stock_news(ticker_symbol):
     try:
-        news = finnhub_client.company_news(ticker_symbol, _from="2024-04-01", to=formatted_today)
+        news = finnhub_client.company_news(ticker_symbol, _from=formatted_prevdate, to=formatted_today)
         df = pd.DataFrame(news)
-        df = df[['headline', 'summary']].head(5)
+        df = df[['headline', 'summary']]
+        df = df[~df['summary'].str.contains('Looking for stock market analysis and research with proves results?')]
+    
+        # Select words less than 500 and reset index by counting related word
+        df['word_counts'] = df['summary'].str.split().str.len()
+        df['related_word_count'] = df['summary'].apply(lambda text: count_related_words(text, ticker_symbol))
+
+        df = df[(df['word_counts'] <= 500)]
+
         df.rename(columns={'headline': 'Headline', 'summary': 'Summary'}, inplace=True)
         df['Sentiment Analysis'] = df['Summary'].apply(classify_sentiment)
         df['Score'] = df['Summary'].apply(prediction_score)
+        df = df.drop(columns=['word_counts', 'related_word_count'])
         return df
     except Exception as e:
         return f"An error occurred: {e}"
