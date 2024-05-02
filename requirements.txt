@@ -10,7 +10,6 @@ scipy
 google.generativeai
 prophet
 scikit-learn
-TextBlob
 torch
 transformers
 chardet
