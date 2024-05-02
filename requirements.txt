@@ -11,3 +11,7 @@ google.generativeai
 prophet
 scikit-learn
 TextBlob
+torch
+transformers
+chardet
+huggingface_hub

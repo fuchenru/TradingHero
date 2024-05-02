@@ -200,15 +200,18 @@ def run():
 
             st.plotly_chart(fig)  
 
-    st.write('Stock Analyst Recommendations')
+    st.subheader('Stock Analyst Recommendations')
     if symbol:
         recommendations = recommend.get_rec(symbol)
         st.bar_chart(recommendations)
         
-    st.write('Latest News')
+    st.subheader('Latest News')
+    st.write("""Trading Hero utilize a self-trained Natural Language Processing (NLP) pipeline to perform sentiment analysis specifically tailored for financial news. 
+             This self-trained NLP solution leverages state-of-the-art machine learning models with accuracy 98% to 
+             interpret and classify the sentiment of textual data from news articles related to stock market activities.""")
     if True:
         news_data = get_news.get_stock_news(symbol)
-        news_data.set_index("headline", inplace = True)
+        news_data.set_index("Headline", inplace = True)
         st.table(news_data)
 
     if st.checkbox('Trends'):
