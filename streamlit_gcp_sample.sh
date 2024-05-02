@@ -21,11 +21,11 @@ gcloud artifacts repositories create tradinghero --repository-format=docker --lo
 
 
 # Build Docker image
-docker image build -t us-docker.pkg.dev/adsp-capstone-trading-hero/tradinghero/app.py:latest .
+docker build -t us-docker.pkg.dev/adsp-capstone-trading-hero/tradinghero/app:latest .
 
 
 # Push Docker image into artifact registry
-docker push us-docker.pkg.dev/adsp-capstone-trading-hero/tradinghero/app.py:latest
+docker push us-docker.pkg.dev/adsp-capstone-trading-hero/tradinghero/app:latest
 
 
 # Enable  Cloud Run API
@@ -45,7 +45,7 @@ gcloud run deploy app.py \
  --project=adsp-capstone-trading-hero \
 #  --set-env-vars='GEMINI_API_KEY'
 
-gcloud run deploy tradinghero --image=us-docker.pkg.dev/adsp-capstone-trading-hero/tradinghero/app.py:latest --platform managed --region us-central1 --allow-unauthenticated --project=adsp-capstone-trading-hero
+gcloud run deploy tradinghero --image=us-docker.pkg.dev/adsp-capstone-trading-hero/tradinghero/app:latest --platform managed --region us-central1 --allow-unauthenticated
 
 # Delete Streamlit app when no longer needed
 gcloud run services delete APP-NAME --region=us-central1 --quiet
