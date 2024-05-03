@@ -62,6 +62,6 @@ def get_stock_news(ticker_symbol):
         df['Sentiment Analysis'] = df['Summary'].apply(classify_sentiment)
         df['Score'] = df['Summary'].apply(prediction_score)
         df = df.drop(columns=['word_counts', 'related_word_count'])
-        return df
+        return df.head(5)
     except Exception as e:
         return f"An error occurred: {e}"

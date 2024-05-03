@@ -204,15 +204,18 @@ def run():
     if symbol:
         recommendations = recommend.get_rec(symbol)
         st.bar_chart(recommendations)
-        
-    st.subheader('Latest News')
-    st.write("""Trading Hero utilize a self-trained Natural Language Processing (NLP) pipeline to perform sentiment analysis specifically tailored for financial news. 
-             This self-trained NLP solution leverages state-of-the-art machine learning models with accuracy 98% to 
-             interpret and classify the sentiment of textual data from news articles related to stock market activities.""")
-    if True:
-        news_data = get_news.get_stock_news(symbol)
-        news_data.set_index("Headline", inplace = True)
-        st.table(news_data)
+
+    with st.spinner("NLP sentiment analysis is working to generate."):
+        progress_bar = st.progress(0)
+        if st.checkbox('Latest News'):
+            st.write("""Trading Hero utilize a self-trained Natural Language Processing (NLP) pipeline to perform sentiment analysis specifically tailored for financial news. 
+                    This self-trained NLP solution leverages state-of-the-art machine learning models with accuracy 98% to 
+                    interpret and classify the sentiment of textual data from news articles related to stock market activities.""")
+            news_data = get_news.get_stock_news(symbol)
+            news_data.set_index("Headline", inplace = True)
+            progress_bar.progress(50)
+            st.table(news_data)
+            progress_bar.progress(100)
 
     if st.checkbox('Trends'):
         period = st.slider(label='period', min_value=7, max_value=140, value=14, step=7)
@@ -277,7 +280,6 @@ def run():
         fig2 = make_subplots(rows=1, cols=1)
         dates, close_data, relative_close_data, sector_normalized_avg = trends.sector_trends(symbol, weeks_back)
         ui.create_candlestick(fig2, dates, sector_normalized_avg, 'Sector Trend', 'Normalized Price')
-        # st.plotly_chart(fig2, use_container_width=True)
 
         # plot the difference between each peer and the sector trend
         fig3 = make_subplots(rows=1, cols=1)
@@ -285,7 +287,6 @@ def run():
         st.plotly_chart(fig3, use_container_width=True)
 
     forecast_days = int(st.session_state.years_back) * 365
-    # if st.checkbox('Forecast Stock Prices'):
     if True:
         with st.spinner('Fetching data...'):
             df = predict.transform_price(symbol_prices)
@@ -308,7 +309,6 @@ def run():
         predicted = forecast['yhat'][:len(df)]
         metrics = predict.calculate_performance_metrics(actual, predicted)
         st.subheader('Performance Metrics')
-        # st.write('The metrics below provide a quantitative measure of the model’s accuracy. They include Mean Absolute Error (MAE), Mean Squared Error (MSE), and Root Mean Squared Error (RMSE), with lower values indicating better performance.')
 
         metrics_data = {
             "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
@@ -331,12 +331,12 @@ def run():
         Based on this information, please provide insights into the company's potential investment implications.
         """
         tsai_data = predict.generate_gemini_tsresponse(tsprompt,future_price,metrics_data)
-
-        progress_bar = st.progress(0)
-        if st.button("Show Trading Hero Time-Series AI Analysis"):
-            progress_bar.progress(50)
-            st.markdown(tsai_data)
-            progress_bar.progress(100)
+        with st.spinner("Time-Series analysis is working to generate."):
+            progress_bar = st.progress(0)
+            if st.button("Show Trading Hero Time-Series AI Analysis"):
+                progress_bar.progress(50)
+                st.markdown(tsai_data)
+                progress_bar.progress(100)
 
     with st.spinner("Model is working to generate."):
         progress_bar = st.progress(0)
