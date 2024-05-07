@@ -15,7 +15,7 @@ import bidder
 import get_news
 import status
 import recommend
-import vertexai
+import vertex
 import predict
 import get_earnings
 
@@ -459,7 +459,7 @@ def show_trends():
             prices = symbol_prices.loc[:,"Adj Close"]
             news_data = get_news.get_stock_news(symbol)["Summary"].to_string()
             analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
-            ai_data = vertexai.generate_vertexai_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
+            ai_data = vertex.generate_vertexai_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
             progress_bar.progress(50)
             for response in ai_data:
                 st.markdown(response)
