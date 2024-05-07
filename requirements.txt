@@ -7,7 +7,7 @@ datetime
 plotly
 numpy
 scipy
-google.generativeai
+vertexai
 prophet
 scikit-learn
 torch
