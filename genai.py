@@ -1,18 +1,46 @@
 import streamlit as st
 from PIL import Image
-import google.generativeai as genai
-import os
-import io
-import openai
-genai.configure(api_key="AIzaSyDfwWZH59XOxiVnz6XRyXWIX47hF7BZ1jQ")
-model = genai.GenerativeModel(model_name="gemini-pro")
+import vertexai
+from vertexai.preview.generative_models import GenerativeModel, ChatSession, Part
+import vertexai.preview.generative_models as generative_models
 
 
-def generate_gemini_response(prompt, symbol, symbol_prices, company_basic,news,recommendations):
-    symbol_prices = symbol_prices.to_string()
-    company_basic = "Keys: {}, Values: {}".format(company_basic.keys(), company_basic.values())
-    response = model.generate_content([prompt, symbol, symbol_prices, company_basic, news,recommendations])
-    return response.text
+vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
+# Define the model for Gemini Pro
+model = GenerativeModel("gemini-1.0-pro")
+
+
+
+def extract_text_from_generation_response(responses):
+    """Extracts the concatenated text from the responses and removes extra newlines/spaces."""
+    concatenated_text = []
+    for response in responses:
+        for candidate in response.candidates:
+            for part in candidate.content.parts:
+                concatenated_text.append(part.text.strip())
+    return concatenated_text
+
+
+
+def generate_vertexai_response(prompt, symbol, symbol_prices, company_basic, news, recommendations):
+    # Convert data to strings
+    symbol_prices_str = symbol_prices.to_string()
+    company_basic_str = "Keys: {}, Values: {}".format(company_basic.keys(), company_basic.values())
+
+    # Create the full prompt
+    full_prompt = f"{prompt}\nSymbol: {symbol}\nPrices: {symbol_prices_str}\nBasics: {company_basic_str}\nNews: {news}\nRecommendations: {recommendations}"
+
+    responses = model.generate_content(
+    [full_prompt],
+    generation_config={
+        "max_output_tokens": 2048,
+        "temperature": 0.9,
+        "top_p": 1
+    },
+        stream=True,
+      )
+  
+    return extract_text_from_generation_response(responses)
 
 # def generate_chatgpt_response(messages, symbol, symbol_prices, company_basic,news,recommendations):
 #     openai.api_key = "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"
