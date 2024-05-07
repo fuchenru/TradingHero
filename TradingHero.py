@@ -165,14 +165,10 @@ def show_candle_chart():
     symbol = st.session_state.get('selected_symbol', symbols[0])
     st.markdown(f"**Candle Chart for {symbol}**")
 
-    # Retrieve the symbol prices if not available or update it if the user changes the symbol
-    if 'symbol_prices' not in st.session_state or st.session_state.selected_symbol != symbol:
-        st.session_state.symbol_prices = data_retriever.get_current_stock_data(symbol, 52 * 5)  # Assuming 5 years of weekly data
-        st.session_state.selected_symbol = symbol
+    # Retrieve the latest symbol prices each time the chart is displayed
+    symbol_prices = data_retriever.get_current_stock_data(symbol, 52 * 5)  # Assuming 5 years of weekly data
 
-    # Check if there are prices to display
-    if not st.session_state.symbol_prices.empty:
-        symbol_prices = st.session_state.symbol_prices
+    if not symbol_prices.empty:
         dates = symbol_prices.index.astype(str)
 
         # Create a candlestick graph
@@ -182,20 +178,15 @@ def show_candle_chart():
         # Update layout of the figure
         candle_figure.update_layout(
             xaxis_title='Date',
-            yaxis_title="Price per Share"
+            yaxis_title="Price per Share",
+            template='plotly_dark'  # Optional, for consistent dark theme
         )
 
-        # Allow for selection of specific points within the graph
-        selected_points = plotly_events(candle_figure, click_event=True, select_event=True)
-
         # Display the chart
-        # st.plotly_chart(candle_figure, use_container_width=True)
-
-        # Show selected points
-        if selected_points:
-            st.write("Selected Points:", selected_points)
+        st.plotly_chart(candle_figure, use_container_width=True)
     else:
         st.error("No price data available for the selected symbol.")
+
 
 
 def show_historical_data():
