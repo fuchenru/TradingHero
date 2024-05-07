@@ -15,7 +15,7 @@ import bidder
 import get_news
 import status
 import recommend
-import genai
+import vertexai
 import predict
 import get_earnings
 
@@ -443,7 +443,7 @@ def show_trends():
 
     Based on this information, please provide insights into the company's potential investment implications.
     """
-    tsai_data = predict.generate_gemini_tsresponse(tsprompt,future_price,metrics_data)
+    tsai_data = predict.generate_vertexai_tsresponse(tsprompt,future_price,metrics_data)
     with st.spinner("Time-Series analysis is working to generate."):
         progress_bar = st.progress(0)
         if st.button("Show Trading Hero Time-Series AI Analysis"):
@@ -459,7 +459,8 @@ def show_trends():
             prices = symbol_prices.loc[:,"Adj Close"]
             news_data = get_news.get_stock_news(symbol)["Summary"].to_string()
             analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
-            ai_data = genai.generate_gemini_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
+            ai_data = vertexai.generate_vertexai_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
             progress_bar.progress(50)
-            st.markdown(ai_data)
+            for response in ai_data:
+                st.markdown(response)
             progress_bar.progress(100)
