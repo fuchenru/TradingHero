@@ -6,6 +6,15 @@ from streamlit_plotly_events import plotly_events
 import plotly.graph_objects as go
 from prophet.plot import plot_plotly, plot_components_plotly, plot
 from datetime import datetime
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+        # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
+
+import certifi
+import json
 
 import calculator
 import data_retriever
@@ -18,6 +27,7 @@ import recommend
 import vertex
 import predict
 import get_earnings
+import requests
 
 input_prompt = """
 As a seasoned market analyst with an uncanny ability to decipher the language of price charts, your expertise is crucial in navigating the turbulent seas of financial markets. I have provided you with information about a specific stock, including its ticker symbol, recent prices, company fundamental information, news, and analyst recommendations. Your task is to analyze the stock and provide insights on its recent performance and future prospects.
@@ -69,15 +79,13 @@ def run():
         st.session_state['last_opened'] = None
 
     with st.sidebar:
-        if st.sidebar.button('□ ℹ️ Overall Information'):
+        if st.sidebar.button('ℹ️ Overall Information'):
             st.session_state['last_opened'] = 'Overall Information'
-        if st.sidebar.button('□ 📈 Candle Chart'):
-            st.session_state['last_opened'] = 'Candle Chart'
-        if st.sidebar.button('□ 📜 End-of-Day Historical Stock and EPS Surprises'):
+        if st.sidebar.button('📜 Historical Stock and EPS Surprises'):
             st.session_state['last_opened'] = 'End-of-Day Historical Stock and EPS Surprises'
-        if st.sidebar.button('□ 💡Stock Analyst Recommendations and Latest News'):
+        if st.sidebar.button('💡Stock Analyst Recommendations and Latest News'):
             st.session_state['last_opened'] = 'Stock Analyst Recommendations'
-        if st.sidebar.button('□ 🔍 Trends Forecasting and TradingHero Analysis'):
+        if st.sidebar.button('🔍 Trends Forecasting and TradingHero Analysis'):
             st.session_state['last_opened'] = 'Trends'
 
 
@@ -86,8 +94,6 @@ def run():
     # Check which content to display based on what was clicked in the sidebar
     if st.session_state['last_opened'] == 'Overall Information':
         show_overall_information()
-    elif st.session_state['last_opened'] == 'Candle Chart':
-        show_candle_chart()
     elif st.session_state['last_opened'] == 'End-of-Day Historical Stock and EPS Surprises':
         show_historical_data()
     elif st.session_state['last_opened'] == 'Stock Analyst Recommendations':
@@ -97,13 +103,43 @@ def run():
 
 
 def show_overall_information():
+
+
+
+    def get_jsonparsed_data(url):
+        response = urlopen(url, cafile=certifi.where())
+        data = response.read().decode("utf-8")
+        return json.loads(data)
+
+    gain_url = ("https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")
+    gainer_data = get_jsonparsed_data(gain_url)
+
+    st.write("**Today's Top Gainers traded US tickers:**")
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric(gainer_data[0]['name'], gainer_data[0]['price'], str(gainer_data[0]['changesPercentage'])+'%')
+    col2.metric(gainer_data[1]['name'], gainer_data[1]['price'], str(gainer_data[1]['changesPercentage'])+'%')
+    col3.metric(gainer_data[2]['name'], gainer_data[2]['price'], str(gainer_data[2]['changesPercentage'])+'%')
+    col4.metric(gainer_data[3]['name'], gainer_data[3]['price'], str(gainer_data[3]['changesPercentage'])+'%')
+    col5.metric(gainer_data[4]['name'], gainer_data[4]['price'], str(gainer_data[4]['changesPercentage'])+'%')
+
+    lose_url = ("https://financialmodelingprep.com/api/v3/stock_market/losers?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")
+    data = get_jsonparsed_data(lose_url)
+    st.write("**Today's Top Losers traded US tickers:**")
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric(data[0]['name'], data[0]['price'], str(data[0]['changesPercentage'])+'%')
+    col2.metric(data[1]['name'], data[1]['price'], str(data[1]['changesPercentage'])+'%')
+    col3.metric(data[2]['name'], data[2]['price'], str(data[2]['changesPercentage'])+'%')
+    col4.metric(data[3]['name'], data[3]['price'], str(data[3]['changesPercentage'])+'%')
+    col5.metric(data[4]['name'], data[4]['price'], str(data[4]['changesPercentage'])+'%')
+     
     col1, col2 = st.columns(2)
     with col1:
         exchange_names = data_retriever.get_exchange_code_names()
         # Right now only limit to 1 stock(US Exchange)
         if len(exchange_names) == 1:
             exchange_name = exchange_names[0]  
-            st.text("Exchange (Currently only support US market):")
+            st.write("**Exchange (Currently only support US market):**")
+            # st.text("Exchange (Currently only support US market):")
             st.markdown(f"**{exchange_name}**")
         else:
             # If there are multiple exchange options, let the user select
@@ -160,32 +196,22 @@ def show_overall_information():
             symbol_prices_backtest = symbol_prices[symbol_prices.index <= end_date]
             backtest_dates = symbol_prices_backtest.index.astype(str)
 
-def show_candle_chart():
-    symbols = get_active_symbols()
-    symbol = st.session_state.get('selected_symbol', symbols[0])
-    st.markdown(f"**Candle Chart for {symbol}**")
+# def show_candle_chart():
+        # symbol candlestick graph
+    candleFigure = make_subplots(rows=1, cols=1)
+    ui.create_candlestick(candleFigure, dates, symbol_prices, symbol, 'Price')
 
-    # Retrieve the latest symbol prices each time the chart is displayed
-    symbol_prices = data_retriever.get_current_stock_data(symbol, 52 * 5)  # Assuming 5 years of weekly data
+    # plot all
+    candleFigure.update_layout(title="Candle Chart",
+                               xaxis_title='Date',
+                               yaxis_title="Price per Share",
+                               template='plotly_dark')
 
-    if not symbol_prices.empty:
-        dates = symbol_prices.index.astype(str)
+    # use this to add markers on other graphs for click points on this graph
+    selected_points = []
 
-        # Create a candlestick graph
-        candle_figure = make_subplots(rows=1, cols=1)
-        ui.create_candlestick(candle_figure, dates, symbol_prices, symbol, 'Price')
 
-        # Update layout of the figure
-        candle_figure.update_layout(
-            xaxis_title='Date',
-            yaxis_title="Price per Share",
-            template='plotly_dark'  # Optional, for consistent dark theme
-        )
-
-        # Display the chart
-        st.plotly_chart(candle_figure, use_container_width=True)
-    else:
-        st.error("No price data available for the selected symbol.")
+    st.plotly_chart(candleFigure, use_container_width=True)
 
 
 
@@ -200,7 +226,7 @@ def show_historical_data():
         st.session_state.selected_symbol_hist = symbol
 
     if not st.session_state.symbol_prices_hist.empty:
-        symbol_prices_hist = st.session_state.symbol_prices_hist
+        symbol_prices_hist = st.session_state.symbol_prices_hist[::-1]
         col1, col2 = st.columns(2)
 
         with col1:
@@ -293,6 +319,7 @@ def show_analyst_recommendations():
         else:
             st.error("No recommendations data available for the selected symbol.")
     
+    
     with st.spinner("NLP sentiment analysis is working to generate."):
         progress_bar = st.progress(0)
         if st.checkbox('Show Latest News'):
@@ -359,6 +386,7 @@ def show_trends():
     # Bids and Strategies
     init_val = 1000.0
     buy_and_hold_val = bidder.buy_and_hold(init_val, symbol_prices['Close'])
+    st.write(f"Initial Value: {init_val}")
     st.write(f"BUY AND HOLD: {buy_and_hold_val}")
 
     bid_dates, bid_vals = trends.bids(dates, symbol_prices, period)
