@@ -15,6 +15,10 @@ except ImportError:
 
 import certifi
 import json
+import base64
+import vertexai
+from vertexai.generative_models import GenerativeModel
+import vertexai.preview.generative_models as generative_models
 
 import calculator
 import data_retriever
@@ -27,7 +31,7 @@ import recommend
 import vertex
 import predict
 import get_earnings
-import requests
+
 
 input_prompt = """
 As a seasoned market analyst with an uncanny ability to decipher the language of price charts, your expertise is crucial in navigating the turbulent seas of financial markets. I have provided you with information about a specific stock, including its ticker symbol, recent prices, company fundamental information, news, and analyst recommendations. Your task is to analyze the stock and provide insights on its recent performance and future prospects.
@@ -51,7 +55,23 @@ Put more weight on the Pattern Recognition and the news.
 
 Finally, provide your recommendations on whether to Buy, Hold, Sell, Strong Buy, or Strong Sell the stock in the future, along with the percentage of confidence you have in your prediction.
 """
+vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
+model = GenerativeModel("gemini-1.5-pro-preview-0409")
 
+    # Define the generation configuration
+generation_config = {
+        "max_output_tokens": 8192,
+        "temperature": 1,
+        "top_p": 0.95,
+    }
+
+    # Define safety settings
+safety_settings = {
+        generative_models.HarmCategory.HARM_CATEGORY_HATE_SPEECH: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+        generative_models.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+        generative_models.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+        generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+    }
 
 def get_active_symbols():
     exchange_names = data_retriever.get_exchange_code_names()
@@ -197,7 +217,7 @@ def show_overall_information():
             backtest_dates = symbol_prices_backtest.index.astype(str)
 
 # def show_candle_chart():
-        # symbol candlestick graph
+    # symbol candlestick graph
     candleFigure = make_subplots(rows=1, cols=1)
     ui.create_candlestick(candleFigure, dates, symbol_prices, symbol, 'Price')
 
@@ -213,6 +233,41 @@ def show_overall_information():
 
     st.plotly_chart(candleFigure, use_container_width=True)
 
+    st.write("**Trading Hero AI Technical Summary:**")
+    prices = symbol_prices.loc[:,"Adj Close"]
+    symbol = st.session_state.get('selected_symbol', symbols[0])
+    text1 = f"""You are a financial analyst tasked with providing a technical summary for various stocks based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock\'s trend, its performance relative to a major market index (like the S&P 500), and key technical indicators such as momentum (measured by the RSI), volume trends, and the position relative to moving averages.
+
+        Please generate a technical summary that follows the structure and tone of the example provided below:
+
+        Example Technical Summary:
+        \"Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. A reversal of the existing trend looks unlikely at this time. Over the last 50 trading days, when compared to the S&P 500, the stock has performed in line with the market. Despite a weak technical condition, there are positive signs. Momentum, as measured by the 9-day RSI, is bullish. Over the last 50 trading sessions, there has been more volume on down days than on up days, indicating that [Ticker] is under distribution, which is a bearish condition. The stock is currently above a falling 50-day moving average. A move below this average could trigger additional weakness in the stock. [Ticker] could find secondary support at its rising 200-day moving average.\"
+
+        Ticker Symbol: {symbol}
+        Current Price: {prices}
+        [Detailed Technical Summary]"""
+
+        # Generate content based on the prompt
+    responses = model.generate_content(
+            [text1],
+            generation_config=generation_config,
+            safety_settings=safety_settings,
+            stream=True,
+        )
+
+    responses = model.generate_content(
+    [text1],
+    generation_config=generation_config,
+    safety_settings=safety_settings,
+    stream=True,)
+
+    def extract_text_from_generation_response(responses):
+        return [resp.text for resp in responses] 
+
+    # Extract and format the response
+    text_responses = extract_text_from_generation_response(responses)
+    full_summary = "".join(text_responses)  # Join all parts into one string
+    st.write(full_summary)  # Display the formatted summary
 
 
 def show_historical_data():
