@@ -14,5 +14,5 @@ import streamlit as st
 
 
 if __name__ == '__main__':
-    st.set_page_config(layout="wide")
+    st.set_page_config(layout="wide", page_title='TradingHero', page_icon="https://i.imgur.com/Lw9T6s9.png") 
     TradingHero.run()
