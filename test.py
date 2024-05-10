@@ -920,7 +920,7 @@ def get_active_symbols():
     exchange = get_exchange_codes()[exchange_index]
     return get_symbols(exchange)
 
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title='TradingHero', page_icon="https://i.imgur.com/Lw9T6s9.png")
 st.markdown(
         """
         <style>
