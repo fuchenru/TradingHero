@@ -10,6 +10,15 @@ import static_data
 #test
 import streamlit as st
 
+try:
+    # For Python 3.0 and later
+    from urllib.request import urlopen
+except ImportError:
+    # Fall back to Python 2's urllib2
+    from urllib2 import urlopen
+
+import certifi
+import json
 
 @st.cache_data
 def get_exchange_code_names():
@@ -20,27 +29,36 @@ def get_exchange_code_names():
 def get_exchange_codes():
     return static_data.exchange_codes
 
+def get_jsonparsed_data(url):
+    response = urlopen(url, cafile=certifi.where())
+    data = response.read().decode("utf-8")
+    return json.loads(data)
 
-@st.cache_data
-def get_symbols(exchange_code):
-    symbol_data = finnhub_client().stock_symbols(exchange_code)
-    symbols = []
-    for symbol_info in symbol_data:
-        symbols.append(symbol_info['displaySymbol'])
-    symbols.sort()
-    return symbols
+# temp fix for now because finhub api not working
+def get_symbols(data):
+    # Extract symbols where type is 'stock'
+    return [item['symbol'] for item in data if item.get('type') == 'stock']
+
+# @st.cache_data
+# def get_symbols(exchange_code):
+#     symbol_data = finnhub_client().stock_symbols(exchange_code)
+#     symbols = []
+#     for symbol_info in symbol_data:
+#         symbols.append(symbol_info['displaySymbol'])
+#     symbols.sort()
+#     return symbols
 
 
 @st.cache_data
 def today():
     return date.today().strftime("%Y-%m-%d")
 
-
+@st.cache_data
 def n_weeks_before(date_string, n):
     date_value = datetime.strptime(date_string, "%Y-%m-%d") - timedelta(days=7*n)
     return date_value.strftime("%Y-%m-%d")
 
-
+@st.cache_data
 def n_days_before(date_string, n):
     date_value = datetime.strptime(date_string, "%Y-%m-%d") - timedelta(days=n)
     return date_value.strftime("%Y-%m-%d")

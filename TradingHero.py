@@ -73,12 +73,19 @@ safety_settings = {
         generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT: generative_models.HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
     }
 
+# temp fix for now
+def get_jsonparsed_data(url):
+        response = urlopen(url, cafile=certifi.where())
+        data = response.read().decode("utf-8")
+        return json.loads(data)
+url = ("https://financialmodelingprep.com/api/v3/stock/list?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")
+data = get_jsonparsed_data(url)
 def get_active_symbols():
-    exchange_names = data_retriever.get_exchange_code_names()
-    exchange_name = exchange_names[0] if len(exchange_names) == 1 else st.session_state.exchange_name
-    exchange_index = exchange_names.index(exchange_name)
-    exchange = data_retriever.get_exchange_codes()[exchange_index]
-    return data_retriever.get_symbols(exchange)
+    # exchange_names = data_retriever.get_exchange_code_names()
+    # exchange_name = exchange_names[0] if len(exchange_names) == 1 else st.session_state.exchange_name
+    # exchange_index = exchange_names.index(exchange_name)
+    # exchange = data_retriever.get_exchange_codes()[exchange_index]
+    return data_retriever.get_symbols(data)
 
 
 def run():
@@ -136,21 +143,21 @@ def show_overall_information():
 
     st.write("**Today's Top Gainers traded US tickers:**")
     col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric(gainer_data[0]['name'], gainer_data[0]['price'], str(gainer_data[0]['changesPercentage'])+'%')
-    col2.metric(gainer_data[1]['name'], gainer_data[1]['price'], str(gainer_data[1]['changesPercentage'])+'%')
-    col3.metric(gainer_data[2]['name'], gainer_data[2]['price'], str(gainer_data[2]['changesPercentage'])+'%')
-    col4.metric(gainer_data[3]['name'], gainer_data[3]['price'], str(gainer_data[3]['changesPercentage'])+'%')
-    col5.metric(gainer_data[4]['name'], gainer_data[4]['price'], str(gainer_data[4]['changesPercentage'])+'%')
+    col1.metric(gainer_data[0]['symbol'], gainer_data[0]['price'], str(gainer_data[0]['changesPercentage'])+'%')
+    col2.metric(gainer_data[1]['symbol'], gainer_data[1]['price'], str(gainer_data[1]['changesPercentage'])+'%')
+    col3.metric(gainer_data[2]['symbol'], gainer_data[2]['price'], str(gainer_data[2]['changesPercentage'])+'%')
+    col4.metric(gainer_data[3]['symbol'], gainer_data[3]['price'], str(gainer_data[3]['changesPercentage'])+'%')
+    col5.metric(gainer_data[4]['symbol'], gainer_data[4]['price'], str(gainer_data[4]['changesPercentage'])+'%')
 
     lose_url = ("https://financialmodelingprep.com/api/v3/stock_market/losers?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")
     data = get_jsonparsed_data(lose_url)
     st.write("**Today's Top Losers traded US tickers:**")
     col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric(data[0]['name'], data[0]['price'], str(data[0]['changesPercentage'])+'%')
-    col2.metric(data[1]['name'], data[1]['price'], str(data[1]['changesPercentage'])+'%')
-    col3.metric(data[2]['name'], data[2]['price'], str(data[2]['changesPercentage'])+'%')
-    col4.metric(data[3]['name'], data[3]['price'], str(data[3]['changesPercentage'])+'%')
-    col5.metric(data[4]['name'], data[4]['price'], str(data[4]['changesPercentage'])+'%')
+    col1.metric(data[0]['symbol'], data[0]['price'], str(data[0]['changesPercentage'])+'%')
+    col2.metric(data[1]['symbol'], data[1]['price'], str(data[1]['changesPercentage'])+'%')
+    col3.metric(data[2]['symbol'], data[2]['price'], str(data[2]['changesPercentage'])+'%')
+    col4.metric(data[3]['symbol'], data[3]['price'], str(data[3]['changesPercentage'])+'%')
+    col5.metric(data[4]['symbol'], data[4]['price'], str(data[4]['changesPercentage'])+'%')
      
     col1, col2 = st.columns(2)
     with col1:
@@ -196,11 +203,11 @@ def show_overall_information():
         else:
             st.write("🌃 It is currently outside of regular trading hours.")
 
-    company_basic = status.get_basic(symbol)
-    if st.checkbox('Show Company Basics'):
-        basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
-        metrics = data_retriever.get_basic_detail(basics_data)
-        st.dataframe(metrics[['Explanation', 'Value']], width=3000)
+    # company_basic = status.get_basic(symbol)
+    # if st.checkbox('Show Company Basics'):
+    #     basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
+    #     metrics = data_retriever.get_basic_detail(basics_data)
+    #     st.dataframe(metrics[['Explanation', 'Value']], width=3000)
 
     with col2:
         st.text_input('No. of years look-back:', value=1, key="years_back")
