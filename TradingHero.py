@@ -74,18 +74,18 @@ safety_settings = {
     }
 
 # temp fix for now
-def get_jsonparsed_data(url):
-        response = urlopen(url, cafile=certifi.where())
-        data = response.read().decode("utf-8")
-        return json.loads(data)
-url = ("https://financialmodelingprep.com/api/v3/stock/list?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")
-data = get_jsonparsed_data(url)
+# def get_jsonparsed_data(url):
+#         response = urlopen(url, cafile=certifi.where())
+#         data = response.read().decode("utf-8")
+#         return json.loads(data)
+# url = ("https://financialmodelingprep.com/api/v3/stock/list?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")
+# data = get_jsonparsed_data(url)
 def get_active_symbols():
-    # exchange_names = data_retriever.get_exchange_code_names()
-    # exchange_name = exchange_names[0] if len(exchange_names) == 1 else st.session_state.exchange_name
-    # exchange_index = exchange_names.index(exchange_name)
-    # exchange = data_retriever.get_exchange_codes()[exchange_index]
-    return data_retriever.get_symbols(data)
+    exchange_names = data_retriever.get_exchange_code_names()
+    exchange_name = exchange_names[0] if len(exchange_names) == 1 else st.session_state.exchange_name
+    exchange_index = exchange_names.index(exchange_name)
+    exchange = data_retriever.get_exchange_codes()[exchange_index]
+    return data_retriever.get_symbols(exchange)
 
 
 def run():
@@ -203,11 +203,11 @@ def show_overall_information():
         else:
             st.write("🌃 It is currently outside of regular trading hours.")
 
-    # company_basic = status.get_basic(symbol)
-    # if st.checkbox('Show Company Basics'):
-    #     basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
-    #     metrics = data_retriever.get_basic_detail(basics_data)
-    #     st.dataframe(metrics[['Explanation', 'Value']], width=3000)
+    company_basic = status.get_basic(symbol)
+    if st.checkbox('Show Company Basics'):
+        basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
+        metrics = data_retriever.get_basic_detail(basics_data)
+        st.dataframe(metrics[['Explanation', 'Value']], width=3000)
 
     with col2:
         st.text_input('No. of years look-back:', value=1, key="years_back")

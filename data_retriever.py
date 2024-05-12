@@ -35,18 +35,18 @@ def get_jsonparsed_data(url):
     return json.loads(data)
 
 # temp fix for now because finhub api not working
-def get_symbols(data):
-    # Extract symbols where type is 'stock'
-    return [item['symbol'] for item in data if item.get('type') == 'stock']
+# def get_symbols(data):
+#     # Extract symbols where type is 'stock'
+#     return [item['symbol'] for item in data if item.get('type') == 'stock']
 
-# @st.cache_data
-# def get_symbols(exchange_code):
-#     symbol_data = finnhub_client().stock_symbols(exchange_code)
-#     symbols = []
-#     for symbol_info in symbol_data:
-#         symbols.append(symbol_info['displaySymbol'])
-#     symbols.sort()
-#     return symbols
+@st.cache_data
+def get_symbols(exchange_code):
+    symbol_data = finnhub_client().stock_symbols(exchange_code)
+    symbols = []
+    for symbol_info in symbol_data:
+        symbols.append(symbol_info['displaySymbol'])
+    symbols.sort()
+    return symbols
 
 
 @st.cache_data
