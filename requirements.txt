@@ -14,3 +14,4 @@ torch
 transformers
 chardet
 huggingface_hub
+textblob

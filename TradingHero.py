@@ -19,7 +19,7 @@ import base64
 import vertexai
 from vertexai.generative_models import GenerativeModel
 import vertexai.preview.generative_models as generative_models
-
+from datetime import timedelta
 import calculator
 import data_retriever
 import trends
@@ -392,9 +392,21 @@ def show_analyst_recommendations():
                 learning models with 98% accuracy to interpret and classify the sentiment of textual data from news articles 
                 related to stock market activities.
             """)
-            news_data = get_news.get_stock_news(symbol)
+
+            today_str = data_retriever.today()
+            # Convert today's date string to a datetime.date object
+            today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
+
+            # Calculate the date 14 days ago
+            fourteen_days_ago = today_date - timedelta(days=14)
+
+            # Format dates into 'YYYY-MM-DD' string format for function call
+            today_formatted = today_date.strftime('%Y-%m-%d')
+            fourteen_days_ago_formatted = fourteen_days_ago.strftime('%Y-%m-%d')
+
+            news_data = get_news.get_stock_news(symbol, fourteen_days_ago_formatted, today_formatted)
             if not news_data.empty:
-                news_data.set_index("Headline", inplace=True)
+                news_data.set_index("headline", inplace=True)
                 progress_bar.progress(50)
                 st.table(news_data)
                 progress_bar.progress(100)
