@@ -57,7 +57,7 @@ Put more weight on the Pattern Recognition and the news.
 Finally, provide your recommendations on whether to Buy, Hold, Sell, Strong Buy, or Strong Sell the stock in the future, along with the percentage of confidence you have in your prediction.
 """
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
-model = GenerativeModel("gemini-1.5-pro-preview-0409")
+model = GenerativeModel("gemini-1.5-flash-preview-0514")
 
     # Define the generation configuration
 generation_config = {

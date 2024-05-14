@@ -7,7 +7,7 @@ from vertexai.preview.generative_models import GenerativeModel, GenerationConfig
 import pandas as pd
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 # Define the model for Gemini Pro
-model = GenerativeModel("gemini-1.5-pro-preview-0409")
+model = GenerativeModel("gemini-1.5-flash-preview-0514")
 
 
 
