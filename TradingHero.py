@@ -29,8 +29,9 @@ import get_news
 import status
 import recommend
 import vertex
-import predict
+# import predict
 import get_earnings
+# import torch in requirements
 
 
 input_prompt = """
@@ -481,58 +482,58 @@ def show_trends():
             f"When the trend intersects the price, place a bid. If the previous intercept is lower, then buy.")
 
     # Forecast Section
-    with st.spinner('Fetching data and training model...'):
-        df = predict.transform_price(symbol_prices)
-        model = predict.train_prophet_model(df)
-        forecast = predict.make_forecast(model, days_to_forecast)
+    # with st.spinner('Fetching data and training model...'):
+    #     df = predict.transform_price(symbol_prices)
+    #     model = predict.train_prophet_model(df)
+    #     forecast = predict.make_forecast(model, days_to_forecast)
 
-    st.subheader('Trading Hero Forecasting')
-    st.write("""
-        The plot below visualizes the forecasted stock prices using Trading Hero's own time-series algorithm.
-        Our tool is designed to handle the complexities of time series data automatically, such as seasonal variations and missing data.
-        The plotted forecast includes trend lines and confidence intervals, providing a clear visual representation of expected future values and the uncertainty around these predictions.
-    """)
+    # st.subheader('Trading Hero Forecasting')
+    # st.write("""
+    #     The plot below visualizes the forecasted stock prices using Trading Hero's own time-series algorithm.
+    #     Our tool is designed to handle the complexities of time series data automatically, such as seasonal variations and missing data.
+    #     The plotted forecast includes trend lines and confidence intervals, providing a clear visual representation of expected future values and the uncertainty around these predictions.
+    # """)
 
-    fig1 = plot_plotly(model, forecast)
-    fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
-    st.plotly_chart(fig1)
+    # fig1 = plot_plotly(model, forecast)
+    # fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
+    # st.plotly_chart(fig1)
 
-    actual = df['y']
-    predicted = forecast['yhat'][:len(df)]
-    metrics = predict.calculate_performance_metrics(actual, predicted)
-    st.subheader('Performance Metrics')
+    # actual = df['y']
+    # predicted = forecast['yhat'][:len(df)]
+    # metrics = predict.calculate_performance_metrics(actual, predicted)
+    # st.subheader('Performance Metrics')
 
-    metrics_data = {
-        "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
-        "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
-    }
+    # metrics_data = {
+    #     "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
+    #     "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
+    # }
 
-    metrics_df = pd.DataFrame(metrics_data)
-    metrics_df.set_index("Metric", inplace=True)
-    st.table(metrics_df)
+    # metrics_df = pd.DataFrame(metrics_data)
+    # metrics_df.set_index("Metric", inplace=True)
+    # st.table(metrics_df)
 
 
-    # AI analysis
-    future_price = forecast.loc[:,"trend"]
-    metrics_data = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
-    tsprompt = """
-    You are provided with the following data for one company's future stock time series analysis:
-    - Futur Price (Only focus the overall future trend, don't focus on the short term)
-    - Performance Metrics:
-    - MAE: 
-    - MSE: 
-    - RMSE: 
+    # # AI analysis
+    # future_price = forecast.loc[:,"trend"]
+    # metrics_data = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
+    # tsprompt = """
+    # You are provided with the following data for one company's future stock time series analysis:
+    # - Futur Price (Only focus the overall future trend, don't focus on the short term)
+    # - Performance Metrics:
+    # - MAE: 
+    # - MSE: 
+    # - RMSE: 
 
-    These values are all came from the Performance Metrics using Meta's prophet to do direct forecasting.
-    Based on this information, please provide insights.
-    """
-    tsai_data = predict.generate_vertexai_tsresponse(tsprompt,future_price,metrics_data)
-    with st.spinner("Time-Series analysis is working to generate."):
-        progress_bar = st.progress(0)
-        if st.button("Show Trading Hero Time-Series AI Analysis"):
-            progress_bar.progress(50)
-            st.markdown(tsai_data)
-            progress_bar.progress(100)
+    # These values are all came from the Performance Metrics using Meta's prophet to do direct forecasting.
+    # Based on this information, please provide insights.
+    # """
+    # tsai_data = predict.generate_vertexai_tsresponse(tsprompt,future_price,metrics_data)
+    # with st.spinner("Time-Series analysis is working to generate."):
+    #     progress_bar = st.progress(0)
+    #     if st.button("Show Trading Hero Time-Series AI Analysis"):
+    #         progress_bar.progress(50)
+    #         st.markdown(tsai_data)
+    #         progress_bar.progress(100)
 
     recommendations = recommend.get_rec(symbol)
     with st.spinner("Model is working to generate."):
