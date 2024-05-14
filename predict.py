@@ -12,7 +12,7 @@ import vertexai.preview.generative_models as generative_models
 
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 # Define the model for Gemini Pro
-model = GenerativeModel("gemini-1.0-pro")
+model = GenerativeModel("gemini-1.5-pro-preview-0409")
 
 def transform_price(df):
     df = df[['Adj Close']].reset_index()

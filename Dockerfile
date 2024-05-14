@@ -1,40 +1,24 @@
+# Use an official Python runtime as a parent image
 FROM python:3.12.2-bullseye
 
-# Allow statements and log messages to immediately appear in the Knative logs
+# Set environment variables
 ENV PYTHONUNBUFFERED True
-
-# Expose port
-EXPOSE 8080
+ENV APP_HOME /app
 
 # Set working directory
-ENV APP_HOME /app
 WORKDIR $APP_HOME
 
-# Copy Streamlit app
-ADD app.py ./
+# Expose port for Streamlit
+EXPOSE 8080
 
-# Install dependencies
-RUN python -m pip install --no-cache-dir \
-        streamlit==1.33.0 \
-        google-generativeai==0.5.0 \
-        streamlit_plotly_events \
-        yfinance \
-        finnhub-python \
-        pandas \
-        datetime \
-        plotly \
-        numpy \
-        scipy \
-        google.generativeai \
-        prophet \
-        scikit-learn \
-        TextBlob \
-        torch \
-        transformers \
-        chardet \
-        huggingface_hub
+# Copy the local code to the container
+COPY . $APP_HOME
 
+# Install Python dependencies
+# Ensure you have a requirements.txt in your application directory, or list packages here
+ADD requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
 
-
-# Start Streamlit app
-ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8080"]
+# Run the Streamlit application on container startup
+ENTRYPOINT ["streamlit", "run"]
+CMD ["app.py", "--server.port=8080"]

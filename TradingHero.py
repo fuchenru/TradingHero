@@ -516,13 +516,15 @@ def show_trends():
     future_price = forecast.loc[:,"trend"]
     metrics_data = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
     tsprompt = """
-    You are provided with the following data for one company's future stock:
+    You are provided with the following data for one company's future stock time series analysis:
+    - Futur Price (Only focus the overall future trend, don't focus on the short term)
     - Performance Metrics:
     - MAE: 
     - MSE: 
     - RMSE: 
 
-    Based on this information, please provide insights into the company's potential investment implications.
+    These values are all came from the Performance Metrics using Meta's prophet to do direct forecasting.
+    Based on this information, please provide insights.
     """
     tsai_data = predict.generate_vertexai_tsresponse(tsprompt,future_price,metrics_data)
     with st.spinner("Time-Series analysis is working to generate."):

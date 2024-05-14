@@ -8,9 +8,10 @@ plotly
 numpy
 scipy
 vertexai
-prophet
+prophet==1.1.1
 scikit-learn
 torch
 transformers
 chardet
 huggingface_hub
+holidays==0.18.0
