@@ -10,7 +10,6 @@ scipy
 vertexai
 prophet
 scikit-learn
-torch
 transformers
 chardet
 huggingface_hub
