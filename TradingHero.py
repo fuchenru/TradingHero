@@ -382,7 +382,6 @@ def show_analyst_recommendations():
         else:
             st.error("No recommendations data available for the selected symbol.")
     # AI analysis
-
     recomprompt = """
         You are provided with the following data for one company's stock analyst recommendations:
         Based on this information, please provide Positive Sentiment, Negative Sentiment and the Overall.
@@ -390,17 +389,10 @@ def show_analyst_recommendations():
     recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
     st.markdown(recai_data)
     
-    
-    with st.spinner("NLP sentiment analysis is working to generate."):
+    st.markdown(f"**News Analysis for {symbol}**")
+    with st.spinner("Trading Hero AI News analysis is working to generate."):
         progress_bar = st.progress(0)
         if st.checkbox('Show Latest News'):
-            st.write("""
-                Trading Hero utilizes a self-trained Natural Language Processing (NLP) pipeline to perform sentiment analysis 
-                specifically tailored for financial news. This self-trained NLP solution leverages state-of-the-art machine 
-                learning models with 98% accuracy to interpret and classify the sentiment of textual data from news articles 
-                related to stock market activities.
-            """)
-
             today_str = data_retriever.today()
             # Convert today's date string to a datetime.date object
             today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
@@ -421,6 +413,35 @@ def show_analyst_recommendations():
             else:
                 st.error("No news data available for the selected symbol.")
                 progress_bar.progress(100)
+            # AI analysis
+            st.write("""
+            Trading Hero utilizes AI News Analysis leverages state-of-the-art large language models to perform comprehensive analysis 
+            on massive volumes of news articles across diverse domains. Our proprietary system harnesses the power of these advanced AI models, 
+            which have been trained on vast datasets, to accurately interpret and classify the sentiment expressed in textual news data. 
+            Whether it's finance, technology, politics, or any other field, 
+            AI News Analysis can rapidly process and analyze news coverage at an unprecedented scale, 
+            enabling users to gauge the tone and emotional undercurrents of news narratives, empowering data-driven decision-making.
+            """)
+            news_data_80 = get_news.get_80_stock_news(symbol, fourteen_days_ago_formatted, today_formatted)
+            newsprompt = f"""
+            You have been provided with the full text of summaries for recent news articles about a specific company{symbol}. 
+            Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
+            Please include the following elements in your analysis:
+            
+            1. Key Trends: Analyze the recurring topics and themes across the summaries to identify prevalent trends.
+            2. Strengths and Weaknesses: Assess the positive and negative attributes of the company as highlighted by the news articles.
+            3. Opportunities and Threats: Evaluate external factors that could influence the company positively or negatively in the future.
+            4. Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
+            Please justify and explain your scoring rationale in detail, drawing evidence from the specific details, facts, 
+            and narratives portrayed across the news summaries. Your scoring should encompass both the company's present circumstances 
+            as well as the projected trajectory factoring in future risks and prospects.
+
+            The provided summaries contain all necessary details to perform this comprehensive review.  
+            Don't include any of your suggestion on if I can provide any more data to you. Make the summary as concise as possible.
+            """
+
+            newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
+            st.markdown(newsai_data)
 
 
 def show_trends():

@@ -70,6 +70,12 @@ from datetime import date
 from textblob import TextBlob
 import pandas as pd
 import requests
+import vertexai
+from vertexai.preview.generative_models import GenerativeModel, ChatSession, Part
+import vertexai.preview.generative_models as generative_models
+vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
+# Define the model for Gemini Pro
+model = GenerativeModel("gemini-1.5-flash-preview-0514")
 finnhub_client = finnhub.Client(api_key="co6v709r01qj6a5mgco0co6v709r01qj6a5mgcog")
 
 today = date.today()
@@ -99,3 +105,31 @@ def get_stock_news(ticker_symbol, start_date, end_date):
         return top_5_news
     except requests.exceptions.RequestException as e:
         return f"An error occurred: {e}"
+    
+def get_80_stock_news(ticker_symbol, start_date, end_date):
+    try:
+        news = finnhub_client.company_news(ticker_symbol, _from=start_date, to=end_date)
+        df = pd.DataFrame.from_records(news, columns=['headline', 'summary'])
+        if df.empty:
+            return "No news available for the given date range."
+        top_80_news = df.head(80)
+        return top_80_news['headline']
+    except requests.exceptions.RequestException as e:
+        return f"An error occurred: {e}"
+    
+def extract_text_from_response(response):
+    # Check if there are candidates and parts available
+    if response.candidates and response.candidates[0].content.parts:
+        # Extract text from the first part of the first candidate
+        generated_text = response.candidates[0].content.parts[0].text.strip()
+        return generated_text
+    else:
+        return "No generated content available."
+
+def generate_vertexai_newsresponse(newsprompt, data):
+    formatted_data = f"""
+    - News Summary: {data} 
+    """
+    full_prompt = newsprompt + formatted_data
+    responses = model.generate_content(full_prompt)
+    return extract_text_from_response(responses)
