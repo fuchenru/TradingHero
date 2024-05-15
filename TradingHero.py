@@ -553,7 +553,18 @@ def show_trends():
         if st.button("Show Trading Hero AI Analysis"):
             company_basic = data_retriever.get_current_basics(symbol, data_retriever.today())
             prices = symbol_prices.loc[:,"Adj Close"]
-            news_data = get_news.get_stock_news(symbol)["Summary"].to_string()
+            today_str = data_retriever.today()
+            # Convert today's date string to a datetime.date object
+            today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
+
+            # Calculate the date 14 days ago
+            fourteen_days_ago = today_date - timedelta(days=14)
+
+            # Format dates into 'YYYY-MM-DD' string format for function call
+            today_formatted = today_date.strftime('%Y-%m-%d')
+            fourteen_days_ago_formatted = fourteen_days_ago.strftime('%Y-%m-%d')
+            news_data = get_news.get_stock_news(symbol, fourteen_days_ago_formatted, today_formatted)["summary"].to_string()
+            # news_data = get_news.get_stock_news(symbol)
             analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
             ai_data = vertex.generate_vertexai_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
             progress_bar.progress(50)
