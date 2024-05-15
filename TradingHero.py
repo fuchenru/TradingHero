@@ -381,6 +381,14 @@ def show_analyst_recommendations():
             st.bar_chart(recommendations)
         else:
             st.error("No recommendations data available for the selected symbol.")
+    # AI analysis
+
+    recomprompt = """
+        You are provided with the following data for one company's stock analyst recommendations:
+        Based on this information, please provide Positive Sentiment, Negative Sentiment and the Overall.
+        """
+    recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
+    st.markdown(recai_data)
     
     
     with st.spinner("NLP sentiment analysis is working to generate."):
