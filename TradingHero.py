@@ -35,26 +35,41 @@ import get_earnings
 
 
 input_prompt = """
-As a seasoned market analyst with an uncanny ability to decipher the language of price charts, your expertise is crucial in navigating the turbulent seas of financial markets. I have provided you with information about a specific stock, including its ticker symbol, recent prices, company fundamental information, news, and analyst recommendations. Your task is to analyze the stock and provide insights on its recent performance and future prospects.
+As a seasoned market analyst with an uncanny ability to decipher the language of price charts, 
+your expertise is crucial in navigating the turbulent seas of financial markets. 
+I have provided you with information about a specific stock, including its ticker symbol, 
+recent prices, company fundamental information, news, and analyst recommendations. 
+Your task is to analyze the stock and provide insights on its recent performance and future prospects.
 
 The first few characters you received is the company's ticker symbol. 
 
 Analysis Guidelines:
-1. Company Overview: Begin with a brief overview of the company you are analyzing. Understand its market position, recent news, financial health, and sector performance to provide context for your analysis.
+1. Company Overview: Begin with a brief overview of the company you are analyzing. Understand its market position, 
+recent news, financial health, and sector performance to provide context for your analysis.
 
-2. Fundamental Analysis: Conduct a thorough fundamental analysis of the company. Assess its financial statements, including income statements, balance sheets, and cash flow statements. Evaluate key financial ratios (e.g., P/E ratio, debt-to-equity, ROE) and consider the company's growth prospects, management effectiveness, competitive positioning, and market conditions. This step is crucial for understanding the underlying value and potential of the company.
+2. Fundamental Analysis: Conduct a thorough fundamental analysis of the company. Assess its financial statements, 
+including income statements, balance sheets, and cash flow statements. Evaluate key financial ratios 
+(e.g., P/E ratio, debt-to-equity, ROE) and consider the company's growth prospects, management effectiveness, competitive positioning, 
+and market conditions. This step is crucial for understanding the underlying value and potential of the company.
 
-3. Pattern Recognition: Diligently examine the price chart to identify critical candlestick formations, trendlines, and a comprehensive set of technical indicators relevant to the timeframe and instrument in question. Pay special attention to recent price movements in the year 2024.
+3. Pattern Recognition: Diligently examine the price chart to identify critical candlestick formations, trendlines, 
+and a comprehensive set of technical indicators relevant to the timeframe and instrument in question. 
+Pay special attention to recent price movements in the year 2024.
 
-4. Technical Analysis: Leverage your in-depth knowledge of technical analysis principles to interpret the identified patterns and indicators. Extract nuanced insights into market dynamics, identify key levels of support and resistance, and gauge potential price movements in the near future.
+4. Technical Analysis: Leverage your in-depth knowledge of technical analysis principles to interpret the identified patterns and indicators. 
+Extract nuanced insights into market dynamics, identify key levels of support and resistance, and gauge potential price movements in the near future.
 
-5. Sentiment Prediction: Based on your technical analysis, predict the likely direction of the stock price. Determine whether the stock is poised for a bullish upswing or a bearish downturn. Assess the likelihood of a breakout versus a consolidation phase, taking into account the analyst recommendations.
+5. Sentiment Prediction: Based on your technical analysis, predict the likely direction of the stock price. 
+Determine whether the stock is poised for a bullish upswing or a bearish downturn. 
+Assess the likelihood of a breakout versus a consolidation phase, taking into account the analyst recommendations.
 
-6. Confidence Level: Evaluate the robustness and reliability of your prediction. Assign a confidence level based on the coherence and convergence of the technical evidence at hand.
+6. Confidence Level: Evaluate the robustness and reliability of your prediction. 
+Assign a confidence level based on the coherence and convergence of the technical evidence at hand.
 
 Put more weight on the Pattern Recognition and the news.
 
-Finally, provide your recommendations on whether to Buy, Hold, Sell, Strong Buy, or Strong Sell the stock in the future, along with the percentage of confidence you have in your prediction.
+Finally, provide your recommendations on whether to Buy, Hold, Sell, Strong Buy, or Strong Sell the stock in the future, 
+along with the percentage of confidence you have in your prediction.
 """
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 model = GenerativeModel("gemini-1.5-flash-preview-0514")
@@ -244,12 +259,21 @@ def show_overall_information():
     st.write("**Trading Hero AI Technical Summary:**")
     prices = symbol_prices.loc[:,"Adj Close"]
     symbol = st.session_state.get('selected_symbol', symbols[0])
-    text1 = f"""You are a financial analyst tasked with providing a technical summary for various stocks based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock\'s trend, its performance relative to a major market index (like the S&P 500), and key technical indicators such as momentum (measured by the RSI), volume trends, and the position relative to moving averages.
+    text1 = f"""You are a financial analyst tasked with providing a technical summary for various stocks 
+        based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock\'s trend, 
+        its performance, and key technical indicators such as momentum (measured by the RSI), 
+        volume trends, and the position relative to moving averages.
 
         Please generate a technical summary that follows the structure and tone of the example provided below:
 
         Example Technical Summary:
-        \"Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. A reversal of the existing trend looks unlikely at this time. Over the last 50 trading days, when compared to the S&P 500, the stock has performed in line with the market. Despite a weak technical condition, there are positive signs. Momentum, as measured by the 9-day RSI, is bullish. Over the last 50 trading sessions, there has been more volume on down days than on up days, indicating that [Ticker] is under distribution, which is a bearish condition. The stock is currently above a falling 50-day moving average. A move below this average could trigger additional weakness in the stock. [Ticker] could find secondary support at its rising 200-day moving average.\"
+        \"Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. 
+        A reversal of the existing trend looks unlikely at this time. Despite a weak technical condition, there are positive signs. 
+        Momentum, as measured by the 9-day RSI, is bullish. Over the last 50 trading sessions, 
+        there has been more volume on down days than on up days, indicating that [Ticker] is under distribution, 
+        which is a bearish condition. The stock is currently above a falling 50-day moving average. 
+        A move below this average could trigger additional weakness in the stock. 
+        [Ticker] could find secondary support at its rising 200-day moving average.\"
 
         Ticker Symbol: {symbol}
         Current Price: {prices}
@@ -397,14 +421,14 @@ def show_analyst_recommendations():
             # Convert today's date string to a datetime.date object
             today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
 
-            # Calculate the date 14 days ago
-            fourteen_days_ago = today_date - timedelta(days=14)
+            # Calculate the date 60 days ago
+            sixty_days_ago = today_date - timedelta(days=60)
 
             # Format dates into 'YYYY-MM-DD' string format for function call
             today_formatted = today_date.strftime('%Y-%m-%d')
-            fourteen_days_ago_formatted = fourteen_days_ago.strftime('%Y-%m-%d')
+            sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
 
-            news_data = get_news.get_stock_news(symbol, fourteen_days_ago_formatted, today_formatted)
+            news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
             if not news_data.empty:
                 news_data.set_index("headline", inplace=True)
                 progress_bar.progress(50)
@@ -422,7 +446,7 @@ def show_analyst_recommendations():
             AI News Analysis can rapidly process and analyze news coverage at an unprecedented scale, 
             enabling users to gauge the tone and emotional undercurrents of news narratives, empowering data-driven decision-making.
             """)
-            news_data_80 = get_news.get_80_stock_news(symbol, fourteen_days_ago_formatted, today_formatted)
+            news_data_80 = get_news.get_80_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
             newsprompt = f"""
             You have been provided with the full text of summaries for recent news articles about a specific company{symbol}. 
             Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
@@ -586,13 +610,14 @@ def show_trends():
             # Convert today's date string to a datetime.date object
             today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
 
-            # Calculate the date 14 days ago
-            fourteen_days_ago = today_date - timedelta(days=14)
+            # Calculate the date 60 days ago
+            sixty_days_ago = today_date - timedelta(days=60)
 
             # Format dates into 'YYYY-MM-DD' string format for function call
             today_formatted = today_date.strftime('%Y-%m-%d')
-            fourteen_days_ago_formatted = fourteen_days_ago.strftime('%Y-%m-%d')
-            news_data = get_news.get_stock_news(symbol, fourteen_days_ago_formatted, today_formatted)["summary"].to_string()
+            sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
+
+            news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)["headline"].to_string()
             # news_data = get_news.get_stock_news(symbol)
             analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
             ai_data = vertex.generate_vertexai_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
