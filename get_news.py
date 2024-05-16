@@ -66,7 +66,7 @@
 #     except Exception as e:
 #         return f"An error occurred: {e}"
 import finnhub
-from datetime import date
+from datetime import date, timedelta
 from textblob import TextBlob
 import pandas as pd
 import requests
@@ -77,9 +77,6 @@ vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 # Define the model for Gemini Pro
 model = GenerativeModel("gemini-1.5-flash-preview-0514")
 finnhub_client = finnhub.Client(api_key="co6v709r01qj6a5mgco0co6v709r01qj6a5mgcog")
-
-today = date.today()
-formatted_today = today.strftime('%Y-%m-%d')
 
 def classify_sentiment(text):
     blob = TextBlob(text)
@@ -106,13 +103,13 @@ def get_stock_news(ticker_symbol, start_date, end_date):
     except requests.exceptions.RequestException as e:
         return f"An error occurred: {e}"
     
-def get_80_stock_news(ticker_symbol, start_date, end_date):
+def get_all_stock_news(ticker_symbol, start_date, end_date):
     try:
         news = finnhub_client.company_news(ticker_symbol, _from=start_date, to=end_date)
         df = pd.DataFrame.from_records(news, columns=['headline', 'summary'])
         if df.empty:
             return "No news available for the given date range."
-        top_80_news = df.head(80)
+        top_80_news = df
         return top_80_news['headline']
     except requests.exceptions.RequestException as e:
         return f"An error occurred: {e}"
