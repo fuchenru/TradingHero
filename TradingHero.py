@@ -90,10 +90,10 @@ safety_settings = {
     }
 
 # temp fix for now
-# def get_jsonparsed_data(url):
-#         response = urlopen(url, cafile=certifi.where())
-#         data = response.read().decode("utf-8")
-#         return json.loads(data)
+def get_jsonparsed_data(url):
+    response = urlopen(url, cafile=certifi.where())
+    data = response.read().decode("utf-8")
+    return json.loads(data)
 # url = ("https://financialmodelingprep.com/api/v3/stock/list?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")
 # data = get_jsonparsed_data(url)
 def get_active_symbols():
@@ -396,15 +396,35 @@ def show_historical_data():
 def show_analyst_recommendations():
     symbols = get_active_symbols()
     symbol = st.session_state.get('selected_symbol', symbols[0])
+
     st.markdown(f"**Stock Analyst Recommendations for {symbol}**")
+    # st.markdown(f'**Company Rating:{get_jsonparsed_data(url)[0]['rating']} with RatingScore:**')
     
     if symbol:
         recommendations = recommend.get_rec(symbol)
         if recommendations:
-            st.subheader('Stock Analyst Recommendations')
+            # st.subheader('Stock Analyst Recommendations')
             st.bar_chart(recommendations)
         else:
             st.error("No recommendations data available for the selected symbol.")
+    
+    company_ratings = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/rating/{symbol}?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")[0]
+    if company_ratings:
+        st.markdown(f"**Company Rating for {symbol}**")
+        # Parsing the data into a structured format
+    ratings_info = [
+        {"Category": "Overall", "Recommendation": company_ratings["ratingRecommendation"], "Score": company_ratings["ratingScore"]},
+        {"Category": "DCF(Discounted Cash Flow)", "Recommendation": company_ratings["ratingDetailsDCFRecommendation"], "Score": company_ratings["ratingDetailsDCFScore"], 'Usage': 'Used to determine the intrinsic value of an investment, considering the time value of money.', 'Description': 'A valuation method used to estimate the value of an investment based on its expected future cash flows. The approach involves forecasting future cash flows and discounting them to their present value using a rate that reflects their risk.'},
+        {"Category": "ROE(Return on Equity)", "Recommendation": company_ratings["ratingDetailsROERecommendation"], "Score": company_ratings["ratingDetailsROEScore"], 'Usage': "Helps in comparing the profitability of companies within the same industry.", 'Description': "A measure of a company's profitability that reveals how much profit a company generates with the money shareholders have invested. It is calculated as Net Income divided by Shareholders' Equity."},
+        {"Category": "ROA(Return on Assets)", "Recommendation": company_ratings["ratingDetailsROARecommendation"], "Score": company_ratings["ratingDetailsROAScore"], 'Usage': "Assesses how efficient management is at using assets to generate earnings.", 'Description': "An indicator of how profitable a company is relative to its total assets, calculated by dividing Net Income by Total Assets."},
+        {"Category": "DE(Debt to Equity)", "Recommendation": company_ratings["ratingDetailsDERecommendation"], "Score": company_ratings["ratingDetailsDEScore"], 'Usage': "Provides insight into a company's leverage and financial health.", "Description": "A ratio indicating the relative proportion of shareholders' equity and debt used to finance a company's assets. Calculated as Total Liabilities divided by Shareholders' Equity."},
+        {"Category": "PE(Price to Earnings)", "Recommendation": company_ratings["ratingDetailsPERecommendation"], "Score": company_ratings["ratingDetailsPEScore"], 'Usage': "Commonly used by investors to evaluate the market value of a stock compared to the company's earnings.", "Description": "A ratio for valuing a company that measures its current share price relative to its per-share earnings. Calculated as Market Value per Share divided by Earnings per Share (EPS)."},
+        {"Category": "PB(Price to Book)", "Recommendation": company_ratings["ratingDetailsPBRecommendation"], 'Usage': "Indicates what investors are prepared to pay for each dollar of book value equity.", "Score": company_ratings["ratingDetailsPBScore"], 'Description': "A ratio used to compare a firm's market capitalization to its book value. It is derived by dividing the stock's price per share by book value per share."}
+    ]
+
+    # Creating DataFrame
+    ratings_df = pd.DataFrame(ratings_info)
+    st.dataframe(ratings_df.set_index('Category'), width = 1200)  # Displaying company ratings as JSON
     # AI analysis
     recomprompt = """
         You are provided with the following data for one company's stock analyst recommendations:
