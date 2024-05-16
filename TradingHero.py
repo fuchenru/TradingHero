@@ -466,7 +466,7 @@ def show_analyst_recommendations():
             AI News Analysis can rapidly process and analyze news coverage at an unprecedented scale, 
             enabling users to gauge the tone and emotional undercurrents of news narratives, empowering data-driven decision-making.
             """)
-            news_data_80 = get_news.get_80_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
+            news_data_80 = get_news.get_all_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
             newsprompt = f"""
             You have been provided with the full text of summaries for recent news articles about a specific company{symbol}. 
             Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
@@ -478,7 +478,8 @@ def show_analyst_recommendations():
             4. Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
             Please justify and explain your scoring rationale in detail, drawing evidence from the specific details, facts, 
             and narratives portrayed across the news summaries. Your scoring should encompass both the company's present circumstances 
-            as well as the projected trajectory factoring in future risks and prospects.
+            as well as the projected trajectory factoring in future risks and prospects. Put more weights on most recent news sentiments, and less
+            weights on the least recent news.
 
             The provided summaries contain all necessary details to perform this comprehensive review.  
             Don't include any of your suggestion on if I can provide any more data to you. Make the summary as concise as possible.
