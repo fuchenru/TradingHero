@@ -35,11 +35,13 @@ import get_earnings
 
 
 input_prompt = """
-As a seasoned market analyst with an uncanny ability to decipher the language of price charts, 
+You are an equity research analyst with an uncanny ability to decipher the language of price charts, 
 your expertise is crucial in navigating the turbulent seas of financial markets. 
 I have provided you with information about a specific stock, including its ticker symbol, 
 recent prices, company fundamental information, news, and analyst recommendations. 
 Your task is to analyze the stock and provide insights on its recent performance and future prospects.
+
+You can add some emoji in this report if you want to make it interactive.
 
 The first few characters you received is the company's ticker symbol. 
 
@@ -259,11 +261,13 @@ def show_overall_information():
     st.write("**Trading Hero AI Technical Summary:**")
     prices = symbol_prices.loc[:,"Adj Close"]
     symbol = st.session_state.get('selected_symbol', symbols[0])
-    text1 = f"""You are a financial analyst tasked with providing a technical summary for various stocks 
+    text1 = f"""You are an equity research analyst tasked with providing a technical summary for various stocks 
         based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock\'s trend, 
         its performance, and key technical indicators such as momentum (measured by the RSI), 
         volume trends, and the position relative to moving averages.
 
+        You can add some emoji in this report if you want to make it interactive.
+        
         Please generate a technical summary that follows the structure and tone of the example provided below:
 
         Example Technical Summary:
@@ -470,6 +474,7 @@ def show_analyst_recommendations():
             newsprompt = f"""
             You have been provided with the full text of summaries for recent news articles about a specific company{symbol}. 
             Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
+            You can add some emoji in this report if you want to make it interactive.
             Please include the following elements in your analysis:
             
             1. Key Trends: Analyze the recurring topics and themes across the summaries to identify prevalent trends.
@@ -643,6 +648,5 @@ def show_trends():
             analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
             ai_data = vertex.generate_vertexai_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
             progress_bar.progress(50)
-            for response in ai_data:
-                st.markdown(response)
+            st.markdown(ai_data)
             progress_bar.progress(100)
