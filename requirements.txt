@@ -13,4 +13,5 @@ scikit-learn
 transformers
 chardet
 huggingface_hub
-textblob
+transformers
+torch

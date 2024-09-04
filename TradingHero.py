@@ -438,6 +438,15 @@ def show_analyst_recommendations():
     st.markdown(recai_data)
     
     st.markdown(f"**News Analysis for {symbol}**")
+    # Information about the NLP model and AI News Analysis
+    st.caption("""
+    Trading Hero utilizes AI News Analysis to leverage state-of-the-art Natural Language Processing (NLP) model for comprehensive analysis 
+    on massive volumes of news articles across diverse domains. This tool helps in making informed investment decisions 
+    by providing insights into the sentiment of news articles related to specific stocks.
+
+    **Trading Hero Financial Sentiment Analysis**
+    You can find our model on [Hugging Face](https://huggingface.co/fuchenru/Trading-Hero-LLM)
+    """)
     with st.spinner("Trading Hero AI News analysis is working to generate."):
         progress_bar = st.progress(0)
         if st.checkbox('Show Latest News'):
@@ -462,14 +471,6 @@ def show_analyst_recommendations():
                 st.error("No news data available for the selected symbol.")
                 progress_bar.progress(100)
             # AI analysis
-            st.write("""
-            Trading Hero utilizes AI News Analysis leverages state-of-the-art large language models to perform comprehensive analysis 
-            on massive volumes of news articles across diverse domains. Our proprietary system harnesses the power of these advanced AI models, 
-            which have been trained on vast datasets, to accurately interpret and classify the sentiment expressed in textual news data. 
-            Whether it's finance, technology, politics, or any other field, 
-            AI News Analysis can rapidly process and analyze news coverage at an unprecedented scale, 
-            enabling users to gauge the tone and emotional undercurrents of news narratives, empowering data-driven decision-making.
-            """)
             news_data_80 = get_news.get_all_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
             newsprompt = f"""
             You have been provided with the full text of summaries for recent news articles about a specific company{symbol}. 
