@@ -433,9 +433,11 @@ def show_analyst_recommendations():
     recomprompt = """
         You are provided with the following data for one company's stock analyst recommendations:
         Based on this information, please provide Positive Sentiment, Negative Sentiment and the Overall.
+        You can add some emoji in this report if you want to make it interactive.
         """
     recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
-    st.markdown(recai_data)
+    sanitized_recai_data = recai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
+    st.markdown(sanitized_recai_data)
     
     st.markdown(f"**News Analysis for {symbol}**")
     # Information about the NLP model and AI News Analysis
@@ -492,7 +494,8 @@ def show_analyst_recommendations():
             """
 
             newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
-            st.markdown(newsai_data)
+            sanitized_newsai_data = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
+            st.markdown(sanitized_newsai_data)
 
 
 def show_trends():
@@ -649,5 +652,6 @@ def show_trends():
             analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
             ai_data = vertex.generate_vertexai_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
             progress_bar.progress(50)
-            st.markdown(ai_data)
+            sanitized_ai_data = ai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
+            st.markdown(sanitized_ai_data)
             progress_bar.progress(100)
