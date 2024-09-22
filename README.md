@@ -2,7 +2,7 @@
 
 <!-- ![Result](https://i.postimg.cc/cLMsKfTw/Art.png) -->
 <p align="center">
-<img width="600" alt="TR logo 1" src="https://i.postimg.cc/PqDftb4Y/tr-logo1.jpg">
+<img width="600" alt="TR logo 1" src="https://i.postimg.cc/8zhnNjvs/tr-logo1.png">
 </p>
 
 Trading Hero is an advanced application designed for stock market analysis. Our goal is to streamline the trading process and enhance decision-making efficiency. This project aims to reduce information overload and improve the overall trading experience for users.

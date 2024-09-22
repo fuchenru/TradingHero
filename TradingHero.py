@@ -134,6 +134,7 @@ def run():
         """,
         unsafe_allow_html=True,
     )
+    st.sidebar.image("https://i.postimg.cc/8zhnNjvs/tr-logo1.png", use_column_width=True)
     st.sidebar.title("Menu 🌐")
     st.image("https://i.imgur.com/WQE6iLY.jpeg", width=805)
 
@@ -142,13 +143,15 @@ def run():
         st.session_state['last_opened'] = None
 
     with st.sidebar:
-        if st.sidebar.button('ℹ️ Overall Information'):
+        if st.sidebar.button('ℹ️ Overall Information ℹ️'):
             st.session_state['last_opened'] = 'Overall Information'
-        if st.sidebar.button('📜 Historical Stock and EPS Surprises'):
+        if st.sidebar.button('📊 Historical Stock and EPS Surprises 📊'):
             st.session_state['last_opened'] = 'End-of-Day Historical Stock and EPS Surprises'
-        if st.sidebar.button('💡Stock Analyst Recommendations and Latest News'):
+        if st.sidebar.button('💡 Stock Analyst Recommendations 💡'):
             st.session_state['last_opened'] = 'Stock Analyst Recommendations'
-        if st.sidebar.button('🔍 Trends Forecasting and TradingHero Analysis'):
+        if st.sidebar.button('📜 Latest News 📜'):
+            st.session_state['last_opened'] = 'Latest News'
+        if st.sidebar.button('🔮 Trends Forecasting and TradingHero Analysis 🔮'):
             st.session_state['last_opened'] = 'Trends'
 
 
@@ -161,23 +164,23 @@ def run():
         show_historical_data()
     elif st.session_state['last_opened'] == 'Stock Analyst Recommendations':
         show_analyst_recommendations()
+    elif st.session_state['last_opened'] == 'Latest News':
+        show_news()  
     elif st.session_state['last_opened'] == 'Trends':
         show_trends()
 
 
 def show_overall_information():
 
-
-
     def get_jsonparsed_data(url):
         response = urlopen(url, cafile=certifi.where())
         data = response.read().decode("utf-8")
         return json.loads(data)
-
+    
+    # Fetch and display top gainers
     gain_url = ("https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")
     gainer_data = get_jsonparsed_data(gain_url)
-
-    st.write("**Today's Top Gainers traded US tickers:**")
+    st.write("**📈 Today's Top Gainers traded US tickers:**")
     col1, col2, col3, col4, col5 = st.columns(5)
     col1.metric(gainer_data[0]['symbol'], gainer_data[0]['price'], str(gainer_data[0]['changesPercentage'])+'%')
     col2.metric(gainer_data[1]['symbol'], gainer_data[1]['price'], str(gainer_data[1]['changesPercentage'])+'%')
@@ -185,15 +188,18 @@ def show_overall_information():
     col4.metric(gainer_data[3]['symbol'], gainer_data[3]['price'], str(gainer_data[3]['changesPercentage'])+'%')
     col5.metric(gainer_data[4]['symbol'], gainer_data[4]['price'], str(gainer_data[4]['changesPercentage'])+'%')
 
-    lose_url = ("https://financialmodelingprep.com/api/v3/stock_market/losers?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")
-    data = get_jsonparsed_data(lose_url)
-    st.write("**Today's Top Losers traded US tickers:**")
+
+
+    # Fetch and display top losers
+    lose_url = "https://financialmodelingprep.com/api/v3/stock_market/losers?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8"
+    loser_data = get_jsonparsed_data(lose_url)
+    st.write("**📉 Today's Top Losers traded US tickers:**")
     col1, col2, col3, col4, col5 = st.columns(5)
-    col1.metric(data[0]['symbol'], data[0]['price'], str(data[0]['changesPercentage'])+'%')
-    col2.metric(data[1]['symbol'], data[1]['price'], str(data[1]['changesPercentage'])+'%')
-    col3.metric(data[2]['symbol'], data[2]['price'], str(data[2]['changesPercentage'])+'%')
-    col4.metric(data[3]['symbol'], data[3]['price'], str(data[3]['changesPercentage'])+'%')
-    col5.metric(data[4]['symbol'], data[4]['price'], str(data[4]['changesPercentage'])+'%')
+    col1.metric(loser_data[0]['symbol'], loser_data[0]['price'], str(loser_data[0]['changesPercentage'])+'%')
+    col2.metric(loser_data[1]['symbol'], loser_data[1]['price'], str(loser_data[1]['changesPercentage'])+'%')
+    col3.metric(loser_data[2]['symbol'], loser_data[2]['price'], str(loser_data[2]['changesPercentage'])+'%')
+    col4.metric(loser_data[3]['symbol'], loser_data[3]['price'], str(loser_data[3]['changesPercentage'])+'%')
+    col5.metric(loser_data[4]['symbol'], loser_data[4]['price'], str(loser_data[4]['changesPercentage'])+'%')
      
     col1, col2 = st.columns(2)
     with col1:
@@ -286,7 +292,7 @@ def show_overall_information():
 
         You can add some emoji in this report if you want to make it interactive.
         
-        Please generate a technical summary that follows the structure and tone of the example provided below:
+        Please generate a technical summary (only in English) that follows the structure and tone of the example provided below:
 
         Example Technical Summary:
         \"Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. 
@@ -322,6 +328,15 @@ def show_overall_information():
     text_responses = extract_text_from_generation_response(responses)
     full_summary = "".join(text_responses)  # Join all parts into one string
     st.write(full_summary)  # Display the formatted summary
+    def add_footer():
+        st.markdown("""
+        ---
+        © 2024 Trading Hero. All rights reserved.
+                    
+        **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
+        """, unsafe_allow_html=True)
+
+    add_footer()
 
 
 def show_historical_data():
@@ -456,6 +471,19 @@ def show_analyst_recommendations():
     recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
     sanitized_recai_data = recai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
     st.markdown(sanitized_recai_data)
+    def add_footer():
+        st.markdown("""
+        ---
+        © 2024 Trading Hero. All rights reserved.
+                    
+        **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
+        """, unsafe_allow_html=True)
+
+    add_footer()
+
+def show_news():
+    symbols = get_active_symbols()
+    symbol = st.session_state.get('selected_symbol', symbols[0])
     
     st.markdown(f"**News Analysis for {symbol}**")
     # Information about the NLP model and AI News Analysis
@@ -514,6 +542,15 @@ def show_analyst_recommendations():
             newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
             sanitized_newsai_data = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
             st.markdown(sanitized_newsai_data)
+            def add_footer():
+                st.markdown("""
+                ---
+                © 2024 Trading Hero. All rights reserved.
+                            
+                **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
+                """, unsafe_allow_html=True)
+
+            add_footer()
 
 
 def show_trends():
@@ -673,3 +710,12 @@ def show_trends():
             sanitized_ai_data = ai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
             st.markdown(sanitized_ai_data)
             progress_bar.progress(100)
+            def add_footer():
+                st.markdown("""
+                ---
+                © 2024 Trading Hero. All rights reserved.
+                            
+                **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
+                """, unsafe_allow_html=True)
+
+            add_footer()
