@@ -1,7 +1,9 @@
 <h1 align="center"> Trading Hero: Empowering Traders with AI Market Analysis </h1>
 
 <!-- ![Result](https://i.postimg.cc/cLMsKfTw/Art.png) -->
-<img width="380" alt="TR Logo" src="Assets/tr_logo1.png">
+<p align="center">
+<img width="600" alt="TR logo 1" src="https://i.postimg.cc/PqDftb4Y/tr-logo1.jpg">
+</p>
 
 Trading Hero is an advanced application designed for stock market analysis. Our goal is to streamline the trading process and enhance decision-making efficiency. This project aims to reduce information overload and improve the overall trading experience for users.
 
@@ -39,5 +41,6 @@ The predictions and recommendations made by the AI are based on data and pattern
   Nathan Chen ([@nathanchen07](https://github.com/nathanchen07))  
 
 <p align="center">
-<img width="600" alt="Chatbot Page" src="Assets/tr_logo2.png">
+<img width="600" alt="TR logo 2" src="https://i.imgur.com/Lw9T6s9.png">
+</p>
 <!-- ![Result](https://i.imgur.com/Lw9T6s9.png) -->
