@@ -1,36 +1,52 @@
-import numpy as np
-import pandas as pd
-import streamlit as st
-from plotly.subplots import make_subplots
-from streamlit_plotly_events import plotly_events
-import plotly.graph_objects as go
-from prophet.plot import plot_plotly, plot_components_plotly, plot
-from datetime import datetime
+# Standard Library Imports
+from datetime import datetime, timedelta
+import base64
+import certifi
+import json
 try:
     # For Python 3.0 and later
     from urllib.request import urlopen
 except ImportError:
-        # Fall back to Python 2's urllib2
+    # Fall back to Python 2's urllib2
     from urllib2 import urlopen
 
-import certifi
-import json
-import base64
+# Third-Party Library Imports
+
+# Data Manipulation
+import numpy as np
+import pandas as pd
+
+# Streamlit
+import streamlit as st
+
+# Plotly
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+from streamlit_plotly_events import plotly_events
+
+# Prophet
+from prophet.plot import plot_plotly, plot_components_plotly, plot
+
+# Vertex AI
 import vertexai
 from vertexai.generative_models import GenerativeModel
 import vertexai.preview.generative_models as generative_models
-from datetime import timedelta
-import calculator
-import data_retriever
-import trends
-import ui
-import bidder
-import get_news
-import status
-import recommend
-import vertex
+
+# Local Application Imports
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), 'modules'))
+from modules import bidder
+from modules import calculator
+from modules import data_retriever
+from modules import get_earnings
+from modules import get_news
+from modules import recommend
+from modules import status
+from modules import trends
+from modules import ui
+from modules import vertex
 # import predict
-import get_earnings
 # import torch in requirements
 
 
@@ -73,6 +89,8 @@ Put more weight on the Pattern Recognition and the news.
 Finally, provide your recommendations on whether to Buy, Hold, Sell, Strong Buy, or Strong Sell the stock in the future, 
 along with the percentage of confidence you have in your prediction.
 """
+
+
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 model = GenerativeModel("gemini-1.5-flash-preview-0514")
 

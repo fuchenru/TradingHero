@@ -1,42 +1,20 @@
-# Trading Hero Stock Analysis 📈
+<h1 align="center"> Trading Hero: Empowering Traders with AI Market Analysis </h1>
 
-![Result](https://i.postimg.cc/cLMsKfTw/Art.png)
+<!-- ![Result](https://i.postimg.cc/cLMsKfTw/Art.png) -->
+<img width="380" alt="TR Logo" src="Assets/tr_logo1.png">
 
-Trading Hero is a comprehensive Streamlit application designed to empower traders and investors with advanced tools for stock market analysis. The application integrates a wide range of functionalities, including market status updates, historical data visualization, stock recommendations, news updates, technical trend analysis, and AI-driven insights. With a focus on the US stock market, Trading Hero aims to provide users with actionable insights to inform their trading decisions.
+Trading Hero is an advanced application designed for stock market analysis. Our goal is to streamline the trading process and enhance decision-making efficiency. This project aims to reduce information overload and improve the overall trading experience for users.
 
-## Getting Started
+# **Project Motivation** <a name="Project-Motivation"></a>
+<p align="center">
+<!-- <img width="380" alt="TR Logo" src="Assets/tr_logo1.png"> -->
+</p>
+The story begins with our realization and understanding of the challenges faced by semi-professional retail traders—individuals who consider themselves professional but often lack the necessary tools and insights. These traders typically have setups with multiple monitors, each tracking different pieces of information such as news, stock charts, company financial reports, and overall market sentiment.
 
-### Prerequisites
+We recognize that these traders need a way to integrate and analyze fundamental, technical, and news data in real-time. This integration is important for making informed short-term trading decisions efficiently, without the need to manually interpret large amounts of information.
 
-Before you begin, ensure you have the following installed:
-- Python 3.6 or later
-- Pip package manager
-
-### Installation
-
-Follow these steps to get your development environment set up:
-
-1. **Clone the repository**
-
-```bash
-git clone https://github.com/fuchenru/TradingHero.git
-```
-
-2. **Install the required packages**
-
-```bash
-pip install -r requirements.txt
-```
-
-3. **Run the Streamlit application**
-
-```bash
-streamlit run app.py
-```
-
-## Usage
-
-After launching the application, navigate through the intuitive interface to select the stock exchange and ticker symbol of interest. Explore the various analysis tools available, from market summaries to detailed trend analysis and forecasts.
+**Here is how Trading Hero can help:**
+Trading Hero provides a unified platform for traders to make well-informed decisions swiftly and accurately<sup>[1](#footnote1)</sup>. Our goal is to streamline the trading process, reduce information overload, and enhance the overall trading experience for semi-professional retail traders.
 
 ## Features
 
@@ -50,16 +28,16 @@ After launching the application, navigate through the intuitive interface to sel
 - **AI-Powered Analysis:** Leverage the power of a large language model to generate insightful narratives and summaries of the stock's performance and prospects.
 - **Price Forecasting:** Forecast future stock prices using the Prophet model and evaluate the model's accuracy with performance metrics.
 
-## Contributing
+# Disclaimer <a name="Disclaimer"></a>
+<a name="footnote1">1</a>: Trading Hero is for educational and informational purposes only. It is not intended as financial advice. 
+The predictions and recommendations made by the AI are based on data and patterns, which may not always accurately predict future market movements.
 
-Contributions to Trading Hero are welcome! Whether it's feature requests, bug reports, or code contributions, please feel free to reach out or submit a pull request.
+# About Us <a name="About Us"></a>                                                
+  Peter Fu Chen  ([@fuchenru](https://github.com/fuchenru))  
+  Kelvin Hsueh  ([@chsuehkelvin](https://github.com/chsuehkelvin))  
+  Yaoning Yu  ([@yyu6](https://github.com/yyu6))  
+  Nathan Chen ([@nathanchen07](https://github.com/nathanchen07))  
 
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## Disclaimer
-
-Trading Hero is for educational and informational purposes only. It is not intended as financial advice. Please consult with a qualified professional before making any investment decisions.
-
-![Result](https://i.imgur.com/Lw9T6s9.png)
+<p align="center">
+<img width="600" alt="Chatbot Page" src="Assets/tr_logo2.png">
+<!-- ![Result](https://i.imgur.com/Lw9T6s9.png) -->
