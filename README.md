@@ -7,18 +7,19 @@
 
 Trading Hero is an advanced application designed for stock market analysis. Our goal is to streamline the trading process and enhance decision-making efficiency. This project aims to reduce information overload and improve the overall trading experience for users.
 
-# **Project Motivation** <a name="Project-Motivation"></a>
+# Project Motivation
+
 <p align="center">
 <!-- <img width="380" alt="TR Logo" src="Assets/tr_logo1.png"> -->
 </p>
-The story begins with our realization and understanding of the challenges faced by semi-professional retail traders—individuals who consider themselves professional but often lack the necessary tools and insights. These traders typically have setups with multiple monitors, each tracking different pieces of information such as news, stock charts, company financial reports, and overall market sentiment.
+The story begins with our realization and understanding of the challenges faced by semi-professional retail traders—individuals who consider themselves professional but often lack the necessary tools and insights. These traders typically have setups with multiple monitors, each tracking different pieces of information such as news, stock charts, company financial reports, and overall market sentiment.  
 
-We recognize that these traders need a way to integrate and analyze fundamental, technical, and news data in real-time. This integration is important for making informed short-term trading decisions efficiently, without the need to manually interpret large amounts of information.
+We recognize that these traders need a way to integrate and analyze fundamental, technical, and news data in real-time. This integration is important for making informed short-term trading decisions efficiently, without the need to manually interpret large amounts of information.  
 
 **Here is how Trading Hero can help:**
 Trading Hero provides a unified platform for traders to make well-informed decisions swiftly and accurately<sup>[1](#footnote1)</sup>. Our goal is to streamline the trading process, reduce information overload, and enhance the overall trading experience for semi-professional retail traders.
 
-## Features
+# Features
 
 - **Market Status & Company Basics:** Get real-time information about the market's open/closed status and essential company details, including market cap, volume, and P/E ratio.
 - **Interactive Charts:** Visualize historical stock price movements with candlestick charts. Adjust the look-back period to analyze trends over different timeframes.

@@ -46,7 +46,7 @@ from modules import status
 from modules import trends
 from modules import ui
 from modules import vertex
-# import predict
+from modules import predict
 # import torch in requirements
 
 
@@ -92,7 +92,7 @@ along with the percentage of confidence you have in your prediction.
 
 
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
-model = GenerativeModel("gemini-1.5-flash-preview-0514")
+model = GenerativeModel("gemini-1.5-pro-002")
 
     # Define the generation configuration
 generation_config = {
@@ -140,18 +140,20 @@ def run():
 
     # Use session_state to track which section was last opened
     if 'last_opened' not in st.session_state:
-        st.session_state['last_opened'] = None
+        st.session_state['last_opened'] = 'Overall Information'
 
     with st.sidebar:
-        if st.sidebar.button('ℹ️ Overall Information ℹ️'):
+        if st.sidebar.button('Overall Information'):
             st.session_state['last_opened'] = 'Overall Information'
-        if st.sidebar.button('📊 Historical Stock and EPS Surprises 📊'):
+        if st.sidebar.button('Historical Stock and EPS Surprises'):
             st.session_state['last_opened'] = 'End-of-Day Historical Stock and EPS Surprises'
-        if st.sidebar.button('💡 Stock Analyst Recommendations 💡'):
+        if st.sidebar.button('Stock Analyst Recommendations'):
             st.session_state['last_opened'] = 'Stock Analyst Recommendations'
-        if st.sidebar.button('📜 Latest News 📜'):
+        if st.sidebar.button('Latest News'):
             st.session_state['last_opened'] = 'Latest News'
-        if st.sidebar.button('🔮 Trends Forecasting and TradingHero Analysis 🔮'):
+        if st.sidebar.button('Time Series Forecasting'):
+            st.session_state['last_opened'] = 'Time Series Forecasting'
+        if st.sidebar.button('Trends Forecasting and TradingHero Analysis'):
             st.session_state['last_opened'] = 'Trends'
 
 
@@ -166,6 +168,8 @@ def run():
         show_analyst_recommendations()
     elif st.session_state['last_opened'] == 'Latest News':
         show_news()  
+    elif st.session_state['last_opened'] == 'Time Series Forecasting':
+        show_ts() 
     elif st.session_state['last_opened'] == 'Trends':
         show_trends()
 
@@ -446,22 +450,22 @@ def show_analyst_recommendations():
             st.error("No recommendations data available for the selected symbol.")
     
     company_ratings = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/rating/{symbol}?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")[0]
-    if company_ratings:
-        st.markdown(f"**Company Rating for {symbol}**")
-        # Parsing the data into a structured format
-    ratings_info = [
-        {"Category": "Overall", "Recommendation": company_ratings["ratingRecommendation"], "Score": company_ratings["ratingScore"]},
-        {"Category": "DCF(Discounted Cash Flow)", "Recommendation": company_ratings["ratingDetailsDCFRecommendation"], "Score": company_ratings["ratingDetailsDCFScore"], 'Usage': 'Used to determine the intrinsic value of an investment, considering the time value of money.', 'Description': 'A valuation method used to estimate the value of an investment based on its expected future cash flows. The approach involves forecasting future cash flows and discounting them to their present value using a rate that reflects their risk.'},
-        {"Category": "ROE(Return on Equity)", "Recommendation": company_ratings["ratingDetailsROERecommendation"], "Score": company_ratings["ratingDetailsROEScore"], 'Usage': "Helps in comparing the profitability of companies within the same industry.", 'Description': "A measure of a company's profitability that reveals how much profit a company generates with the money shareholders have invested. It is calculated as Net Income divided by Shareholders' Equity."},
-        {"Category": "ROA(Return on Assets)", "Recommendation": company_ratings["ratingDetailsROARecommendation"], "Score": company_ratings["ratingDetailsROAScore"], 'Usage': "Assesses how efficient management is at using assets to generate earnings.", 'Description': "An indicator of how profitable a company is relative to its total assets, calculated by dividing Net Income by Total Assets."},
-        {"Category": "DE(Debt to Equity)", "Recommendation": company_ratings["ratingDetailsDERecommendation"], "Score": company_ratings["ratingDetailsDEScore"], 'Usage': "Provides insight into a company's leverage and financial health.", "Description": "A ratio indicating the relative proportion of shareholders' equity and debt used to finance a company's assets. Calculated as Total Liabilities divided by Shareholders' Equity."},
-        {"Category": "PE(Price to Earnings)", "Recommendation": company_ratings["ratingDetailsPERecommendation"], "Score": company_ratings["ratingDetailsPEScore"], 'Usage': "Commonly used by investors to evaluate the market value of a stock compared to the company's earnings.", "Description": "A ratio for valuing a company that measures its current share price relative to its per-share earnings. Calculated as Market Value per Share divided by Earnings per Share (EPS)."},
-        {"Category": "PB(Price to Book)", "Recommendation": company_ratings["ratingDetailsPBRecommendation"], 'Usage': "Indicates what investors are prepared to pay for each dollar of book value equity.", "Score": company_ratings["ratingDetailsPBScore"], 'Description': "A ratio used to compare a firm's market capitalization to its book value. It is derived by dividing the stock's price per share by book value per share."}
-    ]
+    # if company_ratings:
+    #     st.markdown(f"**Company Rating for {symbol}**")
+    #     # Parsing the data into a structured format
+    # ratings_info = [
+    #     {"Category": "Overall", "Recommendation": company_ratings["ratingRecommendation"], "Score": company_ratings["ratingScore"]},
+    #     {"Category": "DCF(Discounted Cash Flow)", "Recommendation": company_ratings["ratingDetailsDCFRecommendation"], "Score": company_ratings["ratingDetailsDCFScore"], 'Usage': 'Used to determine the intrinsic value of an investment, considering the time value of money.', 'Description': 'A valuation method used to estimate the value of an investment based on its expected future cash flows. The approach involves forecasting future cash flows and discounting them to their present value using a rate that reflects their risk.'},
+    #     {"Category": "ROE(Return on Equity)", "Recommendation": company_ratings["ratingDetailsROERecommendation"], "Score": company_ratings["ratingDetailsROEScore"], 'Usage': "Helps in comparing the profitability of companies within the same industry.", 'Description': "A measure of a company's profitability that reveals how much profit a company generates with the money shareholders have invested. It is calculated as Net Income divided by Shareholders' Equity."},
+    #     {"Category": "ROA(Return on Assets)", "Recommendation": company_ratings["ratingDetailsROARecommendation"], "Score": company_ratings["ratingDetailsROAScore"], 'Usage': "Assesses how efficient management is at using assets to generate earnings.", 'Description': "An indicator of how profitable a company is relative to its total assets, calculated by dividing Net Income by Total Assets."},
+    #     {"Category": "DE(Debt to Equity)", "Recommendation": company_ratings["ratingDetailsDERecommendation"], "Score": company_ratings["ratingDetailsDEScore"], 'Usage': "Provides insight into a company's leverage and financial health.", "Description": "A ratio indicating the relative proportion of shareholders' equity and debt used to finance a company's assets. Calculated as Total Liabilities divided by Shareholders' Equity."},
+    #     {"Category": "PE(Price to Earnings)", "Recommendation": company_ratings["ratingDetailsPERecommendation"], "Score": company_ratings["ratingDetailsPEScore"], 'Usage': "Commonly used by investors to evaluate the market value of a stock compared to the company's earnings.", "Description": "A ratio for valuing a company that measures its current share price relative to its per-share earnings. Calculated as Market Value per Share divided by Earnings per Share (EPS)."},
+    #     {"Category": "PB(Price to Book)", "Recommendation": company_ratings["ratingDetailsPBRecommendation"], 'Usage': "Indicates what investors are prepared to pay for each dollar of book value equity.", "Score": company_ratings["ratingDetailsPBScore"], 'Description': "A ratio used to compare a firm's market capitalization to its book value. It is derived by dividing the stock's price per share by book value per share."}
+    # ]
 
     # Creating DataFrame
-    ratings_df = pd.DataFrame(ratings_info)
-    st.dataframe(ratings_df.set_index('Category'), width = 1200)  # Displaying company ratings as JSON
+    # ratings_df = pd.DataFrame(ratings_info)
+    # st.dataframe(ratings_df.set_index('Category'), width = 1200)  # Displaying company ratings as JSON
     # AI analysis
     recomprompt = """
         You are provided with the following data for one company's stock analyst recommendations:
@@ -553,6 +557,85 @@ def show_news():
             add_footer()
 
 
+def show_ts():
+    """Display the time series analysis and AI-generated insights."""
+    symbols = get_active_symbols()
+    symbol = st.session_state.get('selected_symbol', symbols[0])
+    st.markdown(f"**Trends and Forecast for {symbol}**")
+
+    # User inputs for trend analysis and forecasting
+    period = st.slider(label='Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
+    days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
+    years_back = st.number_input('No. of years look-back:', value=1, min_value=1, max_value=10)
+    weeks_back = int(years_back * 52)
+
+    # Fetch and transform stock data
+    symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
+    with st.spinner('Fetching data and training model...'):
+        df = predict.transform_price(symbol_prices)
+        model = predict.train_prophet_model(df)
+        forecast = predict.make_forecast(model, days_to_forecast)
+
+    # Display forecast plot
+    st.subheader('Trading Hero Forecasting')
+    st.write("""
+        The plot below visualizes the forecasted stock prices using Trading Hero's time-series algorithm.
+        Our tool handles complexities such as seasonal variations and missing data automatically.
+        The forecast includes trend lines and confidence intervals, providing a clear visual representation of expected future values and the uncertainty around these predictions.
+    """)
+
+    fig1 = plot_plotly(model, forecast)
+    fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
+    st.plotly_chart(fig1)
+
+    # Calculate and display performance metrics
+    actual = df['y']
+    predicted = forecast['yhat'][:len(df)]
+    metrics = predict.calculate_performance_metrics(actual, predicted)
+    st.subheader('Performance Metrics')
+
+    metrics_data = {
+        "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
+        "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
+    }
+
+    metrics_df = pd.DataFrame(metrics_data)
+    metrics_df.set_index("Metric", inplace=True)
+    st.table(metrics_df)
+
+    # AI analysis
+    future_price = forecast[['ds', 'yhat']]
+    metrics_data_str = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
+    tsprompt = """
+    You are provided with the following data for one company's future stock time series analysis:
+    - Future Price (Focus on the overall future trend, not short-term fluctuations)
+    - Performance Metrics:
+    - MAE: 
+    - MSE: 
+    - RMSE: 
+
+    These values are derived from the Performance Metrics using Meta's Prophet for direct forecasting.
+    Based on this information, please provide insights. Talk more on Future Price overlook.
+    Add emoji to make your output more interactive. This is one time response, don't ask for any follow up.
+    """
+    tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
+    with st.spinner("Generating Time-Series AI Analysis..."):
+        progress_bar = st.progress(0)
+        if st.button("Show Trading Hero Time-Series AI Analysis"):
+            progress_bar.progress(50)
+            st.markdown(tsai_data)
+            progress_bar.progress(100)
+            def add_footer():
+                st.markdown("""
+                ---
+                © 2024 Trading Hero. All rights reserved.
+                            
+                **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
+                """, unsafe_allow_html=True)
+
+            add_footer()
+
+
 def show_trends():
     symbols = get_active_symbols()
     symbol = st.session_state.get('selected_symbol', symbols[0])
@@ -630,60 +713,6 @@ def show_trends():
     st.markdown(
             f"If the trend intersects SMA, then reset. "
             f"When the trend intersects the price, place a bid. If the previous intercept is lower, then buy.")
-
-    # Forecast Section
-    # with st.spinner('Fetching data and training model...'):
-    #     df = predict.transform_price(symbol_prices)
-    #     model = predict.train_prophet_model(df)
-    #     forecast = predict.make_forecast(model, days_to_forecast)
-
-    # st.subheader('Trading Hero Forecasting')
-    # st.write("""
-    #     The plot below visualizes the forecasted stock prices using Trading Hero's own time-series algorithm.
-    #     Our tool is designed to handle the complexities of time series data automatically, such as seasonal variations and missing data.
-    #     The plotted forecast includes trend lines and confidence intervals, providing a clear visual representation of expected future values and the uncertainty around these predictions.
-    # """)
-
-    # fig1 = plot_plotly(model, forecast)
-    # fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
-    # st.plotly_chart(fig1)
-
-    # actual = df['y']
-    # predicted = forecast['yhat'][:len(df)]
-    # metrics = predict.calculate_performance_metrics(actual, predicted)
-    # st.subheader('Performance Metrics')
-
-    # metrics_data = {
-    #     "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
-    #     "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
-    # }
-
-    # metrics_df = pd.DataFrame(metrics_data)
-    # metrics_df.set_index("Metric", inplace=True)
-    # st.table(metrics_df)
-
-
-    # # AI analysis
-    # future_price = forecast.loc[:,"trend"]
-    # metrics_data = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
-    # tsprompt = """
-    # You are provided with the following data for one company's future stock time series analysis:
-    # - Futur Price (Only focus the overall future trend, don't focus on the short term)
-    # - Performance Metrics:
-    # - MAE: 
-    # - MSE: 
-    # - RMSE: 
-
-    # These values are all came from the Performance Metrics using Meta's prophet to do direct forecasting.
-    # Based on this information, please provide insights.
-    # """
-    # tsai_data = predict.generate_vertexai_tsresponse(tsprompt,future_price,metrics_data)
-    # with st.spinner("Time-Series analysis is working to generate."):
-    #     progress_bar = st.progress(0)
-    #     if st.button("Show Trading Hero Time-Series AI Analysis"):
-    #         progress_bar.progress(50)
-    #         st.markdown(tsai_data)
-    #         progress_bar.progress(100)
 
     recommendations = recommend.get_rec(symbol)
     with st.spinner("Model is working to generate."):

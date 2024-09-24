@@ -9,7 +9,7 @@ from vertexai.preview.generative_models import GenerativeModel, ChatSession, Par
 import vertexai.preview.generative_models as generative_models
 
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
-model = GenerativeModel("gemini-1.5-flash-preview-0514")
+model = GenerativeModel("gemini-1.5-pro-002")
 finnhub_client = finnhub.Client(api_key="co6v709r01qj6a5mgco0co6v709r01qj6a5mgcog")
 tokenizer = AutoTokenizer.from_pretrained("fuchenru/Trading-Hero-LLM")
 sentiment_model = AutoModelForSequenceClassification.from_pretrained("fuchenru/Trading-Hero-LLM")

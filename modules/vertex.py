@@ -7,7 +7,7 @@ from vertexai.preview.generative_models import GenerativeModel, GenerationConfig
 import pandas as pd
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 
-model = GenerativeModel("gemini-1.5-flash-preview-0514")
+model = GenerativeModel("gemini-1.5-pro-002")
 
 def generate_vertexai_response(prompt, symbol, symbol_prices, company_basic, news, recommendations):
     symbol_prices_str = symbol_prices.to_string()
