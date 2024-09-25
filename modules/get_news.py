@@ -2,6 +2,7 @@ import finnhub
 from datetime import date, timedelta
 import pandas as pd
 import requests
+import streamlit as st
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, pipeline
 import vertexai

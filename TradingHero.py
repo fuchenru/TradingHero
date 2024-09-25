@@ -48,6 +48,7 @@ from modules import trends
 from modules import ui
 from modules import vertex
 from modules import predict
+from modules import footer
 # import torch in requirements
 
 input_prompt = """
@@ -153,8 +154,8 @@ def run():
             st.session_state['last_opened'] = 'Stock Analyst Recommendations'
         if st.sidebar.button('Latest News'):
             st.session_state['last_opened'] = 'Latest News'
-        if st.sidebar.button('Time Series Forecasting'):
-            st.session_state['last_opened'] = 'Time Series Forecasting'
+        # if st.sidebar.button('Time Series Forecasting'):
+        #     st.session_state['last_opened'] = 'Time Series Forecasting'
         if st.sidebar.button('Trends Forecasting and TradingHero Analysis'):
             st.session_state['last_opened'] = 'Trends'
 
@@ -170,12 +171,14 @@ def run():
         show_analyst_recommendations()
     elif st.session_state['last_opened'] == 'Latest News':
         show_news()  
-    elif st.session_state['last_opened'] == 'Time Series Forecasting':
-        show_ts() 
+    # elif st.session_state['last_opened'] == 'Time Series Forecasting':
+    #     show_ts() 
     elif st.session_state['last_opened'] == 'Trends':
         show_trends()
     elif st.session_state['last_opened'] == 'ETF Holdings':
         show_etf()
+
+#------------------ 'ETF Holdings'
 
 def show_etf():
     # List of ETFs with their fund names
@@ -225,7 +228,6 @@ def show_etf():
     # Determine the symbol to use
     symbol = custom_etf if custom_etf else selected_symbol
 
-    # HTML code for the Finnhub widget with dynamic symbol
     finnhub_widget = f"""
     <!-- Finnhub Widget BEGIN -->
     <div style="border: 1px solid #e0e3eb; height: 600px; width: 100%">
@@ -240,7 +242,6 @@ def show_etf():
     <!-- Finnhub Widget END -->
     """
 
-    # Embed the HTML in the Streamlit app
     components.html(finnhub_widget, height=600)
 
     # HTML code for the TradingView ETF heatmap widget
@@ -271,8 +272,10 @@ def show_etf():
     <!-- TradingView Widget END -->
     """
 
-    # Embed the HTML in the Streamlit app
     components.html(heatmap, height=500)
+
+
+#------------------ 'Stock Overall Information'
 
 def show_overall_information():
     tradingview_ticker_tape = """
@@ -360,7 +363,7 @@ def show_overall_information():
         "title": "JPMorgan Chase"
     }],
     "showSymbolLogo": true,
-    "isTransparent": false,
+    "isTransparent": true,
     "displayMode": "adaptive",
     "colorTheme": "light",
     "locale": "en"
@@ -371,7 +374,20 @@ def show_overall_information():
     """
 
     # Render the TradingView ticker tape widget in Streamlit
-    components.html(tradingview_ticker_tape, height=50)  # Adjust height if needed
+    components.html(tradingview_ticker_tape, height=50) 
+
+    market_status = status.get_status('US')
+    st.write("**Market Status Summary:**")
+    if market_status["isOpen"]:
+        st.write("🟢 The US market is currently open for trading.")
+    else:
+        st.write("🔴 The US market is currently closed.")
+        if market_status["holiday"]:
+            st.write(f"Reason: {market_status['holiday']}")
+        else:
+            st.write("🌃 It is currently outside of regular trading hours.")
+
+    st.markdown("---")
 
     def get_jsonparsed_data(url):
         response = urlopen(url, cafile=certifi.where())
@@ -401,15 +417,17 @@ def show_overall_information():
     col3.metric(loser_data[2]['symbol'], loser_data[2]['price'], str(loser_data[2]['changesPercentage'])+'%')
     col4.metric(loser_data[3]['symbol'], loser_data[3]['price'], str(loser_data[3]['changesPercentage'])+'%')
     col5.metric(loser_data[4]['symbol'], loser_data[4]['price'], str(loser_data[4]['changesPercentage'])+'%')
-     
+   
+    st.markdown("---")
+    
     col1, col2 = st.columns(2)
+
     with col1:
         exchange_names = data_retriever.get_exchange_code_names()
         # Right now only limit to 1 stock(US Exchange)
         if len(exchange_names) == 1:
             exchange_name = exchange_names[0]  
             st.write("**Exchange (Currently only support US market):**")
-            # st.text("Exchange (Currently only support US market):")
             st.markdown(f"**{exchange_name}**")
         else:
             # If there are multiple exchange options, let the user select
@@ -420,7 +438,7 @@ def show_overall_information():
                 key='exchange_selectbox'
             )
             exchange_name = exchanges_selectbox  # Use the user's selection
-    
+
         exchange_index = exchange_names.index(exchange_name)
         exchange = data_retriever.get_exchange_codes()[exchange_index]
 
@@ -432,19 +450,14 @@ def show_overall_information():
             key='overall_info_symbol'
         )
 
+        st.text_input('No. of years look-back:', value=1, key="years_back")
+        years_back = int(st.session_state.years_back)
+        weeks_back = years_back * 13 * 4
+
+    st.markdown("---")
+
     st.session_state['selected_symbol'] = selected_symbol
     symbol = st.session_state.get('selected_symbol', symbols[0])
-    
-    market_status = status.get_status(exchange)
-    st.write("**Market Status Summary:**")
-    if market_status["isOpen"]:
-        st.write("🟢 The US market is currently open for trading.")
-    else:
-        st.write("🔴 The US market is currently closed.")
-        if market_status["holiday"]:
-            st.write(f"Reason: {market_status['holiday']}")
-        else:
-            st.write("🌃 It is currently outside of regular trading hours.")
 
     # company_basic = status.get_basic(symbol)
     # if st.checkbox('Show Company Basics'):
@@ -452,19 +465,9 @@ def show_overall_information():
     #     metrics = data_retriever.get_basic_detail(basics_data)
     #     st.dataframe(metrics[['Explanation', 'Value']], width=3000)
 
-    with col2:
-        st.text_input('No. of years look-back:', value=1, key="years_back")
-        years_back = int(st.session_state.years_back)
-        weeks_back = years_back * 13 * 4
-
-        symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
-        if not symbol_prices.empty:
-            dates = symbol_prices.index.astype(str)
-            st.text_input('No. of days back-test:', value=0, key="backtest_period")
-            n_days_back = int(st.session_state.backtest_period)
-            end_date = data_retriever.n_days_before(data_retriever.today(), n_days_back)
-            symbol_prices_backtest = symbol_prices[symbol_prices.index <= end_date]
-            backtest_dates = symbol_prices_backtest.index.astype(str)
+    symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
+    if not symbol_prices.empty:
+        dates = symbol_prices.index.astype(str)
 
     # TradingView Symbol Profile Widget HTML code
     symbol_profile_widget_html = f"""
@@ -561,59 +564,50 @@ def show_overall_information():
     st.write("**Trading Hero AI Technical Summary:**")
     prices = symbol_prices.loc[:,"Adj Close"]
     symbol = st.session_state.get('selected_symbol', symbols[0])
-    text1 = f"""You are an equity research analyst tasked with providing a technical summary for various stocks 
-        based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock\'s trend, 
-        its performance, and key technical indicators such as momentum (measured by the RSI), 
-        volume trends, and the position relative to moving averages.
+    text1 = f"""
+    You are an equity research analyst tasked with providing a technical summary for various stocks 
+    based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock's trend, 
+    its performance, and key technical indicators such as momentum (measured by the RSI), 
+    volume trends, and the position relative to moving averages.
 
-        You can add some emoji in this report if you want to make it interactive.
-        
-        Please generate a technical summary (only in English) that follows the structure and tone of the example provided below:
+    You can add some emoji in this report if you want to make it interactive.
+    
+    Please generate a technical summary (only in English) that follows the structure and tone of the example provided below:
 
-        Example Technical Summary:
-        \"Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. 
-        A reversal of the existing trend looks unlikely at this time. Despite a weak technical condition, there are positive signs. 
-        Momentum, as measured by the 9-day RSI, is bullish. Over the last 50 trading sessions, 
-        there has been more volume on down days than on up days, indicating that [Ticker] is under distribution, 
-        which is a bearish condition. The stock is currently above a falling 50-day moving average. 
-        A move below this average could trigger additional weakness in the stock. 
-        [Ticker] could find secondary support at its rising 200-day moving average.\"
+    Example Technical Summary:
+    "Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. 
+    A reversal of the existing trend looks unlikely at this time. Despite a weak technical condition, there are positive signs. 
+    Momentum, as measured by the 9-day RSI, is bullish. Over the last 50 trading sessions, 
+    there has been more volume on down days than on up days, indicating that [Ticker] is under distribution, 
+    which is a bearish condition. The stock is currently above a falling 50-day moving average. 
+    A move below this average could trigger additional weakness in the stock. 
+    [Ticker] could find secondary support at its rising 200-day moving average."
 
-        Ticker Symbol: {symbol}
-        Current Price: {prices}
-        [Detailed Technical Summary]"""
+    Ticker Symbol: {symbol}
+    Current Price: {prices}
+    [Detailed Technical Summary with clear line break for each part of your analysis]
+    """
 
-        # Generate content based on the prompt
+    # Generate content based on the prompt
     responses = model.generate_content(
-            [text1],
-            generation_config=generation_config,
-            safety_settings=safety_settings,
-            stream=True,
-        )
-
-    responses = model.generate_content(
-    [text1],
-    generation_config=generation_config,
-    safety_settings=safety_settings,
-    stream=True,)
+        [text1],
+        generation_config=generation_config,
+        safety_settings=safety_settings,
+        stream=True,
+    ) 
 
     def extract_text_from_generation_response(responses):
-        return [resp.text for resp in responses] 
+        return [resp.text for resp in responses]
 
     # Extract and format the response
     text_responses = extract_text_from_generation_response(responses)
-    full_summary = "".join(text_responses)  # Join all parts into one string
-    st.write(full_summary)  # Display the formatted summary
-    def add_footer():
-        st.markdown("""
-        ---
-        © 2024 Trading Hero. All rights reserved.
-                    
-        **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
-        """, unsafe_allow_html=True)
+    full_summary = "".join(text_responses)
+    st.markdown(full_summary)
 
-    add_footer()
+    footer.add_footer()
 
+
+#------------------ 'Historical Stock and EPS Surprises'
 
 def show_historical_data():
     # Get symbols and exchange data as with the candle chart
@@ -706,56 +700,34 @@ def show_historical_data():
         st.error("No historical stock data available for the selected symbol.")
 
 
+#------------------ 'Stock Analyst Recommendations'
+
 def show_analyst_recommendations():
     symbols = get_active_symbols()
     symbol = st.session_state.get('selected_symbol', symbols[0])
 
     st.markdown(f"**Stock Analyst Recommendations for {symbol}**")
-    # st.markdown(f'**Company Rating:{get_jsonparsed_data(url)[0]['rating']} with RatingScore:**')
-    
+
     if symbol:
         recommendations = recommend.get_rec(symbol)
         if recommendations:
-            # st.subheader('Stock Analyst Recommendations')
             st.bar_chart(recommendations)
         else:
             st.error("No recommendations data available for the selected symbol.")
     
-    company_ratings = get_jsonparsed_data(f"https://financialmodelingprep.com/api/v3/rating/{symbol}?apikey=M8vsGpmAiqXW6RxWkSn7a71AvdGHywN8")[0]
-    # if company_ratings:
-    #     st.markdown(f"**Company Rating for {symbol}**")
-    #     # Parsing the data into a structured format
-    # ratings_info = [
-    #     {"Category": "Overall", "Recommendation": company_ratings["ratingRecommendation"], "Score": company_ratings["ratingScore"]},
-    #     {"Category": "DCF(Discounted Cash Flow)", "Recommendation": company_ratings["ratingDetailsDCFRecommendation"], "Score": company_ratings["ratingDetailsDCFScore"], 'Usage': 'Used to determine the intrinsic value of an investment, considering the time value of money.', 'Description': 'A valuation method used to estimate the value of an investment based on its expected future cash flows. The approach involves forecasting future cash flows and discounting them to their present value using a rate that reflects their risk.'},
-    #     {"Category": "ROE(Return on Equity)", "Recommendation": company_ratings["ratingDetailsROERecommendation"], "Score": company_ratings["ratingDetailsROEScore"], 'Usage': "Helps in comparing the profitability of companies within the same industry.", 'Description': "A measure of a company's profitability that reveals how much profit a company generates with the money shareholders have invested. It is calculated as Net Income divided by Shareholders' Equity."},
-    #     {"Category": "ROA(Return on Assets)", "Recommendation": company_ratings["ratingDetailsROARecommendation"], "Score": company_ratings["ratingDetailsROAScore"], 'Usage': "Assesses how efficient management is at using assets to generate earnings.", 'Description': "An indicator of how profitable a company is relative to its total assets, calculated by dividing Net Income by Total Assets."},
-    #     {"Category": "DE(Debt to Equity)", "Recommendation": company_ratings["ratingDetailsDERecommendation"], "Score": company_ratings["ratingDetailsDEScore"], 'Usage': "Provides insight into a company's leverage and financial health.", "Description": "A ratio indicating the relative proportion of shareholders' equity and debt used to finance a company's assets. Calculated as Total Liabilities divided by Shareholders' Equity."},
-    #     {"Category": "PE(Price to Earnings)", "Recommendation": company_ratings["ratingDetailsPERecommendation"], "Score": company_ratings["ratingDetailsPEScore"], 'Usage': "Commonly used by investors to evaluate the market value of a stock compared to the company's earnings.", "Description": "A ratio for valuing a company that measures its current share price relative to its per-share earnings. Calculated as Market Value per Share divided by Earnings per Share (EPS)."},
-    #     {"Category": "PB(Price to Book)", "Recommendation": company_ratings["ratingDetailsPBRecommendation"], 'Usage': "Indicates what investors are prepared to pay for each dollar of book value equity.", "Score": company_ratings["ratingDetailsPBScore"], 'Description': "A ratio used to compare a firm's market capitalization to its book value. It is derived by dividing the stock's price per share by book value per share."}
-    # ]
-
-    # Creating DataFrame
-    # ratings_df = pd.DataFrame(ratings_info)
-    # st.dataframe(ratings_df.set_index('Category'), width = 1200)  # Displaying company ratings as JSON
-    # AI analysis
     recomprompt = """
         You are provided with the following data for one company's stock analyst recommendations:
         Based on this information, please provide Positive Sentiment, Negative Sentiment and the Overall.
         You can add some emoji in this report if you want to make it interactive.
         """
     recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
-    sanitized_recai_data = recai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
+    sanitized_recai_data = recai_data.replace('\n', '  \n')
     st.markdown(sanitized_recai_data)
-    def add_footer():
-        st.markdown("""
-        ---
-        © 2024 Trading Hero. All rights reserved.
-                    
-        **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
-        """, unsafe_allow_html=True)
 
-    add_footer()
+    footer.add_footer()
+
+
+#------------------ 'Latest News'
 
 def show_news():
     symbols = get_active_symbols()
@@ -800,12 +772,13 @@ def show_news():
             You have been provided with the full text of summaries for recent news articles about a specific company{symbol}. 
             Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
             You can add some emoji in this report if you want to make it interactive.
+
             Please include the following elements in your analysis:
-            
             1. Key Trends: Analyze the recurring topics and themes across the summaries to identify prevalent trends.
             2. Strengths and Weaknesses: Assess the positive and negative attributes of the company as highlighted by the news articles.
             3. Opportunities and Threats: Evaluate external factors that could influence the company positively or negatively in the future.
             4. Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
+
             Please justify and explain your scoring rationale in detail, drawing evidence from the specific details, facts, 
             and narratives portrayed across the news summaries. Your scoring should encompass both the company's present circumstances 
             as well as the projected trajectory factoring in future risks and prospects. Put more weights on most recent news sentiments, and less
@@ -818,95 +791,83 @@ def show_news():
             newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
             sanitized_newsai_data = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
             st.markdown(sanitized_newsai_data)
-            def add_footer():
-                st.markdown("""
-                ---
-                © 2024 Trading Hero. All rights reserved.
-                            
-                **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
-                """, unsafe_allow_html=True)
 
-            add_footer()
+            footer.add_footer()
 
 
-def show_ts():
-    """Display the time series analysis and AI-generated insights."""
-    symbols = get_active_symbols()
-    symbol = st.session_state.get('selected_symbol', symbols[0])
-    st.markdown(f"**Trends and Forecast for {symbol}**")
+# def show_ts():
+#     """Display the time series analysis and AI-generated insights."""
+#     symbols = get_active_symbols()
+#     symbol = st.session_state.get('selected_symbol', symbols[0])
+#     st.markdown(f"**Trends and Forecast for {symbol}**")
 
-    # User inputs for trend analysis and forecasting
-    period = st.slider(label='Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
-    days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
-    years_back = st.number_input('No. of years look-back:', value=1, min_value=1, max_value=10)
-    weeks_back = int(years_back * 52)
+#     # User inputs for trend analysis and forecasting
+#     period = st.slider(label='Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
+#     days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
+#     years_back = st.number_input('No. of years look-back:', value=1, min_value=1, max_value=10)
+#     weeks_back = int(years_back * 52)
 
-    # Fetch and transform stock data
-    symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
-    with st.spinner('Fetching data and training model...'):
-        df = predict.transform_price(symbol_prices)
-        model = predict.train_prophet_model(df)
-        forecast = predict.make_forecast(model, days_to_forecast)
+#     # Fetch and transform stock data
+#     symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
+#     with st.spinner('Fetching data and training model...'):
+#         df = predict.transform_price(symbol_prices)
+#         model = predict.train_prophet_model(df)
+#         forecast = predict.make_forecast(model, days_to_forecast)
 
-    # Display forecast plot
-    st.subheader('Trading Hero Forecasting')
-    st.write("""
-        The plot below visualizes the forecasted stock prices using Trading Hero's time-series algorithm.
-        Our tool handles complexities such as seasonal variations and missing data automatically.
-        The forecast includes trend lines and confidence intervals, providing a clear visual representation of expected future values and the uncertainty around these predictions.
-    """)
+#     # Display forecast plot
+#     st.subheader('Trading Hero Forecasting')
+#     st.write("""
+#         The plot below visualizes the forecasted stock prices using Trading Hero's time-series algorithm.
+#         Our tool handles complexities such as seasonal variations and missing data automatically.
+#         The forecast includes trend lines and confidence intervals, providing a clear visual representation of expected future values and the uncertainty around these predictions.
+#     """)
 
-    fig1 = plot_plotly(model, forecast)
-    fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
-    st.plotly_chart(fig1)
+#     fig1 = plot_plotly(model, forecast)
+#     fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
+#     st.plotly_chart(fig1)
 
-    # Calculate and display performance metrics
-    actual = df['y']
-    predicted = forecast['yhat'][:len(df)]
-    metrics = predict.calculate_performance_metrics(actual, predicted)
-    st.subheader('Performance Metrics')
+#     # Calculate and display performance metrics
+#     actual = df['y']
+#     predicted = forecast['yhat'][:len(df)]
+#     metrics = predict.calculate_performance_metrics(actual, predicted)
+#     st.subheader('Performance Metrics')
 
-    metrics_data = {
-        "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
-        "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
-    }
+#     metrics_data = {
+#         "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
+#         "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
+#     }
 
-    metrics_df = pd.DataFrame(metrics_data)
-    metrics_df.set_index("Metric", inplace=True)
-    st.table(metrics_df)
+#     metrics_df = pd.DataFrame(metrics_data)
+#     metrics_df.set_index("Metric", inplace=True)
+#     st.table(metrics_df)
 
-    # AI analysis
-    future_price = forecast[['ds', 'yhat']]
-    metrics_data_str = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
-    tsprompt = """
-    You are provided with the following data for one company's future stock time series analysis:
-    - Future Price (Focus on the overall future trend, not short-term fluctuations)
-    - Performance Metrics:
-    - MAE: 
-    - MSE: 
-    - RMSE: 
+#     # AI analysis
+#     future_price = forecast[['ds', 'yhat']]
+#     metrics_data_str = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
+#     tsprompt = """
+#     You are provided with the following data for one company's future stock time series analysis:
+#     - Future Price (Focus on the overall future trend, not short-term fluctuations)
+#     - Performance Metrics:
+#     - MAE: 
+#     - MSE: 
+#     - RMSE: 
 
-    These values are derived from the Performance Metrics using Meta's Prophet for direct forecasting.
-    Based on this information, please provide insights. Talk more on Future Price overlook.
-    Add emoji to make your output more interactive. This is one time response, don't ask for any follow up.
-    """
-    tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
-    with st.spinner("Generating Time-Series AI Analysis..."):
-        progress_bar = st.progress(0)
-        if st.button("Show Trading Hero Time-Series AI Analysis"):
-            progress_bar.progress(50)
-            st.markdown(tsai_data)
-            progress_bar.progress(100)
-            def add_footer():
-                st.markdown("""
-                ---
-                © 2024 Trading Hero. All rights reserved.
-                            
-                **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
-                """, unsafe_allow_html=True)
+#     These values are derived from the Performance Metrics using Meta's Prophet for direct forecasting.
+#     Based on this information, please provide insights. Talk more on Future Price overlook.
+#     Add emoji to make your output more interactive. This is one time response, don't ask for any follow up.
+#     """
+#     tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
+#     with st.spinner("Generating Time-Series AI Analysis..."):
+#         progress_bar = st.progress(0)
+#         if st.button("Show Trading Hero Time-Series AI Analysis"):
+#             progress_bar.progress(50)
+#             st.markdown(tsai_data)
+#             progress_bar.progress(100)
 
-            add_footer()
+#             footer.add_footer()
 
+
+#------------------ 'Trends'
 
 def show_trends():
     symbols = get_active_symbols()
@@ -1011,12 +972,5 @@ def show_trends():
             sanitized_ai_data = ai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
             st.markdown(sanitized_ai_data)
             progress_bar.progress(100)
-            def add_footer():
-                st.markdown("""
-                ---
-                © 2024 Trading Hero. All rights reserved.
-                            
-                **Disclaimer:** Trading Hero AI can make mistakes. It is not intended as financial advice.
-                """, unsafe_allow_html=True)
 
-            add_footer()
+            footer.add_footer()
