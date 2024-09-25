@@ -1,24 +1,24 @@
-# Use an official Python runtime as a parent image
-FROM python:3.8.13-bullseye
+# Use a slim Python base image
+FROM python:3.8-slim-bullseye
 
 # Set environment variables
-ENV PYTHONUNBUFFERED True
-ENV APP_HOME /app
+ENV PYTHONUNBUFFERED=1
+ENV APP_HOME=/app
 
 # Set working directory
 WORKDIR $APP_HOME
 
+# Copy only requirements.txt first to leverage Docker cache
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
 # Expose port for Streamlit
 EXPOSE 8080
 
-# Copy the local code to the container
-COPY . $APP_HOME
-
-# Install Python dependencies
-# Ensure you have a requirements.txt in your application directory, or list packages here
-ADD requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
-
 # Run the Streamlit application on container startup
-ENTRYPOINT ["streamlit", "run"]
-CMD ["app.py", "--server.port=8080"]
+CMD ["streamlit", "run", "app.py", "--server.port=8080", "--server.address=0.0.0.0"]
