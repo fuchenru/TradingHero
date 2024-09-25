@@ -18,6 +18,7 @@ import pandas as pd
 
 # Streamlit
 import streamlit as st
+import streamlit.components.v1 as components
 
 # Plotly
 import plotly.graph_objects as go
@@ -48,7 +49,6 @@ from modules import ui
 from modules import vertex
 from modules import predict
 # import torch in requirements
-
 
 input_prompt = """
 You are an equity research analyst with an uncanny ability to decipher the language of price charts, 
@@ -140,11 +140,13 @@ def run():
 
     # Use session_state to track which section was last opened
     if 'last_opened' not in st.session_state:
-        st.session_state['last_opened'] = 'Overall Information'
+        st.session_state['last_opened'] = 'Stock Overall Information'
 
     with st.sidebar:
-        if st.sidebar.button('Overall Information'):
-            st.session_state['last_opened'] = 'Overall Information'
+        if st.sidebar.button('ETF Holdings'):
+            st.session_state['last_opened'] = 'ETF Holdings'
+        if st.sidebar.button('Stock Overall Information'):
+            st.session_state['last_opened'] = 'Stock Overall Information'
         if st.sidebar.button('Historical Stock and EPS Surprises'):
             st.session_state['last_opened'] = 'End-of-Day Historical Stock and EPS Surprises'
         if st.sidebar.button('Stock Analyst Recommendations'):
@@ -160,7 +162,7 @@ def run():
 
 
     # Check which content to display based on what was clicked in the sidebar
-    if st.session_state['last_opened'] == 'Overall Information':
+    if st.session_state['last_opened'] == 'Stock Overall Information':
         show_overall_information()
     elif st.session_state['last_opened'] == 'End-of-Day Historical Stock and EPS Surprises':
         show_historical_data()
@@ -172,9 +174,204 @@ def run():
         show_ts() 
     elif st.session_state['last_opened'] == 'Trends':
         show_trends()
+    elif st.session_state['last_opened'] == 'ETF Holdings':
+        show_etf()
 
+def show_etf():
+    # List of ETFs with their fund names
+    etfs = [
+        ("SPY", "SPDR S&P 500 ETF Trust"),
+        ("IVV", "iShares Core S&P 500 ETF"),
+        ("VOO", "Vanguard S&P 500 ETF"),
+        ("VTI", "Vanguard Total Stock Market ETF"),
+        ("QQQ", "Invesco QQQ Trust Series I"),
+        ("VEA", "Vanguard FTSE Developed Markets ETF"),
+        ("VUG", "Vanguard Growth ETF"),
+        ("VTV", "Vanguard Value ETF"),
+        ("IEFA", "iShares Core MSCI EAFE ETF"),
+        ("AGG", "iShares Core U.S. Aggregate Bond ETF"),
+        ("BND", "Vanguard Total Bond Market ETF"),
+        ("IWF", "iShares Russell 1000 Growth ETF"),
+        ("IJH", "iShares Core S&P Mid-Cap ETF"),
+        ("IJR", "iShares Core S&P Small-Cap ETF"),
+        ("VIG", "Vanguard Dividend Appreciation ETF"),
+        ("IEMG", "iShares Core MSCI Emerging Markets ETF"),
+        ("VWO", "Vanguard FTSE Emerging Markets ETF"),
+        ("VXUS", "Vanguard Total International Stock ETF"),
+        ("VGT", "Vanguard Information Technology ETF"),
+        ("IWM", "iShares Russell 2000 ETF"),
+        ("GLD", "SPDR Gold Shares"),
+        ("XLK", "Technology Select Sector SPDR ETF"),
+        ("VO", "Vanguard Mid-Cap ETF"),
+        ("TLT", "iShares 20+ Year Treasury Bond ETF"),
+        ("RSP", "Invesco S&P 500 Equal Weight ETF")
+    ]
+
+    # Create a dictionary for easy lookup
+    etf_dict = {symbol: name for symbol, name in etfs}
+
+    # Dropdown for sample ETFs with display of both symbol and fund name
+    selected_etf = st.selectbox(
+        "Select an ETF from the list",
+        options=[f"{symbol} - {name}" for symbol, name in etfs]
+    )
+
+    # Extract the symbol from the selected option
+    selected_symbol = selected_etf.split(" - ")[0]
+
+    # Text input for custom ETF symbol
+    custom_etf = st.text_input("Or enter a custom ETF symbol")
+
+    # Determine the symbol to use
+    symbol = custom_etf if custom_etf else selected_symbol
+
+    # HTML code for the Finnhub widget with dynamic symbol
+    finnhub_widget = f"""
+    <!-- Finnhub Widget BEGIN -->
+    <div style="border: 1px solid #e0e3eb; height: 600px; width: 100%">
+        <iframe width="100%" frameBorder="0"
+                height="100%"
+                src="https://widget.finnhub.io/widgets/etf-holdings?symbol={symbol}&theme=light">
+        </iframe>
+    </div>
+    <div style="width: 100%; text-align: center; margin-top:10px;">
+            <a href="https://finnhub.io/" target="_blank" style="color: #1db954;">"co6v709r01qj6a5mgco0co6v709r01qj6a5mgcog"</a>
+    </div>
+    <!-- Finnhub Widget END -->
+    """
+
+    # Embed the HTML in the Streamlit app
+    components.html(finnhub_widget, height=600)
+
+    # HTML code for the TradingView ETF heatmap widget
+    heatmap = """
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-etf-heatmap.js" async>
+      {{
+      "dataSource": "AllUSEtf",
+      "blockSize": "aum",
+      "blockColor": "change",
+      "grouping": "asset_class",
+      "locale": "en",
+      "symbolUrl": "",
+      "colorTheme": "light",
+      "hasTopBar": false,
+      "isDataSetEnabled": false,
+      "isZoomEnabled": true,
+      "hasSymbolTooltip": true,
+      "isMonoSize": false,
+      "width": "100%",
+      "height": "100%"
+    }}
+      </script>
+    </div>
+    <!-- TradingView Widget END -->
+    """
+
+    # Embed the HTML in the Streamlit app
+    components.html(heatmap, height=500)
 
 def show_overall_information():
+    tradingview_ticker_tape = """
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <div class="tradingview-widget-copyright">
+        <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+        <span class="blue-text">Track all markets on TradingView</span>
+        </a>
+    </div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+    {
+    "symbols": [
+    {
+        "proName": "FOREXCOM:SPXUSD",
+        "title": "S&P 500 Index"
+    },
+    {
+        "proName": "NASDAQ:QQQ",
+        "title": "NASDAQ 100 ETF"
+    },
+    {
+        "proName": "FOREXCOM:NSXUSD",
+        "title": "US 100 Cash CFD"
+    },
+    {
+        "proName": "FX_IDC:EURUSD",
+        "title": "EUR to USD"
+    },
+    {
+        "proName": "BITSTAMP:BTCUSD",
+        "title": "Bitcoin"
+    },
+    {
+        "proName": "BITSTAMP:ETHUSD",
+        "title": "Ethereum"
+    },
+    {
+        "proName": "FOREXCOM:DJI",
+        "title": "Dow Jones"
+    },
+    {
+        "proName": "AMEX:SPY",
+        "title": "S&P 500 ETF"
+    },
+    {
+        "proName": "FOREXCOM:USOIL",
+        "title": "Crude Oil"
+    },
+    {
+        "proName": "NASDAQ:AAPL",
+        "title": "Apple"
+    },
+    {
+        "proName": "NASDAQ:GOOGL",
+        "title": "Alphabet (Google)"
+    },
+    {
+        "proName": "NASDAQ:AMZN",
+        "title": "Amazon"
+    },
+    {
+        "proName": "NASDAQ:MSFT",
+        "title": "Microsoft"
+    },
+    {
+        "proName": "NYSE:BRK.B",
+        "title": "Berkshire Hathaway"
+    },
+    {
+        "proName": "NYSE:JNJ",
+        "title": "Johnson & Johnson"
+    },
+    {
+        "proName": "NYSE:V",
+        "title": "Visa"
+    },
+    {
+        "proName": "NYSE:WMT",
+        "title": "Walmart"
+    },
+    {
+        "proName": "NYSE:JPM",
+        "title": "JPMorgan Chase"
+    }],
+    "showSymbolLogo": true,
+    "isTransparent": false,
+    "displayMode": "adaptive",
+    "colorTheme": "light",
+    "locale": "en"
+    }
+    </script>
+    </div>
+    <!-- TradingView Widget END -->
+    """
+
+    # Render the TradingView ticker tape widget in Streamlit
+    components.html(tradingview_ticker_tape, height=50)  # Adjust height if needed
 
     def get_jsonparsed_data(url):
         response = urlopen(url, cafile=certifi.where())
@@ -249,11 +446,11 @@ def show_overall_information():
         else:
             st.write("🌃 It is currently outside of regular trading hours.")
 
-    company_basic = status.get_basic(symbol)
-    if st.checkbox('Show Company Basics'):
-        basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
-        metrics = data_retriever.get_basic_detail(basics_data)
-        st.dataframe(metrics[['Explanation', 'Value']], width=3000)
+    # company_basic = status.get_basic(symbol)
+    # if st.checkbox('Show Company Basics'):
+    #     basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
+    #     metrics = data_retriever.get_basic_detail(basics_data)
+    #     st.dataframe(metrics[['Explanation', 'Value']], width=3000)
 
     with col2:
         st.text_input('No. of years look-back:', value=1, key="years_back")
@@ -268,6 +465,81 @@ def show_overall_information():
             end_date = data_retriever.n_days_before(data_retriever.today(), n_days_back)
             symbol_prices_backtest = symbol_prices[symbol_prices.index <= end_date]
             backtest_dates = symbol_prices_backtest.index.astype(str)
+
+    # TradingView Symbol Profile Widget HTML code
+    symbol_profile_widget_html = f"""
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <div class="tradingview-widget-copyright">
+        <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+        <span class="blue-text">Track all markets on TradingView</span>
+        </a>
+    </div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-profile.js" async>
+    {{
+    "width": 400,
+    "height": 550,
+    "isTransparent": true,
+    "colorTheme": "light",
+    "symbol": "{symbol}",
+    "locale": "en"
+    }}
+    </script>
+    </div>
+    <!-- TradingView Widget END -->
+    """
+
+    # Financials Analysis Widget HTML code
+    financials_analysis_widget_html = f"""
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-financials.js" async>
+    {{
+    "isTransparent": true,
+    "largeChartUrl": "",
+    "displayMode": "regular",
+    "width": "400",
+    "height": "550",
+    "colorTheme": "light",
+    "symbol": "{symbol}",
+    "locale": "en"
+    }}
+    </script>
+    </div>
+    <!-- TradingView Widget END -->
+    """
+
+    symbol_info_widget_html = f"""
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container">
+    <div class="tradingview-widget-container__widget"></div>
+    <div class="tradingview-widget-copyright"><a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-symbol-info.js" async>
+    {{
+    "symbol": "{symbol}",
+    "width": 550,
+    "locale": "en",
+    "colorTheme": "light",
+    "isTransparent": true
+    }}
+    </script>
+    </div>
+    <!-- TradingView Widget END -->
+    """
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        components.html(symbol_info_widget_html, height=500)
+
+    with col2:
+        components.html(financials_analysis_widget_html, height=500)
+
+    with col3:
+        components.html(symbol_profile_widget_html, height=600)
 
 # def show_candle_chart():
     # symbol candlestick graph
@@ -385,7 +657,7 @@ def show_historical_data():
                     text=surpriseText,
                     textposition="bottom center",
                     marker=dict(
-                        size=[abs(s) * 10 + 5 for s in surprisePercents],  # Dynamically size markers
+                        size=[max(10, abs(s) * 10) for s in surprisePercents],  # Dynamically size markers, minimum size of 10
                         color='LightSkyBlue',
                         line=dict(
                             color='MediumPurple',
@@ -402,7 +674,7 @@ def show_historical_data():
                     mode='markers',
                     name='Estimate',
                     marker=dict(
-                        size=30,  # Fixed size for all estimate markers
+                        size=15,  # Fixed size for all estimate markers
                         color='MediumPurple',
                         opacity=0.5,
                         line=dict(
