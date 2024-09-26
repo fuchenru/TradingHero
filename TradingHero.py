@@ -419,7 +419,7 @@ def show_overall_information():
     col5.metric(loser_data[4]['symbol'], loser_data[4]['price'], str(loser_data[4]['changesPercentage'])+'%')
    
     st.markdown("---")
-    
+
     col1, col2 = st.columns(2)
 
     with col1:
@@ -561,6 +561,12 @@ def show_overall_information():
 
     st.plotly_chart(candleFigure, use_container_width=True)
 
+    st.caption("""
+    Trading Hero AI Technical Summary updates its data on a daily basis, ensuring that you have access to the latest information. 
+               However, please note that there is a one-day delay in the data update. 
+               This means that the data reflects all activities and changes up to the last completed trading day.
+    """)
+
     st.write("**Trading Hero AI Technical Summary:**")
     prices = symbol_prices.loc[:,"Adj Close"]
     symbol = st.session_state.get('selected_symbol', symbols[0])
@@ -699,6 +705,40 @@ def show_historical_data():
     else:
         st.error("No historical stock data available for the selected symbol.")
 
+    st.write("**Trading Hero AI EPS Summary:**")     
+    earnings_data = get_earnings.get_earnings(symbol)
+    earnings_prompt = f"""
+    You are a financial analyst tasked with providing a detailed earnings analysis for the company with the ticker symbol {symbol}. 
+    The specific earnings data is as follows:{earnings_data}
+
+    Key areas to focus on:
+
+    Earnings Per Share (EPS): Analyze the EPS performance, including comparisons to previous quarters and the same quarter from the previous year.
+    Guidance: Review the company's forward-looking statements or guidance and provide an interpretation of future prospects.
+    Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
+
+    [Detailed Earnings Analysis with clear line breaks for each part of your analysis(only in English)]
+    Don't ask for more requirements to do analysis, focus on the data provided.
+    You can add some emoji in this report if you want to make it interactive."""
+
+
+    # Generate content based on the prompt
+    responses = model.generate_content(
+        [earnings_prompt],
+        generation_config=generation_config,
+        safety_settings=safety_settings,
+        stream=True,
+    ) 
+
+    def extract_text_from_generation_response(responses):
+        return [resp.text for resp in responses]
+
+    # Extract and format the response
+    text_responses = extract_text_from_generation_response(responses)
+    earnings_summary = "".join(text_responses)
+    st.markdown(earnings_summary)
+
+    footer.add_footer()
 
 #------------------ 'Stock Analyst Recommendations'
 
@@ -745,54 +785,55 @@ def show_news():
     """)
     with st.spinner("Trading Hero AI News analysis is working to generate."):
         progress_bar = st.progress(0)
-        if st.checkbox('Show Latest News'):
-            today_str = data_retriever.today()
-            # Convert today's date string to a datetime.date object
-            today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
+        
+        today_str = data_retriever.today()
+        # Convert today's date string to a datetime.date object
+        today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
 
-            # Calculate the date 60 days ago
-            sixty_days_ago = today_date - timedelta(days=60)
+        # Calculate the date 60 days ago
+        sixty_days_ago = today_date - timedelta(days=60)
 
-            # Format dates into 'YYYY-MM-DD' string format for function call
-            today_formatted = today_date.strftime('%Y-%m-%d')
-            sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
+        # Format dates into 'YYYY-MM-DD' string format for function call
+        today_formatted = today_date.strftime('%Y-%m-%d')
+        sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
 
-            news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
-            if not news_data.empty:
-                news_data.set_index("headline", inplace=True)
-                progress_bar.progress(50)
-                st.table(news_data)
-                progress_bar.progress(100)
-            else:
-                st.error("No news data available for the selected symbol.")
-                progress_bar.progress(100)
-            # AI analysis
-            news_data_80 = get_news.get_all_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
-            newsprompt = f"""
-            You have been provided with the full text of summaries for recent news articles about a specific company{symbol}. 
-            Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
-            You can add some emoji in this report if you want to make it interactive.
+        news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
+        if not news_data.empty:
+            news_data.set_index("headline", inplace=True)
+            progress_bar.progress(50)
+            st.table(news_data)
+            progress_bar.progress(100)
+        else:
+            st.error("No news data available for the selected symbol.")
+            progress_bar.progress(100)
+        
+        # AI analysis
+        news_data_80 = get_news.get_all_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
+        newsprompt = f"""
+        You have been provided with the full text of summaries for recent news articles about a specific company {symbol}. 
+        Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
+        You can add some emoji in this report if you want to make it interactive.
 
-            Please include the following elements in your analysis:
-            1. Key Trends: Analyze the recurring topics and themes across the summaries to identify prevalent trends.
-            2. Strengths and Weaknesses: Assess the positive and negative attributes of the company as highlighted by the news articles.
-            3. Opportunities and Threats: Evaluate external factors that could influence the company positively or negatively in the future.
-            4. Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
+        Please include the following elements in your analysis:
+        1. Key Trends: Analyze the recurring topics and themes across the summaries to identify prevalent trends.
+        2. Strengths and Weaknesses: Assess the positive and negative attributes of the company as highlighted by the news articles.
+        3. Opportunities and Threats: Evaluate external factors that could influence the company positively or negatively in the future.
+        4. Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
 
-            Please justify and explain your scoring rationale in detail, drawing evidence from the specific details, facts, 
-            and narratives portrayed across the news summaries. Your scoring should encompass both the company's present circumstances 
-            as well as the projected trajectory factoring in future risks and prospects. Put more weights on most recent news sentiments, and less
-            weights on the least recent news.
+        Please justify and explain your scoring rationale in detail, drawing evidence from the specific details, facts, 
+        and narratives portrayed across the news summaries. Your scoring should encompass both the company's present circumstances 
+        as well as the projected trajectory factoring in future risks and prospects. Put more weights on most recent news sentiments, and less
+        weights on the least recent news.
 
-            The provided summaries contain all necessary details to perform this comprehensive review.  
-            Don't include any of your suggestion on if I can provide any more data to you. Make the summary as concise as possible.
-            """
+        The provided summaries contain all necessary details to perform this comprehensive review.  
+        Don't include any of your suggestion on if I can provide any more data to you. Make the summary as concise as possible.
+        """
 
-            newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
-            sanitized_newsai_data = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
-            st.markdown(sanitized_newsai_data)
+        newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
+        sanitized_newsai_data = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
+        st.markdown(sanitized_newsai_data)
 
-            footer.add_footer()
+        footer.add_footer()
 
 
 # def show_ts():
