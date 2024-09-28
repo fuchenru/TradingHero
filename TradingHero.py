@@ -156,8 +156,10 @@ def run():
             st.session_state['last_opened'] = 'Latest News'
         # if st.sidebar.button('Time Series Forecasting'):
         #     st.session_state['last_opened'] = 'Time Series Forecasting'
-        if st.sidebar.button('Trends Forecasting and TradingHero Analysis'):
-            st.session_state['last_opened'] = 'Trends'
+        # if st.sidebar.button('Trends Forecasting and TradingHero Analysis'):
+        #     st.session_state['last_opened'] = 'Trends'
+        if st.sidebar.button('Final Equity Report'):
+            st.session_state['last_opened'] = 'Final Equity Report'
 
 
 
@@ -173,10 +175,15 @@ def run():
         show_news()  
     # elif st.session_state['last_opened'] == 'Time Series Forecasting':
     #     show_ts() 
-    elif st.session_state['last_opened'] == 'Trends':
-        show_trends()
+    # elif st.session_state['last_opened'] == 'Trends':
+    #     show_trends()
     elif st.session_state['last_opened'] == 'ETF Holdings':
         show_etf()
+    elif st.session_state['last_opened'] == 'Final Equity Report':
+        final_report()
+
+if 'insights' not in st.session_state:
+    st.session_state['insights'] = []
 
 #------------------ 'ETF Holdings'
 
@@ -591,7 +598,7 @@ def show_overall_information():
 
     Ticker Symbol: {symbol}
     Current Price: {prices}
-    [Detailed Technical Summary with clear line break for each part of your analysis]
+    [Detailed Technical Summary with clear line break for each part of your analysis, don't include date]
     """
 
     # Generate content based on the prompt
@@ -607,10 +614,17 @@ def show_overall_information():
 
     # Extract and format the response
     text_responses = extract_text_from_generation_response(responses)
-    full_summary = "".join(text_responses)
-    st.markdown(full_summary)
+    tech_analysis = "".join(text_responses)
+    st.markdown(tech_analysis)
 
     footer.add_footer()
+
+    st.session_state['insights'].append({
+        'section': 'Stock Overall Information',
+        'price': prices,
+        'symbol': symbol,
+        'summary': tech_analysis
+    })
 
 
 #------------------ 'Historical Stock and EPS Surprises'
@@ -722,23 +736,18 @@ def show_historical_data():
     You can add some emoji in this report if you want to make it interactive."""
 
 
-    # Generate content based on the prompt
-    responses = model.generate_content(
-        [earnings_prompt],
-        generation_config=generation_config,
-        safety_settings=safety_settings,
-        stream=True,
-    ) 
+    eps_report = vertex.eps_response(earnings_prompt, symbol, earnings_data)
 
-    def extract_text_from_generation_response(responses):
-        return [resp.text for resp in responses]
+    earnings_summary = eps_report.replace('\n', '  \n')
 
-    # Extract and format the response
-    text_responses = extract_text_from_generation_response(responses)
-    earnings_summary = "".join(text_responses)
     st.markdown(earnings_summary)
 
     footer.add_footer()
+
+    st.session_state['insights'].append({
+        'section': 'EPS Summary',
+        'summary': earnings_summary
+    })
 
 #------------------ 'Stock Analyst Recommendations'
 
@@ -761,11 +770,15 @@ def show_analyst_recommendations():
         You can add some emoji in this report if you want to make it interactive.
         """
     recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
-    sanitized_recai_data = recai_data.replace('\n', '  \n')
-    st.markdown(sanitized_recai_data)
+    analyst_summary = recai_data.replace('\n', '  \n')
+    st.markdown(analyst_summary)
 
     footer.add_footer()
 
+    st.session_state['insights'].append({
+        'section': 'Analyst Recommendations',
+        'summary': analyst_summary
+    })
 
 #------------------ 'Latest News'
 
@@ -830,10 +843,15 @@ def show_news():
         """
 
         newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
-        sanitized_newsai_data = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
-        st.markdown(sanitized_newsai_data)
+        news_summary = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
+        st.markdown(news_summary)
 
         footer.add_footer()
+
+        st.session_state['insights'].append({
+            'section': 'News Analysis',
+            'summary': news_summary
+        })
 
 
 # def show_ts():
@@ -910,108 +928,179 @@ def show_news():
 
 #------------------ 'Trends'
 
-def show_trends():
-    symbols = get_active_symbols()
-    symbol = st.session_state.get('selected_symbol', symbols[0])
-    st.markdown(f"**Trends and Forecast for {symbol}**")
+# def show_trends():
+#     symbols = get_active_symbols()
+#     symbol = st.session_state.get('selected_symbol', symbols[0])
+#     st.markdown(f"**Trends and Forecast for {symbol}**")
 
-    period = st.slider(label='Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
-    days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
-    years_back = st.number_input('No. of years look-back:', value=1, min_value=1, max_value=10)
-    weeks_back = int(years_back * 52)
+#     period = st.slider(label='Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
+#     days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
+#     years_back = st.number_input('No. of years look-back:', value=1, min_value=1, max_value=10)
+#     weeks_back = int(years_back * 52)
 
-    symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
+#     symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
 
-    if symbol_prices.empty:
-        st.error("No data available for the selected symbol.")
-        return
+#     if symbol_prices.empty:
+#         st.error("No data available for the selected symbol.")
+#         return
 
-    dates = symbol_prices.index.format()
+#     dates = symbol_prices.index.format()
 
-    # Create the indicator figure for trend analysis
-    indicator_figure = make_subplots(rows=1, cols=1)
-    ui.create_line(indicator_figure, dates, symbol_prices['Close'], "Close Price", color="red")
+#     # Create the indicator figure for trend analysis
+#     indicator_figure = make_subplots(rows=1, cols=1)
+#     ui.create_line(indicator_figure, dates, symbol_prices['Close'], "Close Price", color="red")
 
-    # Volume Weighted Average Price (VWAP)
-    vwap = trends.vwap(symbol_prices)
-    ui.create_line(indicator_figure, dates, vwap, "Volume Weighted Average Price (VWAP)", "VWAP")
+#     # Volume Weighted Average Price (VWAP)
+#     vwap = trends.vwap(symbol_prices)
+#     ui.create_line(indicator_figure, dates, vwap, "Volume Weighted Average Price (VWAP)", "VWAP")
 
-    # Bollinger Bands
-    bollinger_dates, bollinger_low, bollinger_high = trends.bollinger_bands(dates, symbol_prices)
-    ui.create_fill_area(indicator_figure, bollinger_dates, bollinger_low, bollinger_high, "Bollinger Bands")
+#     # Bollinger Bands
+#     bollinger_dates, bollinger_low, bollinger_high = trends.bollinger_bands(dates, symbol_prices)
+#     ui.create_fill_area(indicator_figure, bollinger_dates, bollinger_low, bollinger_high, "Bollinger Bands")
 
-    # Linear Regression Trend
-    trend = trends.linear_regression_trend(symbol_prices['Close'], period=period)
-    ui.create_line(indicator_figure, dates[period:], trend, f"Trend: {period} Day", color='blue')
+#     # Linear Regression Trend
+#     trend = trends.linear_regression_trend(symbol_prices['Close'], period=period)
+#     ui.create_line(indicator_figure, dates[period:], trend, f"Trend: {period} Day", color='blue')
 
-    # Trend Deviation Area
-    price_deviation_from_trend = [price - trend_val for price, trend_val in zip(symbol_prices['Close'][period:], trend)]
-    deviation_price_offset = [price + dev for price, dev in zip(symbol_prices['Close'][period:], price_deviation_from_trend)]
-    ui.create_fill_area(indicator_figure, dates[period:], trend, deviation_price_offset, f"Trend Deviation: {period} Day Trend", color="rgba(100,0,100,0.3)")
+#     # Trend Deviation Area
+#     price_deviation_from_trend = [price - trend_val for price, trend_val in zip(symbol_prices['Close'][period:], trend)]
+#     deviation_price_offset = [price + dev for price, dev in zip(symbol_prices['Close'][period:], price_deviation_from_trend)]
+#     ui.create_fill_area(indicator_figure, dates[period:], trend, deviation_price_offset, f"Trend Deviation: {period} Day Trend", color="rgba(100,0,100,0.3)")
 
-    # Simple Moving Average (SMA)
-    deltas_sma = trends.sma(symbol_prices['Close'], period)
-    ui.create_line(indicator_figure, dates[period:], deltas_sma, f"SMA {period} Day", color='green')
+#     # Simple Moving Average (SMA)
+#     deltas_sma = trends.sma(symbol_prices['Close'], period)
+#     ui.create_line(indicator_figure, dates[period:], deltas_sma, f"SMA {period} Day", color='green')
 
-    # Bids and Strategies
-    init_val = 1000.0
-    buy_and_hold_val = bidder.buy_and_hold(init_val, symbol_prices['Close'])
-    st.write(f"Initial Value: {init_val}")
-    st.write(f"BUY AND HOLD: {buy_and_hold_val}")
+#     # Bids and Strategies
+#     init_val = 1000.0
+#     buy_and_hold_val = bidder.buy_and_hold(init_val, symbol_prices['Close'])
+#     st.write(f"Initial Value: {init_val}")
+#     st.write(f"BUY AND HOLD: {buy_and_hold_val}")
 
-    bid_dates, bid_vals = trends.bids(dates, symbol_prices, period)
-    strat_val = bidder.buy_rule(init_val, bid_dates, bid_vals, dates, symbol_prices['Close'])
+#     bid_dates, bid_vals = trends.bids(dates, symbol_prices, period)
+#     strat_val = bidder.buy_rule(init_val, bid_dates, bid_vals, dates, symbol_prices['Close'])
 
-    ui.create_markers(indicator_figure, bid_dates, bid_vals, "Bids", "Price")
-    st.write(f"STRATEGY: {strat_val}")
+#     ui.create_markers(indicator_figure, bid_dates, bid_vals, "Bids", "Price")
+#     st.write(f"STRATEGY: {strat_val}")
 
-    indicator_figure.update_layout(
-        title="Indicators",
-        xaxis_title='Date',
-        yaxis_title="Price",
-        template='plotly_dark'
-    )
-    st.plotly_chart(indicator_figure, use_container_width=True)
+#     indicator_figure.update_layout(
+#         title="Indicators",
+#         xaxis_title='Date',
+#         yaxis_title="Price",
+#         template='plotly_dark'
+#     )
+#     st.plotly_chart(indicator_figure, use_container_width=True)
 
-    st.markdown(
-        f"Trend deviation: indicates the extent to which the price is deviating from its current trajectory. "
-        f"The trajectory is the linear regression of the price over {period} days.")
-    st.markdown('''
-        <ol>
-            <li>Mark all intercepts between the SMA and the price.</li>
-            <li>Calculate the cumulative sum of trend deviations. The cumulative sum is reset when an intercept occurs.</li>
-            <li>When there is an intercept and the cumulative sum is above a threshold, then a price reversal is imminent.</li>
-        </ol>
-    ''', unsafe_allow_html=True)
+#     st.markdown(
+#         f"Trend deviation: indicates the extent to which the price is deviating from its current trajectory. "
+#         f"The trajectory is the linear regression of the price over {period} days.")
+#     st.markdown('''
+#         <ol>
+#             <li>Mark all intercepts between the SMA and the price.</li>
+#             <li>Calculate the cumulative sum of trend deviations. The cumulative sum is reset when an intercept occurs.</li>
+#             <li>When there is an intercept and the cumulative sum is above a threshold, then a price reversal is imminent.</li>
+#         </ol>
+#     ''', unsafe_allow_html=True)
 
-    st.markdown(
-            f"If the trend intersects SMA, then reset. "
-            f"When the trend intersects the price, place a bid. If the previous intercept is lower, then buy.")
+#     st.markdown(
+#             f"If the trend intersects SMA, then reset. "
+#             f"When the trend intersects the price, place a bid. If the previous intercept is lower, then buy.")
 
-    recommendations = recommend.get_rec(symbol)
+#     recommendations = recommend.get_rec(symbol)
+#     with st.spinner("Model is working to generate."):
+#         progress_bar = st.progress(0)
+#         if st.button("Show Trading Hero AI Analysis"):
+#             company_basic = data_retriever.get_current_basics(symbol, data_retriever.today())
+#             prices = symbol_prices.loc[:,"Adj Close"]
+#             today_str = data_retriever.today()
+#             # Convert today's date string to a datetime.date object
+#             today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
+
+#             # Calculate the date 60 days ago
+#             sixty_days_ago = today_date - timedelta(days=60)
+
+#             # Format dates into 'YYYY-MM-DD' string format for function call
+#             today_formatted = today_date.strftime('%Y-%m-%d')
+#             sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
+
+#             news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)["headline"].to_string()
+#             # news_data = get_news.get_stock_news(symbol)
+#             analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
+#             ai_data = vertex.generate_vertexai_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
+#             progress_bar.progress(50)
+#             sanitized_ai_data = ai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
+#             st.markdown(sanitized_ai_data)
+#             progress_bar.progress(100)
+
+#             footer.add_footer()
+
+
+
+def final_report():
     with st.spinner("Model is working to generate."):
         progress_bar = st.progress(0)
-        if st.button("Show Trading Hero AI Analysis"):
-            company_basic = data_retriever.get_current_basics(symbol, data_retriever.today())
-            prices = symbol_prices.loc[:,"Adj Close"]
-            today_str = data_retriever.today()
-            # Convert today's date string to a datetime.date object
-            today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
+        final_report_prompt = """
+        You are an equity research analyst tasked with generating a comprehensive equity report for the stock with the ticker symbol. 
+        This report is based on several analyses, including technical summary, earnings analysis, analyst recommendations, and news sentiment. 
+        You should evaluate the stock's overall performance and future outlook based on the insights provided from each section. 
+        The report should be written in a professional yet engaging tone, with clear headings for each section, 
+        and use emojis where appropriate to make the report more interactive.
 
-            # Calculate the date 60 days ago
-            sixty_days_ago = today_date - timedelta(days=60)
+        Your report should include the following sections:
 
-            # Format dates into 'YYYY-MM-DD' string format for function call
-            today_formatted = today_date.strftime('%Y-%m-%d')
-            sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
+        1. **Technical Summary**: 
+        Analyze the stock's recent price movements, key technical indicators (e.g., RSI, moving averages), and trading volume trends. 
+        The goal is to provide an understanding of the stock's trend and potential future movement.
+        - Example Technical Summary:
+            "Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. 
+            A reversal of the existing trend looks unlikely at this time. Despite a weak technical condition, there are positive signs. 
+            Momentum, as measured by the 9-day RSI, is bullish. Over the last 50 trading sessions, there has been more volume on down days 
+            than on up days, indicating that [Ticker] is under distribution, which is a bearish condition. The stock is currently 
+            above a falling 50-day moving average. A move below this average could trigger additional weakness in the stock."
 
-            news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)["headline"].to_string()
-            # news_data = get_news.get_stock_news(symbol)
-            analyst_rec = "Keys: {}, Values: {}".format(recommendations.keys(), recommendations.values())
-            ai_data = vertex.generate_vertexai_response(input_prompt,symbol,prices,company_basic,news_data,analyst_rec)
+        2. **Earnings Analysis**: 
+        Evaluate the company's earnings performance based on the following data:
+        - Earnings Per Share (EPS): Analyze the company's EPS over the past quarters, comparing with historical performance and expectations.
+        - Forward Guidance: Assess the company's future prospects based on the provided guidance.
+        - Overall Scoring: Provide a score (1-10) of the company's financial performance and future outlook.
+
+        3. **Analyst Recommendations**: 
+        Summarize the stock's current analyst recommendations (e.g., buy, hold, sell) and provide insight into the overall sentiment.
+        - Positive Sentiment: [Insert analysis]
+        - Negative Sentiment: [Insert analysis]
+        - Overall Sentiment: [Insert analysis]
+
+        4. **News Sentiment and Key Events**: 
+        Analyze the recent news articles about the company and provide insights into the key trends, strengths and weaknesses, 
+        and opportunities and threats facing the company. Include a scoring for the company's current status and future outlook (1-10).
+        - Key Trends: Identify the major themes recurring across the news.
+        - Strengths and Weaknesses: Summarize the positive and negative factors.
+        - Opportunities and Threats: Evaluate external factors impacting the company's future.
+        - Overall Scoring: Provide an overall score and explain your rationale, weighing recent news more heavily than older news.
+
+        5. **Final Conclusion and Recommendations**: 
+        Based on all the sections above (technical summary, earnings analysis, analyst recommendations, and news sentiment), 
+        provide a final evaluation of the stock. Offer your recommendation (buy, hold, or sell), and discuss any risks or opportunities 
+        that investors should be aware of. This section should tie together the insights from each section into a cohesive final judgment.
+
+        Make sure the report is easy to read and engaging, using emojis where appropriate to enhance readability. 
+        Keep the overall tone professional, and provide clear line breaks for each part of the analysis.
+        """
+
+        # Gather all insights into a single string
+        if 'insights' in st.session_state:
+            combined_insights = ""
+            for insight in st.session_state['insights']:
+                combined_insights += f"\n\n### {insight['section']}\n{insight.get('summary', '')}\n"
+
+            report = vertex.final_report(final_report_prompt, combined_insights)
+
+            sanitized_ai_data = report.replace('\n', '  \n')
+
+            st.title("Trading Hero Equity Report")
             progress_bar.progress(50)
-            sanitized_ai_data = ai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
             st.markdown(sanitized_ai_data)
             progress_bar.progress(100)
-
             footer.add_footer()
+        else:
+            st.markdown("No insights have been gathered yet. Please run from top to bottom of the side menu.")

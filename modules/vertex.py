@@ -21,3 +21,21 @@ def generate_vertexai_response(prompt, symbol, symbol_prices, company_basic, new
     generated_text = response.text 
 
     return generated_text 
+
+def eps_response(prompt, symbol, earnings_data):
+    formatted_data = f"""
+    {prompt}\nSymbol: {symbol}\nEarnings_data: {earnings_data}
+    """
+    full_prompt = prompt + formatted_data
+    response = model.generate_content(full_prompt) 
+
+    generated_text = response.text 
+
+    return generated_text
+
+
+def final_report(prompt,insights):
+    full_prompt = prompt + insights
+    response = model.generate_content(full_prompt) 
+    generated_text = response.text 
+    return generated_text 

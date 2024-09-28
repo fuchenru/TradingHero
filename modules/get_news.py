@@ -35,7 +35,7 @@ def get_stock_news(ticker_symbol, start_date, end_date):
         df = pd.DataFrame.from_records(news, columns=['headline', 'summary'])
         if df.empty:
             return pd.DataFrame()
-        top_5_news = df.head(7)
+        top_5_news = df.head(15)
         top_5_news['Sentiment Analysis'] = top_5_news['summary'].apply(predict_sentiment)
         return top_5_news
     except requests.exceptions.RequestException as e:
