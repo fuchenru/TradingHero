@@ -433,8 +433,7 @@ def show_overall_information():
     symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
     if not symbol_prices.empty:
         dates = symbol_prices.index.astype(str)
-
-    st.dataframe(symbol_prices)
+        
     # TradingView Symbol Profile Widget HTML code
     symbol_profile_widget_html = f"""
     <!-- TradingView Widget BEGIN -->
