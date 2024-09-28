@@ -433,7 +433,7 @@ def show_overall_information():
     symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
     if not symbol_prices.empty:
         dates = symbol_prices.index.astype(str)
-        
+
     # TradingView Symbol Profile Widget HTML code
     symbol_profile_widget_html = f"""
     <!-- TradingView Widget BEGIN -->
@@ -542,33 +542,26 @@ def show_overall_information():
         prices = symbol_prices.loc[:, "Adj Close"]
         symbol = st.session_state.get('selected_symbol', symbols[0])
         
-        text1 = f"""
+        tech_prompt = f"""
         You are an equity research analyst tasked with providing a technical summary for various stocks 
         based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock's trend, 
-        its performance, and key technical indicators such as momentum (measured by the RSI), 
-        volume trends, and the position relative to moving averages.
+        its performance....
 
         You can add some emoji in this report if you want to make it interactive.
         
-        Please generate a technical summary (only in English) that follows the structure and tone of the example provided below:
-
-        Example Technical Summary:
-        "Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. 
-        A reversal of the existing trend looks unlikely at this time. Despite a weak technical condition, there are positive signs. 
-        Momentum, as measured by the 9-day RSI, is bullish. Over the last 50 trading sessions, 
-        there has been more volume on down days than on up days, indicating that [Ticker] is under distribution, 
-        which is a bearish condition. The stock is currently above a falling 50-day moving average. 
-        A move below this average could trigger additional weakness in the stock. 
-        [Ticker] could find secondary support at its rising 200-day moving average."
+        Please generate a technical summary (only in English)
 
         Ticker Symbol: {symbol}
         Current Price: {prices}
-        [Detailed Technical Summary with clear line break for each part of your analysis, don't include date, don't ask for more data]
+        
+        Detailed Technical Summary with clear line break for each part of your analysis, 
+        don't include date, 
+        don't ask for more data so you can do more analysis on any part
         """
         
         # Generate content based on the prompt
-        responses = model.generate_content(
-            [text1],
+        tech_responses = model.generate_content(
+            [tech_prompt],
             generation_config=generation_config,
             safety_settings=safety_settings,
             stream=True,
@@ -582,7 +575,7 @@ def show_overall_information():
         progress_bar.progress(60)
         
         # Extract and format the response
-        text_responses = extract_text_from_generation_response(responses)
+        text_responses = extract_text_from_generation_response(tech_responses)
         tech_analysis = "".join(text_responses)
         
         # Simulate more progress
