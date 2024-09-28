@@ -1,5 +1,6 @@
 # Standard Library Imports
 from datetime import datetime, timedelta
+import time
 import base64
 import certifi
 import json
@@ -49,48 +50,6 @@ from modules import ui
 from modules import vertex
 from modules import predict
 from modules import footer
-# import torch in requirements
-
-input_prompt = """
-You are an equity research analyst with an uncanny ability to decipher the language of price charts, 
-your expertise is crucial in navigating the turbulent seas of financial markets. 
-I have provided you with information about a specific stock, including its ticker symbol, 
-recent prices, company fundamental information, news, and analyst recommendations. 
-Your task is to analyze the stock and provide insights on its recent performance and future prospects.
-
-You can add some emoji in this report if you want to make it interactive.
-
-The first few characters you received is the company's ticker symbol. 
-
-Analysis Guidelines:
-1. Company Overview: Begin with a brief overview of the company you are analyzing. Understand its market position, 
-recent news, financial health, and sector performance to provide context for your analysis.
-
-2. Fundamental Analysis: Conduct a thorough fundamental analysis of the company. Assess its financial statements, 
-including income statements, balance sheets, and cash flow statements. Evaluate key financial ratios 
-(e.g., P/E ratio, debt-to-equity, ROE) and consider the company's growth prospects, management effectiveness, competitive positioning, 
-and market conditions. This step is crucial for understanding the underlying value and potential of the company.
-
-3. Pattern Recognition: Diligently examine the price chart to identify critical candlestick formations, trendlines, 
-and a comprehensive set of technical indicators relevant to the timeframe and instrument in question. 
-Pay special attention to recent price movements in the year 2024.
-
-4. Technical Analysis: Leverage your in-depth knowledge of technical analysis principles to interpret the identified patterns and indicators. 
-Extract nuanced insights into market dynamics, identify key levels of support and resistance, and gauge potential price movements in the near future.
-
-5. Sentiment Prediction: Based on your technical analysis, predict the likely direction of the stock price. 
-Determine whether the stock is poised for a bullish upswing or a bearish downturn. 
-Assess the likelihood of a breakout versus a consolidation phase, taking into account the analyst recommendations.
-
-6. Confidence Level: Evaluate the robustness and reliability of your prediction. 
-Assign a confidence level based on the coherence and convergence of the technical evidence at hand.
-
-Put more weight on the Pattern Recognition and the news.
-
-Finally, provide your recommendations on whether to Buy, Hold, Sell, Strong Buy, or Strong Sell the stock in the future, 
-along with the percentage of confidence you have in your prediction.
-"""
-
 
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 model = GenerativeModel("gemini-1.5-pro-002")
@@ -138,6 +97,8 @@ def run():
     st.sidebar.image("https://i.postimg.cc/8zhnNjvs/tr-logo1.png", use_column_width=True)
     st.sidebar.title("Menu 🌐")
     st.image("https://i.imgur.com/WQE6iLY.jpeg", width=805)
+    if 'insights' not in st.session_state:
+        st.session_state['insights'] = []
 
     # Use session_state to track which section was last opened
     if 'last_opened' not in st.session_state:
@@ -182,8 +143,6 @@ def run():
     elif st.session_state['last_opened'] == 'Final Equity Report':
         final_report()
 
-if 'insights' not in st.session_state:
-    st.session_state['insights'] = []
 
 #------------------ 'ETF Holdings'
 
@@ -459,7 +418,7 @@ def show_overall_information():
 
         st.text_input('No. of years look-back:', value=1, key="years_back")
         years_back = int(st.session_state.years_back)
-        weeks_back = years_back * 13 * 4
+        weeks_back = years_back * 52
 
     st.markdown("---")
 
@@ -471,11 +430,11 @@ def show_overall_information():
     #     basics_data = data_retriever.get_current_basics(symbol, data_retriever.today())
     #     metrics = data_retriever.get_basic_detail(basics_data)
     #     st.dataframe(metrics[['Explanation', 'Value']], width=3000)
-
     symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
     if not symbol_prices.empty:
         dates = symbol_prices.index.astype(str)
 
+    st.dataframe(symbol_prices)
     # TradingView Symbol Profile Widget HTML code
     symbol_profile_widget_html = f"""
     <!-- TradingView Widget BEGIN -->
@@ -570,61 +529,81 @@ def show_overall_information():
 
     st.caption("""
     Trading Hero AI Technical Summary updates its data on a daily basis, ensuring that you have access to the latest information. 
-               However, please note that there is a one-day delay in the data update. 
+               However, please note that there is a delay in the data update. 
                This means that the data reflects all activities and changes up to the last completed trading day.
     """)
-
     st.write("**Trading Hero AI Technical Summary:**")
-    prices = symbol_prices.loc[:,"Adj Close"]
-    symbol = st.session_state.get('selected_symbol', symbols[0])
-    text1 = f"""
-    You are an equity research analyst tasked with providing a technical summary for various stocks 
-    based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock's trend, 
-    its performance, and key technical indicators such as momentum (measured by the RSI), 
-    volume trends, and the position relative to moving averages.
+    with st.spinner("Trading Hero AI Technical analysis is working to generate."):
+        progress_bar = st.progress(0)
+        
+        # Simulate some initial progress
+        time.sleep(1)
+        progress_bar.progress(10)
+        
+        prices = symbol_prices.loc[:, "Adj Close"]
+        symbol = st.session_state.get('selected_symbol', symbols[0])
+        
+        text1 = f"""
+        You are an equity research analyst tasked with providing a technical summary for various stocks 
+        based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock's trend, 
+        its performance, and key technical indicators such as momentum (measured by the RSI), 
+        volume trends, and the position relative to moving averages.
 
-    You can add some emoji in this report if you want to make it interactive.
-    
-    Please generate a technical summary (only in English) that follows the structure and tone of the example provided below:
+        You can add some emoji in this report if you want to make it interactive.
+        
+        Please generate a technical summary (only in English) that follows the structure and tone of the example provided below:
 
-    Example Technical Summary:
-    "Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. 
-    A reversal of the existing trend looks unlikely at this time. Despite a weak technical condition, there are positive signs. 
-    Momentum, as measured by the 9-day RSI, is bullish. Over the last 50 trading sessions, 
-    there has been more volume on down days than on up days, indicating that [Ticker] is under distribution, 
-    which is a bearish condition. The stock is currently above a falling 50-day moving average. 
-    A move below this average could trigger additional weakness in the stock. 
-    [Ticker] could find secondary support at its rising 200-day moving average."
+        Example Technical Summary:
+        "Although the stock has pulled back from higher prices, [Ticker] remains susceptible to further declines. 
+        A reversal of the existing trend looks unlikely at this time. Despite a weak technical condition, there are positive signs. 
+        Momentum, as measured by the 9-day RSI, is bullish. Over the last 50 trading sessions, 
+        there has been more volume on down days than on up days, indicating that [Ticker] is under distribution, 
+        which is a bearish condition. The stock is currently above a falling 50-day moving average. 
+        A move below this average could trigger additional weakness in the stock. 
+        [Ticker] could find secondary support at its rising 200-day moving average."
 
-    Ticker Symbol: {symbol}
-    Current Price: {prices}
-    [Detailed Technical Summary with clear line break for each part of your analysis, don't include date]
-    """
+        Ticker Symbol: {symbol}
+        Current Price: {prices}
+        [Detailed Technical Summary with clear line break for each part of your analysis, don't include date, don't ask for more data]
+        """
+        
+        # Generate content based on the prompt
+        responses = model.generate_content(
+            [text1],
+            generation_config=generation_config,
+            safety_settings=safety_settings,
+            stream=True,
+        ) 
 
-    # Generate content based on the prompt
-    responses = model.generate_content(
-        [text1],
-        generation_config=generation_config,
-        safety_settings=safety_settings,
-        stream=True,
-    ) 
+        def extract_text_from_generation_response(responses):
+            return [resp.text for resp in responses]
+        
+        # Simulate more progress
+        time.sleep(1)
+        progress_bar.progress(60)
+        
+        # Extract and format the response
+        text_responses = extract_text_from_generation_response(responses)
+        tech_analysis = "".join(text_responses)
+        
+        # Simulate more progress
+        time.sleep(1)
+        progress_bar.progress(90)
+        
+        st.markdown(tech_analysis)
+        
+        # Final progress update
+        time.sleep(1)
+        progress_bar.progress(100)
+        
+        footer.add_footer()
 
-    def extract_text_from_generation_response(responses):
-        return [resp.text for resp in responses]
-
-    # Extract and format the response
-    text_responses = extract_text_from_generation_response(responses)
-    tech_analysis = "".join(text_responses)
-    st.markdown(tech_analysis)
-
-    footer.add_footer()
-
-    st.session_state['insights'].append({
-        'section': 'Stock Overall Information',
-        'price': prices,
-        'symbol': symbol,
-        'summary': tech_analysis
-    })
+        st.session_state['insights'].append({
+            'section': 'Stock Overall Information',
+            'price': prices,
+            'symbol': symbol,
+            'summary': tech_analysis
+        })
 
 
 #------------------ 'Historical Stock and EPS Surprises'
@@ -720,34 +699,57 @@ def show_historical_data():
         st.error("No historical stock data available for the selected symbol.")
 
     st.write("**Trading Hero AI EPS Summary:**")     
-    earnings_data = get_earnings.get_earnings(symbol)
-    earnings_prompt = f"""
-    You are a financial analyst tasked with providing a detailed earnings analysis for the company with the ticker symbol {symbol}. 
-    The specific earnings data is as follows:{earnings_data}
+    with st.spinner("Trading Hero AI EPS analysis is working to generate."):
+        progress_bar = st.progress(0)
+        
+        # Simulate some initial progress
+        time.sleep(1)
+        progress_bar.progress(10)
+        
+        earnings_data = get_earnings.get_earnings(symbol)
+        
+        earnings_prompt = f"""
+        You are a financial analyst tasked with providing a detailed earnings analysis for the company with the ticker symbol {symbol}. 
+        The specific earnings data is as follows:{earnings_data}
 
-    Key areas to focus on:
+        Key areas to focus on:
 
-    Earnings Per Share (EPS): Analyze the EPS performance, including comparisons to previous quarters and the same quarter from the previous year.
-    Guidance: Review the company's forward-looking statements or guidance and provide an interpretation of future prospects.
-    Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
+        Earnings Per Share (EPS): Analyze the EPS performance, including comparisons to previous quarters and the same quarter from the previous year.
+        Guidance: Review the company's forward-looking statements or guidance and provide an interpretation of future prospects.
+        Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
 
-    [Detailed Earnings Analysis with clear line breaks for each part of your analysis(only in English)]
-    Don't ask for more requirements to do analysis, focus on the data provided.
-    You can add some emoji in this report if you want to make it interactive."""
+        [Detailed Earnings Analysis with clear line breaks for each part of your analysis(only in English)]
+        Don't ask for more requirements to do analysis, focus on the data provided.
+        You can add some emoji in this report if you want to make it interactive."""
+        
+        # Simulate more progress
+        time.sleep(1)
+        progress_bar.progress(30)
+        
+        eps_report = vertex.eps_response(earnings_prompt, symbol, earnings_data)
+        
+        # Simulate more progress
+        time.sleep(1)
+        progress_bar.progress(60)
+        
+        earnings_summary = eps_report.replace('\n', '  \n')
+        
+        # Simulate more progress
+        time.sleep(1)
+        progress_bar.progress(90)
+        
+        st.markdown(earnings_summary)
+        
+        # Final progress update
+        time.sleep(1)
+        progress_bar.progress(100)
+        
+        footer.add_footer()
 
-
-    eps_report = vertex.eps_response(earnings_prompt, symbol, earnings_data)
-
-    earnings_summary = eps_report.replace('\n', '  \n')
-
-    st.markdown(earnings_summary)
-
-    footer.add_footer()
-
-    st.session_state['insights'].append({
-        'section': 'EPS Summary',
-        'summary': earnings_summary
-    })
+        st.session_state['insights'].append({
+            'section': 'EPS Summary',
+            'summary': earnings_summary
+        })
 
 #------------------ 'Stock Analyst Recommendations'
 
@@ -757,28 +759,63 @@ def show_analyst_recommendations():
 
     st.markdown(f"**Stock Analyst Recommendations for {symbol}**")
 
-    if symbol:
-        recommendations = recommend.get_rec(symbol)
-        if recommendations:
-            st.bar_chart(recommendations)
-        else:
-            st.error("No recommendations data available for the selected symbol.")
-    
-    recomprompt = """
+    with st.spinner("Fetching and analyzing stock analyst recommendations..."):
+        progress_bar = st.progress(0)
+        
+        # Simulate some initial progress
+        time.sleep(1)
+        progress_bar.progress(10)
+
+        if symbol:
+            recommendations = recommend.get_rec(symbol)
+            
+            # Simulate progress after fetching recommendations
+            time.sleep(1)
+            progress_bar.progress(30)
+
+            if recommendations:
+                st.bar_chart(recommendations)
+                
+                # Simulate progress after displaying chart
+                time.sleep(1)
+                progress_bar.progress(50)
+            else:
+                st.error("No recommendations data available for the selected symbol.")
+                progress_bar.progress(100)
+                return
+        
+        recomprompt = """
         You are provided with the following data for one company's stock analyst recommendations:
         Based on this information, please provide Positive Sentiment, Negative Sentiment and the Overall.
         You can add some emoji in this report if you want to make it interactive.
         """
-    recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
-    analyst_summary = recai_data.replace('\n', '  \n')
-    st.markdown(analyst_summary)
+        
+        # Generate analysis based on recommendations
+        recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
+        
+        # Simulate progress after generating analysis
+        time.sleep(1)
+        progress_bar.progress(70)
+        
+        analyst_summary = recai_data.replace('\n', '  \n')
+        
+        # Simulate progress after formatting the summary
+        time.sleep(1)
+        progress_bar.progress(90)
+        
+        st.markdown(analyst_summary)
+        
+        # Final progress update
+        time.sleep(1)
+        progress_bar.progress(100)
 
-    footer.add_footer()
+        footer.add_footer()
 
-    st.session_state['insights'].append({
-        'section': 'Analyst Recommendations',
-        'summary': analyst_summary
-    })
+        st.session_state['insights'].append({
+            'section': 'Analyst Recommendations',
+            'summary': analyst_summary
+        })
+
 
 #------------------ 'Latest News'
 
@@ -796,6 +833,7 @@ def show_news():
     **Trading Hero Financial Sentiment Analysis**
     You can find our model on [Hugging Face](https://huggingface.co/fuchenru/Trading-Hero-LLM)
     """)
+    
     with st.spinner("Trading Hero AI News analysis is working to generate."):
         progress_bar = st.progress(0)
         
@@ -810,18 +848,32 @@ def show_news():
         today_formatted = today_date.strftime('%Y-%m-%d')
         sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
 
+        # Fetch news data
         news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
+        
+        # Simulate progress after fetching news data
+        time.sleep(1)
+        progress_bar.progress(30)
+        
         if not news_data.empty:
             news_data.set_index("headline", inplace=True)
-            progress_bar.progress(50)
             st.table(news_data)
-            progress_bar.progress(100)
+            
+            # Simulate progress after displaying news table
+            time.sleep(1)
+            progress_bar.progress(60)
         else:
             st.error("No news data available for the selected symbol.")
             progress_bar.progress(100)
+            return
         
-        # AI analysis
+        # Fetch all stock news data for AI analysis
         news_data_80 = get_news.get_all_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
+        
+        # Simulate progress after fetching all news data
+        time.sleep(1)
+        progress_bar.progress(70)
+        
         newsprompt = f"""
         You have been provided with the full text of summaries for recent news articles about a specific company {symbol}. 
         Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
@@ -842,9 +894,19 @@ def show_news():
         Don't include any of your suggestion on if I can provide any more data to you. Make the summary as concise as possible.
         """
 
+        # Generate AI analysis based on the news prompt
         newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
+        
+        # Simulate progress after generating AI analysis
+        time.sleep(1)
+        progress_bar.progress(90)
+        
         news_summary = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
         st.markdown(news_summary)
+        
+        # Final progress update
+        time.sleep(1)
+        progress_bar.progress(100)
 
         footer.add_footer()
 
@@ -852,6 +914,7 @@ def show_news():
             'section': 'News Analysis',
             'summary': news_summary
         })
+
 
 
 # def show_ts():
@@ -1037,8 +1100,9 @@ def show_news():
 
 
 def final_report():
-    with st.spinner("Model is working to generate."):
+    with st.spinner("Trading Hero Final Report Model is working to generate."):
         progress_bar = st.progress(0)
+        
         final_report_prompt = """
         You are an equity research analyst tasked with generating a comprehensive equity report for the stock with the ticker symbol. 
         This report is based on several analyses, including technical summary, earnings analysis, analyst recommendations, and news sentiment. 
@@ -1080,27 +1144,44 @@ def final_report():
 
         5. **Final Conclusion and Recommendations**: 
         Based on all the sections above (technical summary, earnings analysis, analyst recommendations, and news sentiment), 
-        provide a final evaluation of the stock. Offer your recommendation (buy, hold, or sell), and discuss any risks or opportunities 
+        provide a final evaluation of the stock. Offer AI recommendation (buy, hold, or sell with percentage of confidence), and discuss any risks or opportunities 
         that investors should be aware of. This section should tie together the insights from each section into a cohesive final judgment.
 
         Make sure the report is easy to read and engaging, using emojis where appropriate to enhance readability. 
         Keep the overall tone professional, and provide clear line breaks for each part of the analysis.
+        Do not mention any Date in the report.
         """
+
+        # Simulate initial progress
+        time.sleep(1)
+        progress_bar.progress(10)
 
         # Gather all insights into a single string
         if 'insights' in st.session_state:
             combined_insights = ""
             for insight in st.session_state['insights']:
                 combined_insights += f"\n\n### {insight['section']}\n{insight.get('summary', '')}\n"
+            
+            # Simulate progress after gathering insights
+            time.sleep(1)
+            progress_bar.progress(30)
 
+            # Generate final report based on the combined insights
             report = vertex.final_report(final_report_prompt, combined_insights)
+            
+            # Simulate progress after generating the report
+            time.sleep(1)
+            progress_bar.progress(60)
 
             sanitized_ai_data = report.replace('\n', '  \n')
-
+            
             st.title("Trading Hero Equity Report")
-            progress_bar.progress(50)
             st.markdown(sanitized_ai_data)
+            
+            # Final progress update
+            time.sleep(1)
             progress_bar.progress(100)
+
             footer.add_footer()
         else:
             st.markdown("No insights have been gathered yet. Please run from top to bottom of the side menu.")

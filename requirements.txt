@@ -3,6 +3,7 @@ streamlit_plotly_events
 yfinance
 finnhub-python
 pandas
+time
 datetime
 plotly
 numpy
