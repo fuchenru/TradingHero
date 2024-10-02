@@ -115,8 +115,8 @@ def run():
             st.session_state['last_opened'] = 'Stock Analyst Recommendations'
         if st.sidebar.button('Latest News'):
             st.session_state['last_opened'] = 'Latest News'
-        # if st.sidebar.button('Time Series Forecasting'):
-        #     st.session_state['last_opened'] = 'Time Series Forecasting'
+        if st.sidebar.button('Time Series Forecasting'):
+            st.session_state['last_opened'] = 'Time Series Forecasting'
         # if st.sidebar.button('Trends Forecasting and TradingHero Analysis'):
         #     st.session_state['last_opened'] = 'Trends'
         if st.sidebar.button('Final Equity Report'):
@@ -134,8 +134,8 @@ def run():
         show_analyst_recommendations()
     elif st.session_state['last_opened'] == 'Latest News':
         show_news()  
-    # elif st.session_state['last_opened'] == 'Time Series Forecasting':
-    #     show_ts() 
+    elif st.session_state['last_opened'] == 'Time Series Forecasting':
+        show_ts() 
     # elif st.session_state['last_opened'] == 'Trends':
     #     show_trends()
     elif st.session_state['last_opened'] == 'ETF Holdings':
@@ -909,76 +909,107 @@ def show_news():
 
 
 
-# def show_ts():
-#     """Display the time series analysis and AI-generated insights."""
-#     symbols = get_active_symbols()
-#     symbol = st.session_state.get('selected_symbol', symbols[0])
-#     st.markdown(f"**Trends and Forecast for {symbol}**")
+def show_ts():
+    """Display the time series analysis and AI-generated insights."""
+    symbols = get_active_symbols()
+    symbol = st.session_state.get('selected_symbol', symbols[0])
+    st.markdown(f"**Trends and Forecast for {symbol}**")
 
-#     # User inputs for trend analysis and forecasting
-#     period = st.slider(label='Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
-#     days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
-#     years_back = st.number_input('No. of years look-back:', value=1, min_value=1, max_value=10)
-#     weeks_back = int(years_back * 52)
+    # User inputs for trend analysis and forecasting
+    period = st.slider(label='Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
+    days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
+    years_back = st.number_input('No. of years look-back:', value=1, min_value=1, max_value=10)
+    weeks_back = int(years_back * 52)
 
-#     # Fetch and transform stock data
-#     symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
-#     with st.spinner('Fetching data and training model...'):
-#         df = predict.transform_price(symbol_prices)
-#         model = predict.train_prophet_model(df)
-#         forecast = predict.make_forecast(model, days_to_forecast)
+    # Fetch and transform stock data
+    symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
+    with st.spinner('Fetching data and training model...'):
+        df = predict.transform_price(symbol_prices)
+        model = predict.train_prophet_model(df)
+        forecast = predict.make_forecast(model, days_to_forecast)
 
-#     # Display forecast plot
-#     st.subheader('Trading Hero Forecasting')
-#     st.write("""
-#         The plot below visualizes the forecasted stock prices using Trading Hero's time-series algorithm.
-#         Our tool handles complexities such as seasonal variations and missing data automatically.
-#         The forecast includes trend lines and confidence intervals, providing a clear visual representation of expected future values and the uncertainty around these predictions.
-#     """)
+    # Display forecast plot
+    st.subheader('Trading Hero Forecasting')
+    st.write("""
+        The plot below visualizes the forecasted stock prices using Trading Hero's time-series algorithm.
+        Our tool handles complexities such as seasonal variations and missing data automatically.
+        The forecast includes trend lines and confidence intervals, providing a clear visual representation of expected future values and the uncertainty around these predictions.
+    """)
 
-#     fig1 = plot_plotly(model, forecast)
-#     fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
-#     st.plotly_chart(fig1)
+    fig1 = plot_plotly(model, forecast)
+    fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
+    st.plotly_chart(fig1)
 
-#     # Calculate and display performance metrics
-#     actual = df['y']
-#     predicted = forecast['yhat'][:len(df)]
-#     metrics = predict.calculate_performance_metrics(actual, predicted)
-#     st.subheader('Performance Metrics')
+    # Calculate and display performance metrics
+    actual = df['y']
+    predicted = forecast['yhat'][:len(df)]
+    metrics = predict.calculate_performance_metrics(actual, predicted)
+    st.subheader('Performance Metrics')
 
-#     metrics_data = {
-#         "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
-#         "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
-#     }
+    metrics_data = {
+        "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
+        "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
+    }
 
-#     metrics_df = pd.DataFrame(metrics_data)
-#     metrics_df.set_index("Metric", inplace=True)
-#     st.table(metrics_df)
+    metrics_df = pd.DataFrame(metrics_data)
+    metrics_df.set_index("Metric", inplace=True)
+    st.table(metrics_df)
 
-#     # AI analysis
-#     future_price = forecast[['ds', 'yhat']]
-#     metrics_data_str = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
-#     tsprompt = """
-#     You are provided with the following data for one company's future stock time series analysis:
-#     - Future Price (Focus on the overall future trend, not short-term fluctuations)
-#     - Performance Metrics:
-#     - MAE: 
-#     - MSE: 
-#     - RMSE: 
+    # Extract performance metrics
+    MAE = metrics['MAE']
+    MSE = metrics['MSE']
+    RMSE = metrics['RMSE']
 
-#     These values are derived from the Performance Metrics using Meta's Prophet for direct forecasting.
-#     Based on this information, please provide insights. Talk more on Future Price overlook.
-#     Add emoji to make your output more interactive. This is one time response, don't ask for any follow up.
-#     """
-#     tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
-#     with st.spinner("Generating Time-Series AI Analysis..."):
-#         progress_bar = st.progress(0)
-#         if st.button("Show Trading Hero Time-Series AI Analysis"):
-#             progress_bar.progress(50)
-#             st.markdown(tsai_data)
-#             progress_bar.progress(100)
+    # Summarize future_price data
+    future_price = forecast[['ds', 'yhat']]
+    future_price_summary = {
+        'Start Date': future_price['ds'].iloc[0],
+        'End Date': future_price['ds'].iloc[-1],
+        'Start Price': future_price['yhat'].iloc[0],
+        'End Price': future_price['yhat'].iloc[-1],
+        'Average Price': future_price['yhat'].mean(),
+        'Price Trend': 'increasing' if future_price['yhat'].iloc[-1] > future_price['yhat'].iloc[0] else 'decreasing'
+    }
 
-#             footer.add_footer()
+    # Create the prompt with actual data
+    tsprompt = f"""
+    You are provided with the following data for {symbol}'s future stock time series analysis:
+
+    - **Forecast Period:** {future_price_summary['Start Date'].date()} to {future_price_summary['End Date'].date()}
+    - **Forecasted Start Price:** ${future_price_summary['Start Price']:.2f}
+    - **Forecasted End Price:** ${future_price_summary['End Price']:.2f}
+    - **Average Forecasted Price:** ${future_price_summary['Average Price']:.2f}
+    - **Price Trend:** {future_price_summary['Price Trend']}
+
+    **Performance Metrics:**
+
+    - **Mean Absolute Error (MAE):** {MAE:.2f}
+    - **Mean Squared Error (MSE):** {MSE:.2f}
+    - **Root Mean Squared Error (RMSE):** {RMSE:.2f}
+
+    These values are derived from the performance metrics using Meta's Prophet for direct forecasting.
+
+    Based on this information, please provide insights. Focus on the future price outlook, and discuss the overall trend rather than short-term fluctuations.
+
+    Add emojis to make your output more interactive. This is a one-time response; don't ask for any follow-up.
+    """
+
+    # Prepare metrics_data_str
+    metrics_data_str = "MAE: {:.2f}, MSE: {:.2f}, RMSE: {:.2f}".format(MAE, MSE, RMSE)
+
+    # Generate AI analysis
+    with st.spinner("Generating Time-Series AI Analysis..."):
+        if st.button("Show Trading Hero Time-Series AI Analysis"):
+            progress_bar = st.progress(0)
+            tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
+            sanitized_tsai_data = tsai_data.replace('\n', '  \n')
+            time.sleep(1)
+            progress_bar.progress(10)
+            st.markdown(sanitized_tsai_data)
+            footer.add_footer()
+            time.sleep(1)
+            progress_bar.progress(100)
+
 
 
 #------------------ 'Trends'
