@@ -523,79 +523,109 @@ def show_overall_information():
     # use this to add markers on other graphs for click points on this graph
     selected_points = []
 
+    candle_widget_html = f"""
+    <!-- TradingView Widget BEGIN -->
+    <div class="tradingview-widget-container" style="height:600px;width:100%;">
+    <div class="tradingview-widget-container__widget" style="height:100%;width:100%;"></div>
+    <div class="tradingview-widget-copyright">
+        <a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank">
+        <span class="blue-text">Track all markets on TradingView</span>
+        </a>
+    </div>
+    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js" async>
+    {{
+    "width": "100%",
+    "height": "600",
+    "symbol": "{symbol}",
+    "interval": "D",
+    "timezone": "Etc/UTC",
+    "theme": "light",
+    "style": "1",
+    "locale": "en",
+    "allow_symbol_change": true,
+    "calendar": false,
+    "support_host": "https://www.tradingview.com"
+    }}
+    </script>
+    </div>
+    <!-- TradingView Widget END -->
+    """
 
-    st.plotly_chart(candleFigure, use_container_width=True)
+    components.html(candle_widget_html, height=600)  # Ensure this matches your div height
+
+    # st.plotly_chart(candleFigure, use_container_width=True)
 
     st.caption("""
     Trading Hero AI Technical Summary updates its data on a daily basis, ensuring that you have access to the latest information. 
                However, please note that there is a delay in the data update. 
-               This means that the data reflects all activities and changes up to the last completed trading day.
+               This means that the AI Technical Summary reflects all activities and changes up to the last completed trading day.
     """)
     st.write("**Trading Hero AI Technical Summary:**")
     with st.spinner("Trading Hero AI Technical analysis is working to generate."):
-        progress_bar = st.progress(0)
-        
-        # Simulate some initial progress
-        time.sleep(1)
-        progress_bar.progress(10)
-        
-        prices = symbol_prices.loc[:, "Adj Close"]
-        symbol = st.session_state.get('selected_symbol', symbols[0])
-        
-        tech_prompt = f"""
-        You are an equity research analyst tasked with providing a technical summary for various stocks 
-        based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock's trend, 
-        its performance....
+        if st.button("Show Trading Hero AI Analysis"):
+            progress_bar = st.progress(0)
+            
+            # Simulate some initial progress
+            time.sleep(1)
+            progress_bar.progress(10)
+            
+            prices = symbol_prices.loc[:, "Adj Close"]
+            symbol = st.session_state.get('selected_symbol', symbols[0])
+            
+            tech_prompt = f"""
+            You are an equity research analyst tasked with providing a technical summary for various stocks 
+            based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock's trend, 
+            its performance....
 
-        You can add some emoji in this report if you want to make it interactive.
-        
-        Please generate a technical summary (only in English)
+            You can add some emoji in this report if you want to make it interactive.
+            
+            Please generate a technical summary (only in English)
 
-        Ticker Symbol: {symbol}
-        Current Price: {prices}
-        
-        Detailed Technical Summary with clear line break for each part of your analysis, 
-        don't include date, 
-        don't ask for more data so you can do more analysis on any part
-        """
-        
-        # Generate content based on the prompt
-        tech_responses = model.generate_content(
-            [tech_prompt],
-            generation_config=generation_config,
-            safety_settings=safety_settings,
-            stream=True,
-        ) 
+            Ticker Symbol: {symbol}
+            Current Price: {prices}
+            
+            Detailed Technical Summary with clear line break for each part of your analysis, 
+            don't include date, 
+            don't ask for more data so you can do more analysis on any part
+            """
+            
+            # Generate content based on the prompt
+            tech_responses = model.generate_content(
+                [tech_prompt],
+                generation_config=generation_config,
+                safety_settings=safety_settings,
+                stream=True,
+            ) 
 
-        def extract_text_from_generation_response(responses):
-            return [resp.text for resp in responses]
-        
-        # Simulate more progress
-        time.sleep(1)
-        progress_bar.progress(60)
-        
-        # Extract and format the response
-        text_responses = extract_text_from_generation_response(tech_responses)
-        tech_analysis = "".join(text_responses)
-        
-        # Simulate more progress
-        time.sleep(1)
-        progress_bar.progress(90)
-        
-        st.markdown(tech_analysis)
-        
-        # Final progress update
-        time.sleep(1)
-        progress_bar.progress(100)
-        
-        footer.add_footer()
+            def extract_text_from_generation_response(responses):
+                return [resp.text for resp in responses]
+            
+            # Simulate more progress
+            time.sleep(1)
+            progress_bar.progress(60)
+            
+            # Extract and format the response
+            text_responses = extract_text_from_generation_response(tech_responses)
+            tech_analysis = "".join(text_responses)
+            
+            # Simulate more progress
+            time.sleep(1)
+            progress_bar.progress(90)
+            
+            st.markdown(tech_analysis)
+            
+            # Final progress update
+            time.sleep(1)
+            progress_bar.progress(100)
+            
+            footer.add_footer()
 
-        st.session_state['insights'].append({
-            'section': 'Stock Overall Information',
-            'price': prices,
-            'symbol': symbol,
-            'summary': tech_analysis
-        })
+            st.session_state['insights'].append({
+                'section': 'Stock Overall Information',
+                'price': prices,
+                'symbol': symbol,
+                'summary': tech_analysis
+            })
 
 
 #------------------ 'Historical Stock and EPS Surprises'
@@ -692,56 +722,57 @@ def show_historical_data():
 
     st.write("**Trading Hero AI EPS Summary:**")     
     with st.spinner("Trading Hero AI EPS analysis is working to generate."):
-        progress_bar = st.progress(0)
-        
-        # Simulate some initial progress
-        time.sleep(1)
-        progress_bar.progress(10)
-        
-        earnings_data = get_earnings.get_earnings(symbol)
-        
-        earnings_prompt = f"""
-        You are a financial analyst tasked with providing a detailed earnings analysis for the company with the ticker symbol {symbol}. 
-        The specific earnings data is as follows:{earnings_data}
+        if st.button("Show Trading Hero AI EPS Analysis"):
+            progress_bar = st.progress(0)
+            
+            # Simulate some initial progress
+            time.sleep(1)
+            progress_bar.progress(10)
+            
+            earnings_data = get_earnings.get_earnings(symbol)
+            
+            earnings_prompt = f"""
+            You are a financial analyst tasked with providing a detailed earnings analysis for the company with the ticker symbol {symbol}. 
+            The specific earnings data is as follows:{earnings_data}
 
-        Key areas to focus on:
+            Key areas to focus on:
 
-        Earnings Per Share (EPS): Analyze the EPS performance, including comparisons to previous quarters and the same quarter from the previous year.
-        Guidance: Review the company's forward-looking statements or guidance and provide an interpretation of future prospects.
-        Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
+            Earnings Per Share (EPS): Analyze the EPS performance, including comparisons to previous quarters and the same quarter from the previous year.
+            Guidance: Review the company's forward-looking statements or guidance and provide an interpretation of future prospects.
+            Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
 
-        [Detailed Earnings Analysis with clear line breaks for each part of your analysis(only in English)]
-        Don't ask for more requirements to do analysis, focus on the data provided.
-        You can add some emoji in this report if you want to make it interactive."""
-        
-        # Simulate more progress
-        time.sleep(1)
-        progress_bar.progress(30)
-        
-        eps_report = vertex.eps_response(earnings_prompt, symbol, earnings_data)
-        
-        # Simulate more progress
-        time.sleep(1)
-        progress_bar.progress(60)
-        
-        earnings_summary = eps_report.replace('\n', '  \n')
-        
-        # Simulate more progress
-        time.sleep(1)
-        progress_bar.progress(90)
-        
-        st.markdown(earnings_summary)
-        
-        # Final progress update
-        time.sleep(1)
-        progress_bar.progress(100)
-        
-        footer.add_footer()
+            [Detailed Earnings Analysis with clear line breaks for each part of your analysis(only in English)]
+            Don't ask for more requirements to do analysis, focus on the data provided.
+            You can add some emoji in this report if you want to make it interactive."""
+            
+            # Simulate more progress
+            time.sleep(1)
+            progress_bar.progress(30)
+            
+            eps_report = vertex.eps_response(earnings_prompt, symbol, earnings_data)
+            
+            # Simulate more progress
+            time.sleep(1)
+            progress_bar.progress(60)
+            
+            earnings_summary = eps_report.replace('\n', '  \n')
+            
+            # Simulate more progress
+            time.sleep(1)
+            progress_bar.progress(90)
+            
+            st.markdown(earnings_summary)
+            
+            # Final progress update
+            time.sleep(1)
+            progress_bar.progress(100)
+            
+            footer.add_footer()
 
-        st.session_state['insights'].append({
-            'section': 'EPS Summary',
-            'summary': earnings_summary
-        })
+            st.session_state['insights'].append({
+                'section': 'EPS Summary',
+                'summary': earnings_summary
+            })
 
 #------------------ 'Stock Analyst Recommendations'
 
@@ -752,61 +783,62 @@ def show_analyst_recommendations():
     st.markdown(f"**Stock Analyst Recommendations for {symbol}**")
 
     with st.spinner("Fetching and analyzing stock analyst recommendations..."):
-        progress_bar = st.progress(0)
-        
-        # Simulate some initial progress
-        time.sleep(1)
-        progress_bar.progress(10)
-
-        if symbol:
-            recommendations = recommend.get_rec(symbol)
+        if st.button("Show Trading Hero AI Stock Analyst Recommendations Analysis"):
+            progress_bar = st.progress(0)
             
-            # Simulate progress after fetching recommendations
+            # Simulate some initial progress
             time.sleep(1)
-            progress_bar.progress(30)
+            progress_bar.progress(10)
 
-            if recommendations:
-                st.bar_chart(recommendations)
+            if symbol:
+                recommendations = recommend.get_rec(symbol)
                 
-                # Simulate progress after displaying chart
+                # Simulate progress after fetching recommendations
                 time.sleep(1)
-                progress_bar.progress(50)
-            else:
-                st.error("No recommendations data available for the selected symbol.")
-                progress_bar.progress(100)
-                return
-        
-        recomprompt = """
-        You are provided with the following data for one company's stock analyst recommendations:
-        Based on this information, please provide Positive Sentiment, Negative Sentiment and the Overall.
-        You can add some emoji in this report if you want to make it interactive.
-        """
-        
-        # Generate analysis based on recommendations
-        recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
-        
-        # Simulate progress after generating analysis
-        time.sleep(1)
-        progress_bar.progress(70)
-        
-        analyst_summary = recai_data.replace('\n', '  \n')
-        
-        # Simulate progress after formatting the summary
-        time.sleep(1)
-        progress_bar.progress(90)
-        
-        st.markdown(analyst_summary)
-        
-        # Final progress update
-        time.sleep(1)
-        progress_bar.progress(100)
+                progress_bar.progress(30)
 
-        footer.add_footer()
+                if recommendations:
+                    st.bar_chart(recommendations)
+                    
+                    # Simulate progress after displaying chart
+                    time.sleep(1)
+                    progress_bar.progress(50)
+                else:
+                    st.error("No recommendations data available for the selected symbol.")
+                    progress_bar.progress(100)
+                    return
+            
+            recomprompt = """
+            You are provided with the following data for one company's stock analyst recommendations:
+            Based on this information, please provide Positive Sentiment, Negative Sentiment and the Overall.
+            You can add some emoji in this report if you want to make it interactive.
+            """
+            
+            # Generate analysis based on recommendations
+            recai_data = recommend.generate_vertexai_recommendresponse(recomprompt, recommendations)
+            
+            # Simulate progress after generating analysis
+            time.sleep(1)
+            progress_bar.progress(70)
+            
+            analyst_summary = recai_data.replace('\n', '  \n')
+            
+            # Simulate progress after formatting the summary
+            time.sleep(1)
+            progress_bar.progress(90)
+            
+            st.markdown(analyst_summary)
+            
+            # Final progress update
+            time.sleep(1)
+            progress_bar.progress(100)
 
-        st.session_state['insights'].append({
-            'section': 'Analyst Recommendations',
-            'summary': analyst_summary
-        })
+            footer.add_footer()
+
+            st.session_state['insights'].append({
+                'section': 'Analyst Recommendations',
+                'summary': analyst_summary
+            })
 
 
 #------------------ 'Latest News'
@@ -827,159 +859,207 @@ def show_news():
     """)
     
     with st.spinner("Trading Hero AI News analysis is working to generate."):
-        progress_bar = st.progress(0)
-        
-        today_str = data_retriever.today()
-        # Convert today's date string to a datetime.date object
-        today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
-
-        # Calculate the date 60 days ago
-        sixty_days_ago = today_date - timedelta(days=60)
-
-        # Format dates into 'YYYY-MM-DD' string format for function call
-        today_formatted = today_date.strftime('%Y-%m-%d')
-        sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
-
-        # Fetch news data
-        news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
-        
-        # Simulate progress after fetching news data
-        time.sleep(1)
-        progress_bar.progress(30)
-        
-        if not news_data.empty:
-            news_data.set_index("headline", inplace=True)
-            st.table(news_data)
+        if st.button("Show Trading Hero AI News analysis"):
+            progress_bar = st.progress(0)
             
-            # Simulate progress after displaying news table
+            today_str = data_retriever.today()
+            # Convert today's date string to a datetime.date object
+            today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
+
+            # Calculate the date 60 days ago
+            sixty_days_ago = today_date - timedelta(days=60)
+
+            # Format dates into 'YYYY-MM-DD' string format for function call
+            today_formatted = today_date.strftime('%Y-%m-%d')
+            sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
+
+            # Fetch news data
+            news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
+            
+            # Simulate progress after fetching news data
             time.sleep(1)
-            progress_bar.progress(60)
-        else:
-            st.error("No news data available for the selected symbol.")
+            progress_bar.progress(30)
+            
+            if not news_data.empty:
+                news_data.set_index("headline", inplace=True)
+                st.table(news_data)
+                
+                # Simulate progress after displaying news table
+                time.sleep(1)
+                progress_bar.progress(60)
+            else:
+                st.error("No news data available for the selected symbol.")
+                progress_bar.progress(100)
+                return
+            
+            # Fetch all stock news data for AI analysis
+            news_data_80 = get_news.get_all_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
+            
+            # Simulate progress after fetching all news data
+            time.sleep(1)
+            progress_bar.progress(70)
+            
+            newsprompt = f"""
+            You have been provided with the full text of summaries for recent news articles about a specific company {symbol}. 
+            Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
+            You can add some emoji in this report if you want to make it interactive.
+
+            Please include the following elements in your analysis:
+            1. Key Trends: Analyze the recurring topics and themes across the summaries to identify prevalent trends.
+            2. Strengths and Weaknesses: Assess the positive and negative attributes of the company as highlighted by the news articles.
+            3. Opportunities and Threats: Evaluate external factors that could influence the company positively or negatively in the future.
+            4. Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
+
+            Please justify and explain your scoring rationale in detail, drawing evidence from the specific details, facts, 
+            and narratives portrayed across the news summaries. Your scoring should encompass both the company's present circumstances 
+            as well as the projected trajectory factoring in future risks and prospects. Put more weights on most recent news sentiments, and less
+            weights on the least recent news.
+
+            The provided summaries contain all necessary details to perform this comprehensive review.  
+            Don't include any of your suggestion on if I can provide any more data to you. Make the summary as concise as possible.
+            """
+
+            # Generate AI analysis based on the news prompt
+            newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
+            
+            # Simulate progress after generating AI analysis
+            time.sleep(1)
+            progress_bar.progress(90)
+            
+            news_summary = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
+            st.markdown(news_summary)
+            
+            # Final progress update
+            time.sleep(1)
             progress_bar.progress(100)
-            return
-        
-        # Fetch all stock news data for AI analysis
-        news_data_80 = get_news.get_all_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
-        
-        # Simulate progress after fetching all news data
-        time.sleep(1)
-        progress_bar.progress(70)
-        
-        newsprompt = f"""
-        You have been provided with the full text of summaries for recent news articles about a specific company {symbol}. 
-        Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
-        You can add some emoji in this report if you want to make it interactive.
 
-        Please include the following elements in your analysis:
-        1. Key Trends: Analyze the recurring topics and themes across the summaries to identify prevalent trends.
-        2. Strengths and Weaknesses: Assess the positive and negative attributes of the company as highlighted by the news articles.
-        3. Opportunities and Threats: Evaluate external factors that could influence the company positively or negatively in the future.
-        4. Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
+            footer.add_footer()
 
-        Please justify and explain your scoring rationale in detail, drawing evidence from the specific details, facts, 
-        and narratives portrayed across the news summaries. Your scoring should encompass both the company's present circumstances 
-        as well as the projected trajectory factoring in future risks and prospects. Put more weights on most recent news sentiments, and less
-        weights on the least recent news.
-
-        The provided summaries contain all necessary details to perform this comprehensive review.  
-        Don't include any of your suggestion on if I can provide any more data to you. Make the summary as concise as possible.
-        """
-
-        # Generate AI analysis based on the news prompt
-        newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
-        
-        # Simulate progress after generating AI analysis
-        time.sleep(1)
-        progress_bar.progress(90)
-        
-        news_summary = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
-        st.markdown(news_summary)
-        
-        # Final progress update
-        time.sleep(1)
-        progress_bar.progress(100)
-
-        footer.add_footer()
-
-        st.session_state['insights'].append({
-            'section': 'News Analysis',
-            'summary': news_summary
-        })
+            st.session_state['insights'].append({
+                'section': 'News Analysis',
+                'summary': news_summary
+            })
 
 
 
 def show_ts():
     """Display the time series analysis and AI-generated insights."""
+    
     symbols = get_active_symbols()
     symbol = st.session_state.get('selected_symbol', symbols[0])
-    st.markdown(f"**Trends and Forecast for {symbol}**")
+    
+    st.markdown(f"**Time Series Forecasting for {symbol}**")
 
     # User inputs for trend analysis and forecasting
-    period = st.slider(label='Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
+    period = st.slider('Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
     days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
-    years_back = st.number_input('No. of years look-back:', value=1, min_value=1, max_value=10)
+    years_back = st.number_input('Number of years look-back:', value=1, min_value=1, max_value=10)
     weeks_back = int(years_back * 52)
 
     # Fetch and transform stock data
     symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
-    with st.spinner('Fetching data and training model...'):
-        df = predict.transform_price(symbol_prices)
-        model = predict.train_prophet_model(df)
-        forecast = predict.make_forecast(model, days_to_forecast)
 
     # Display forecast plot
-    st.subheader('Trading Hero Forecasting')
-    st.write("""
-        The plot below visualizes the forecasted stock prices using Trading Hero's time-series algorithm.
-        Our tool handles complexities such as seasonal variations and missing data automatically.
-        The forecast includes trend lines and confidence intervals, providing a clear visual representation of expected future values and the uncertainty around these predictions.
+    st.caption("""
+    Trading Hero's Time Series model revolutionizes forecasting by combining PyTorch-based deep learning with traditional time series techniques. 
+    It incorporates local context through auto-regression and covariate modules, providing more accurate and insightful predictions.
     """)
 
-    fig1 = plot_plotly(model, forecast)
-    fig1.update_traces(marker=dict(color='red'), line=dict(color='white'))
-    st.plotly_chart(fig1)
 
-    # Calculate and display performance metrics
-    actual = df['y']
-    predicted = forecast['yhat'][:len(df)]
-    metrics = predict.calculate_performance_metrics(actual, predicted)
-    st.subheader('Performance Metrics')
+    with st.spinner('Fetching and training deep learning time series model...'):
+        df = predict.transform_price(symbol_prices)
+        model_np = predict.train_neuralprophet_model(df)
+        forecast = predict.make_forecast(model_np, df, days_to_forecast)
 
-    metrics_data = {
-        "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
-        "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
-    }
+        # Plot the forecast using Plotly
+        fig = go.Figure()
 
-    metrics_df = pd.DataFrame(metrics_data)
-    metrics_df.set_index("Metric", inplace=True)
-    st.table(metrics_df)
+        # Add actual historical data
+        fig.add_trace(go.Scatter(
+            x=df['ds'], y=df['y'],
+            mode='lines', name='Actual Price',
+            line=dict(color='royalblue', width=2),
+            hovertemplate='%{y:.2f}<extra></extra>',
+        ))
+
+        # Add forecasted data
+        fig.add_trace(go.Scatter(
+            x=forecast['ds'], y=forecast['yhat1'],
+            mode='lines', name='Forecast',
+            line=dict(color='firebrick', width=2, dash='dash'),
+            hovertemplate='%{y:.2f}<extra></extra>',
+        ))
+
+        # If confidence intervals are available, plot them
+        if 'yhat1_lower' in forecast.columns and 'yhat1_upper' in forecast.columns:
+            fig.add_trace(go.Scatter(
+                x=forecast['ds'], y=forecast['yhat1_upper'],
+                mode='lines', name='Upper Bound',
+                line=dict(color='lightgray', width=1),
+                hoverinfo='skip',
+            ))
+            fig.add_trace(go.Scatter(
+                x=forecast['ds'], y=forecast['yhat1_lower'],
+                mode='lines', name='Lower Bound',
+                line=dict(color='lightgray', width=1),
+                fill='tonexty', fillcolor='rgba(255, 0, 0, 0.1)',
+                hoverinfo='skip',
+            ))
+
+        # Update the layout for a more professional look
+        fig.update_layout(
+            title=f'{symbol} Price Forecast',
+            xaxis_title='Date',
+            yaxis_title='Price (USD)',
+            legend_title='Legend',
+            template='plotly_white',
+            hovermode='x unified',
+            xaxis=dict(showgrid=True, gridwidth=1, gridcolor='lightgray'),
+            yaxis=dict(showgrid=True, gridwidth=1, gridcolor='lightgray'),
+            margin=dict(l=40, r=40, t=50, b=40),
+        )
+
+        # Show the plot in Streamlit
+        st.plotly_chart(fig)
+
+        # Calculate and display performance metrics
+        actual = df['y']
+        predicted = forecast.loc[forecast['ds'].isin(df['ds']), 'yhat1']
+        metrics = predict.calculate_performance_metrics(actual, predicted)
+        
+        st.subheader('Performance Metrics')
+
+        metrics_data = {
+            "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
+            "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
+        }
+
+        metrics_df = pd.DataFrame(metrics_data)
+        metrics_df.set_index("Metric", inplace=True)
+        st.table(metrics_df)
 
     # AI analysis
-    future_price = forecast[['ds', 'yhat']]
-    metrics_data_str = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
-    tsprompt = """
-    You are provided with the following data for one company's future stock time series analysis:
-    - Future Price (Focus on the overall future trend, not short-term fluctuations)
-    - Performance Metrics:
-    - MAE: 
-    - MSE: 
-    - RMSE: 
+    future_price = forecast[['ds', 'yhat1']].tail(days_to_forecast)
+    metrics_data_str = "Keys: {}, Values: {}".format(list(metrics.keys()), list(metrics.values()))
+    tsprompt = f"""
+    The following data reflects the future stock price forecast and the model's accuracy:
+    - Future Price Trend: {future_price.to_string(index=False)}
+    - Performance Metrics (MAE: {metrics['MAE']}, RMSE: {metrics['RMSE']}, etc.)
 
-    These values are derived from the Performance Metrics using Meta's Prophet for direct forecasting.
-    Based on this information, please provide insights. Talk more on Future Price overlook.
-    Add emoji to make your output more interactive. This is one time response, don't ask for any follow up.
+    Analyze the trend in light of the performance metrics. Provide actionable insights on whether the stock is likely to rise, fall, 
+    or remain stable in the next {days_to_forecast} days.
     """
+
+
     tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
+    
     with st.spinner("Generating Time-Series AI Analysis..."):
         progress_bar = st.progress(0)
-        if st.button("Show Trading Hero Time-Series AI Analysis"):
-            progress_bar.progress(50)
-            st.markdown(tsai_data)
-            progress_bar.progress(100)
+        progress_bar.progress(50)
+        st.markdown(tsai_data)
+        progress_bar.progress(100)
 
-            footer.add_footer()
-
+    footer.add_footer()
 
 #------------------ 'Trends'
 

@@ -1,22 +1,8 @@
-# Use a slim Python base image
-FROM python:3.8-slim-bullseye
+FROM python:3.12.2-bullseye
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV APP_HOME=/app
-
-# Install system-level dependencies required by Prophet and Stan
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    gcc \
-    g++ \
-    make \
-    libssl-dev \
-    libffi-dev \
-    libpython3-dev \
-    libatlas-base-dev \
-    libstdc++6 \
-    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR $APP_HOME

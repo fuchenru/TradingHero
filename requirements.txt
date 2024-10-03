@@ -8,7 +8,7 @@ plotly
 numpy
 scipy
 vertexai
-prophet
+neuralprophet
 scikit-learn
 transformers
 chardet
