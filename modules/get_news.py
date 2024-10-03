@@ -21,7 +21,13 @@ def preprocess(text, tokenizer, max_length=128):
     return inputs
 
 def predict_sentiment(input_text):
-    inputs = tokenizer(input_text, return_tensors="pt", truncation=True, padding=True)
+    inputs = tokenizer(
+        input_text,
+        return_tensors="pt",
+        truncation=True,
+        padding='max_length',
+        max_length=512
+    )
     with torch.no_grad():
         outputs = sentiment_model(**inputs)
     predicted_label = torch.argmax(outputs.logits, dim=1).item()

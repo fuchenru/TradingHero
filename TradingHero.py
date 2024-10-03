@@ -907,7 +907,7 @@ def show_news():
             'summary': news_summary
         })
 
-#------------------ 'Time Series'
+
 
 def show_ts():
     """Display the time series analysis and AI-generated insights."""
