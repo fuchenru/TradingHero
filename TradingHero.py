@@ -907,7 +907,7 @@ def show_news():
             'summary': news_summary
         })
 
-
+#------------------ 'Time Series'
 
 def show_ts():
     """Display the time series analysis and AI-generated insights."""
@@ -955,61 +955,30 @@ def show_ts():
     metrics_df.set_index("Metric", inplace=True)
     st.table(metrics_df)
 
-    # Extract performance metrics
-    MAE = metrics['MAE']
-    MSE = metrics['MSE']
-    RMSE = metrics['RMSE']
-
-    # Summarize future_price data
+    # AI analysis
     future_price = forecast[['ds', 'yhat']]
-    future_price_summary = {
-        'Start Date': future_price['ds'].iloc[0],
-        'End Date': future_price['ds'].iloc[-1],
-        'Start Price': future_price['yhat'].iloc[0],
-        'End Price': future_price['yhat'].iloc[-1],
-        'Average Price': future_price['yhat'].mean(),
-        'Price Trend': 'increasing' if future_price['yhat'].iloc[-1] > future_price['yhat'].iloc[0] else 'decreasing'
-    }
+    metrics_data_str = "Keys: {}, Values: {}".format(metrics.keys(), metrics.values())
+    tsprompt = """
+    You are provided with the following data for one company's future stock time series analysis:
+    - Future Price (Focus on the overall future trend, not short-term fluctuations)
+    - Performance Metrics:
+    - MAE: 
+    - MSE: 
+    - RMSE: 
 
-    # Create the prompt with actual data
-    tsprompt = f"""
-    You are provided with the following data for {symbol}'s future stock time series analysis:
-
-    - **Forecast Period:** {future_price_summary['Start Date'].date()} to {future_price_summary['End Date'].date()}
-    - **Forecasted Start Price:** ${future_price_summary['Start Price']:.2f}
-    - **Forecasted End Price:** ${future_price_summary['End Price']:.2f}
-    - **Average Forecasted Price:** ${future_price_summary['Average Price']:.2f}
-    - **Price Trend:** {future_price_summary['Price Trend']}
-
-    **Performance Metrics:**
-
-    - **Mean Absolute Error (MAE):** {MAE:.2f}
-    - **Mean Squared Error (MSE):** {MSE:.2f}
-    - **Root Mean Squared Error (RMSE):** {RMSE:.2f}
-
-    These values are derived from the performance metrics using Meta's Prophet for direct forecasting.
-
-    Based on this information, please provide insights. Focus on the future price outlook, and discuss the overall trend rather than short-term fluctuations.
-
-    Add emojis to make your output more interactive. This is a one-time response; don't ask for any follow-up.
+    These values are derived from the Performance Metrics using Meta's Prophet for direct forecasting.
+    Based on this information, please provide insights. Talk more on Future Price overlook.
+    Add emoji to make your output more interactive. This is one time response, don't ask for any follow up.
     """
-
-    # Prepare metrics_data_str
-    metrics_data_str = "MAE: {:.2f}, MSE: {:.2f}, RMSE: {:.2f}".format(MAE, MSE, RMSE)
-
-    # Generate AI analysis
+    tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
     with st.spinner("Generating Time-Series AI Analysis..."):
+        progress_bar = st.progress(0)
         if st.button("Show Trading Hero Time-Series AI Analysis"):
-            progress_bar = st.progress(0)
-            tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
-            sanitized_tsai_data = tsai_data.replace('\n', '  \n')
-            time.sleep(1)
-            progress_bar.progress(10)
-            st.markdown(sanitized_tsai_data)
-            footer.add_footer()
-            time.sleep(1)
+            progress_bar.progress(50)
+            st.markdown(tsai_data)
             progress_bar.progress(100)
 
+            footer.add_footer()
 
 
 #------------------ 'Trends'

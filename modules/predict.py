@@ -21,9 +21,15 @@ def transform_price(df):
     return df
 
 def train_prophet_model(df):
-    """Train the Prophet model with the given data."""
+    """Train the Prophet model with the given data, with error handling for Cloud Run."""
     model = Prophet()
-    model.fit(df)
+    try:
+        model.fit(df)
+    except RuntimeError as e:
+        print(f"Error during Prophet optimization: {e}")
+        # Try using a different optimization algorithm if newton fails
+        model = Prophet()
+        model.fit(df, method='lbfgs')
     return model
 
 def make_forecast(model, periods):
