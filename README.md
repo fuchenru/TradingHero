@@ -8,7 +8,7 @@
 Trading Hero is an advanced stock market analysis tool designed to streamline trading processes, reduce information overload, and enhance decision-making for semi-professional retail traders.
 
 <p align="center">
-<img width="450" alt="Market Analysis Image" src="path-to-your-image">
+<img width="450" alt="Market Analysis Image" src="![image](https://github.com/user-attachments/assets/dab6e7f8-2235-4120-ad2f-516722fbd5c2)">
 </p>
 
 # **📑 Table of Contents**
