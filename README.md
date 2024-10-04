@@ -1,7 +1,8 @@
 <h1 align="center"> Trading Hero: Empowering Traders with AI Market Analysis </h1>
 
+<!-- ![Result](https://i.postimg.cc/cLMsKfTw/Art.png) -->
 <p align="center">
-<img width="300" alt="Trading Hero Logo" src="path-to-your-logo-image">
+<img width="600" alt="TR logo 1" src="https://i.postimg.cc/8zhnNjvs/tr-logo1.png">
 </p>
 
 Trading Hero is an advanced stock market analysis tool designed to streamline trading processes, reduce information overload, and enhance decision-making for semi-professional retail traders.
@@ -101,4 +102,9 @@ Trading Hero empowers traders by integrating essential market data and AI-powere
 - Kelvin Hsueh ([@chsuehkelvin](https://github.com/chsuehkelvin))
 - Peter Fu Chen  ([@fuchenru](https://github.com/fuchenru))  
 - Yaoning Yu  ([@yyu6](https://github.com/yyu6))
-- Nathan Chen ([@nathanchen07](https://github.com/nathanchen07))  
+- Nathan Chen ([@nathanchen07](https://github.com/nathanchen07))
+
+<p align="center">
+<img width="600" alt="TR logo 2" src="https://i.imgur.com/Lw9T6s9.png">
+</p>
+<!-- ![Result](https://i.imgur.com/Lw9T6s9.png) -->
