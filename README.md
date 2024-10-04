@@ -5,43 +5,100 @@
 <img width="600" alt="TR logo 1" src="https://i.postimg.cc/8zhnNjvs/tr-logo1.png">
 </p>
 
-Trading Hero is an advanced application designed for stock market analysis. Our goal is to streamline the trading process and enhance decision-making efficiency. This project aims to reduce information overload and improve the overall trading experience for users.
+Trading Hero is an advanced stock market analysis tool designed to streamline trading processes, reduce information overload, and enhance decision-making for semi-professional retail traders.
 
-# Project Motivation
+# **📑 Table of Contents**
+
+1. [Project Motivation](#Project-Motivation)
+2. [Overview of Trading Hero](#Overview)
+   * [Project Diagram](#Project-Diagram)  
+   * [Front-End](#Front-End)  
+3. [Project Components](#Project-Components) 
+   * [AI-Powered Market Insights](#AI-Insights)
+   * [Interactive Charts](#Charts)
+   * [Earnings Surprises](#Earnings)
+   * [Price Forecasting](#Forecasting)
+4. [Technical Challenges](#Technical-Challenges)
+5. [Market Potential](#Market-Potential)
+6. [Future Developments](#Future-Developments)
+   * [Additional Features](#Additional-Features)
+   * [Next Steps Timeline](#Next-Steps)
+7. [Conclusion](#Conclusion)
+8. [Tools Utilized](#Tools-Utilized)
+9. [References](#References)
+10. [Acknowledgements/About Us](#Acknowledgements)
+
+# **🎯 Project Motivation** <a name="Project-Motivation"></a>
 
 <p align="center">
-<!-- <img width="380" alt="TR Logo" src="Assets/tr_logo1.png"> -->
+<img width="380" alt="Trading Motivation Image" src="image.png">
 </p>
-The story begins with our realization and understanding of the challenges faced by semi-professional retail traders—individuals who consider themselves professional but often lack the necessary tools and insights. These traders typically have setups with multiple monitors, each tracking different pieces of information such as news, stock charts, company financial reports, and overall market sentiment.  
 
+Trading Hero was inspired by the challenges faced by semi-professional retail traders who struggle with managing multiple streams of market data. These traders often rely on various platforms for technical, fundamental, and news analysis, which leads to information overload and inefficiency.
 
-We recognize that these traders need a way to integrate and analyze fundamental, technical, and news data in real-time. This integration is important for making informed short-term trading decisions efficiently, without the need to manually interpret large amounts of information.  
+**How Trading Hero helps:**  
+Trading Hero integrates all necessary data sources into a unified platform, helping traders make well-informed decisions quickly and accurately.
 
+# **🧠 Overview of Trading Hero** <a name="Overview"></a>
 
-**Here is how Trading Hero can help:**
-Trading Hero provides a unified platform for traders to make well-informed decisions swiftly and accurately<sup>[1](#footnote1)</sup>. Our goal is to streamline the trading process, reduce information overload, and enhance the overall trading experience for semi-professional retail traders.
+### Project Diagram <a name="Project-Diagram"></a>
+<img width="785" alt="Project Diagram" src="path-to-your-diagram-image">
 
-# Features
+### Front-End <a name="Front-End"></a>
+<img width="785" alt="Front-End" src="path-to-your-frontend-image">
 
-- **Market Status & Company Basics:** Get real-time information about the market's open/closed status and essential company details, including market cap, volume, and P/E ratio.
-- **Interactive Charts:** Visualize historical stock price movements with candlestick charts. Adjust the look-back period to analyze trends over different timeframes.
-- **Earnings Surprises:** Explore historical earnings data and see how the company has performed relative to analyst expectations.
-- **Analyst Recommendations:** Quickly gauge the overall sentiment towards the stock by viewing the distribution of analyst recommendations (buy, hold, sell).
-- **Latest News:** Stay informed with the most recent news headlines related to the chosen stock.
-- **Trend Analysis:** Utilize various technical indicators like VWAP, Bollinger Bands, trend lines, and moving averages to identify potential trading opportunities.
-- **Sector Trends:** Compare the stock's performance against its peers within the sector and gain insights into overall sector trends.
-- **AI-Powered Analysis:** Leverage the power of a large language model to generate insightful narratives and summaries of the stock's performance and prospects.
-- **Price Forecasting:** Forecast future stock prices using the Prophet model and evaluate the model's accuracy with performance metrics.
+# 🧩 Project Components <a name="Project-Components"></a>
 
-# Disclaimer <a name="Disclaimer"></a>
-<a name="footnote1">1</a>: Trading Hero is for educational and informational purposes only. It is not intended as financial advice. 
-The predictions and recommendations made by the AI are based on data and patterns, which may not always accurately predict future market movements.
+### 📊 AI-Powered Market Insights <a name="AI-Insights"></a>
+Trading Hero provides AI-powered insights using natural language models to generate market sentiment analysis, news summarization, and stock performance forecasts.
 
-# About Us <a name="About Us"></a>                                                
-  Peter Fu Chen  ([@fuchenru](https://github.com/fuchenru))  
-  Kelvin Hsueh  ([@chsuehkelvin](https://github.com/chsuehkelvin))  
-  Yaoning Yu  ([@yyu6](https://github.com/yyu6))  
-  Nathan Chen ([@nathanchen07](https://github.com/nathanchen07))  
+### 📈 Interactive Charts <a name="Charts"></a>
+Visualize historical stock price movements through customizable candlestick charts and trend indicators like VWAP and moving averages.
+
+### 💡 Earnings Surprises <a name="Earnings"></a>
+Analyze past earnings reports and compare actual performance against analyst expectations.
+
+### 🔮 Price Forecasting <a name="Forecasting"></a>
+Use the Prophet model to predict future stock prices, complete with performance metrics for evaluating forecast accuracy.
+
+# **⚙️ Technical Challenges** <a name="Technical-Challenges"></a>
+1. **Data Integration**: Managing real-time updates across multiple data sources.
+2. **Scalability**: Ensuring the platform can handle large volumes of data as the user base grows.
+3. **AI Model Accuracy**: Continuously improving AI prediction models to minimize errors in forecasts and analysis.
+
+# **🚀 Market Potential** <a name="Market-Potential"></a>
+Trading Hero addresses a gap in the market for semi-professional retail traders, offering real-time insights and tools for informed decision-making without the complexity of professional platforms. The application is well-positioned to expand into new markets as demand for AI-powered trading tools grows.
+
+# **🛠️ Future Developments** <a name="Future-Developments"></a>
+
+### Possibilities <a name="Additional-Features"></a>
+1. **Extended AI Capabilities**: Enhancing the AI model to provide more detailed financial analysis and trend predictions.
+2. **Mobile Application**: Developing a mobile version of Trading Hero for on-the-go access.
+3. **Collaborations**: Partnering with financial institutions to provide professional-level data.
+
+### Next Steps Timeline <a name="Next-Steps"></a>
+<img width="650" alt="Next Steps" src="path-to-your-timeline-image">
+
+# **🔚 Conclusion** <a name="Conclusion"></a>
+
+Trading Hero empowers traders by integrating essential market data and AI-powered insights into a single platform. This tool is designed to simplify trading, reduce information overload, and enhance decision-making efficiency.
+
+# **🛠️ Tools Utilized** <a name="Tools-Utilized"></a>
+
+|  | Category | Tool(s) |
+|----------|----------|----------|
+| 1 | Data Visualization | ![Matplotlib](https://img.shields.io/badge/matplotlib-%23ffffff.svg?style=for-the-badge&logo=matplotlib&logoColor=black) |
+| 2 | AI Models | ![Prophet](https://img.shields.io/badge/Prophet-%2300C4CC.svg?style=for-the-badge) |
+| 3 | Backend | ![Python](https://img.shields.io/badge/python-%23ffffff.svg?style=for-the-badge&logo=python&logoColor=black) |
+| 4 | Frontend | ![Streamlit](https://img.shields.io/badge/Streamlit-%23FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white) |
+
+# 📚 References <a name="References"></a>
+
+# 👤 Acknowledgements/About Us <a name="Acknowledgements"></a>
+- Kelvin Hsueh ([@chsuehkelvin](https://github.com/chsuehkelvin))
+- Peter Fu Chen  ([@fuchenru](https://github.com/fuchenru))  
+- Yaoning Yu  ([@yyu6](https://github.com/yyu6))
+- Nathan Chen ([@nathanchen07](https://github.com/nathanchen07))
 
 <p align="center">
 <img width="600" alt="TR logo 2" src="https://i.imgur.com/Lw9T6s9.png">
