@@ -27,7 +27,7 @@ from plotly.subplots import make_subplots
 from streamlit_plotly_events import plotly_events
 
 # Prophet
-from prophet.plot import plot_plotly, plot_components_plotly, plot
+# from prophet.plot import plot_plotly, plot_components_plotly, plot
 
 # Vertex AI
 import vertexai
@@ -573,9 +573,8 @@ def show_overall_information():
             symbol = st.session_state.get('selected_symbol', symbols[0])
             
             tech_prompt = f"""
-            You are an equity research analyst tasked with providing a technical summary for various stocks 
-            based on their recent price movements and technical indicators. Your analysis should include an evaluation of the stock's trend, 
-            its performance....
+            You are an equity research analyst tasked with providing a technical summary for stocks 
+            based on their recent price movements. Your analysis should include an evaluation of the stock's trend, its performance....
 
             You can add some emoji in this report if you want to make it interactive.
             
@@ -586,7 +585,8 @@ def show_overall_information():
             
             Detailed Technical Summary with clear line break for each part of your analysis, 
             don't include date, 
-            don't ask for more data so you can do more analysis on any part
+            don't ask for more data so you can do more analysis on any part. 
+            Try to speak less on numbers, if need to mention numbers use english instead, more focus on non-technical person.
             """
             
             # Generate content based on the prompt
@@ -741,9 +741,9 @@ def show_historical_data():
             Guidance: Review the company's forward-looking statements or guidance and provide an interpretation of future prospects.
             Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
 
-            [Detailed Earnings Analysis with clear line breaks for each part of your analysis(only in English)]
             Don't ask for more requirements to do analysis, focus on the data provided.
-            You can add some emoji in this report if you want to make it interactive."""
+            You can add some emoji in this report if you want to make it interactive.
+            Try not to mention any numbers as people call all view the numbers, more focus on non-technical person."""
             
             # Simulate more progress
             time.sleep(1)
@@ -966,7 +966,7 @@ def show_ts():
     """)
 
 
-    with st.spinner('Fetching and training deep learning time series model...'):
+    with st.spinner('Fetching and training deep learning time series model, It can take a while...'):
         df = predict.transform_price(symbol_prices)
         model_np = predict.train_neuralprophet_model(df)
         forecast = predict.make_forecast(model_np, df, days_to_forecast)
@@ -1058,6 +1058,11 @@ def show_ts():
         progress_bar.progress(50)
         st.markdown(tsai_data)
         progress_bar.progress(100)
+    
+    st.session_state['insights'].append({
+                'section': 'Time-Series Analysis',
+                'summary': tsai_data
+            })
 
     footer.add_footer()
 
@@ -1172,7 +1177,7 @@ def show_ts():
 
 
 def final_report():
-    with st.spinner("Trading Hero Final Report Model is working to generate."):
+    with st.spinner("Trading Hero Final Report Model is working to generate..."):
         progress_bar = st.progress(0)
         
         final_report_prompt = """
@@ -1214,14 +1219,18 @@ def final_report():
         - Opportunities and Threats: Evaluate external factors impacting the company's future.
         - Overall Scoring: Provide an overall score and explain your rationale, weighing recent news more heavily than older news.
 
-        5. **Final Conclusion and Recommendations**: 
+        5. **Time-Series Analysis**: 
+        Analyze the trend in light of the performance metrics. Provide actionable insights on whether the stock is likely to rise, fall, 
+        or remain stable in the next forecast days.
+
+        6. **Final Conclusion and Recommendations**: 
         Based on all the sections above (technical summary, earnings analysis, analyst recommendations, and news sentiment), 
         provide a final evaluation of the stock. Offer AI recommendation (buy, hold, or sell with percentage of confidence), and discuss any risks or opportunities 
         that investors should be aware of. This section should tie together the insights from each section into a cohesive final judgment.
 
         Make sure the report is easy to read and engaging, using emojis where appropriate to enhance readability. 
         Keep the overall tone professional, and provide clear line breaks for each part of the analysis.
-        Do not mention any Date in the report.
+        Do not mention any Date in the report. Try to speak less on numbers, if need to mention numbers use english instead, more focus on non-technical person.
         """
 
         # Simulate initial progress
