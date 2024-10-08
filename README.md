@@ -37,7 +37,7 @@ Trading Hero is an advanced stock market analysis tool designed to streamline tr
 # **🎯 Project Motivation** <a name="Project-Motivation"></a>
 
 <p align="center">
-<img width="380" alt="Trading Motivation Image" src="Assests/Trading_Motivation.png.png">
+<img width="380" alt="Trading Motivation Image" src="Assests/Trading_Motivation.png">
 </p>
 
 Trading Hero was inspired by the challenges faced by semi-professional retail traders who struggle with managing multiple streams of market data. These traders often rely on various platforms for technical, fundamental, and news analysis, which leads to information overload and inefficiency.
