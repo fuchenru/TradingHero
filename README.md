@@ -14,10 +14,12 @@ Trading Hero is an advanced stock market analysis tool designed to streamline tr
    * [Project Diagram](#Project-Diagram)  
    * [Front-End](#Front-End)  
 3. [Project Components](#Project-Components) 
-   * [AI-Powered Market Insights](#AI-Insights)
-   * [Interactive Charts](#Charts)
-   * [Earnings Surprises](#Earnings)
-   * [Price Forecasting](#Forecasting)
+   * [Trading Hero AI Technical Summary](#AI-Technical)
+   * [Trading Hero AI EPS Summary](#EPS)
+   * [Stock Analyst Recommendations](#Recommendations)
+   * [Trading Hero AI News Analysis](#News-Analysis)
+   * [Trading Hero Time Series Forecasting](#Time-Series)
+   * [Trading Hero Final Report](#Final-Report)
 4. [Technical Challenges](#Technical-Challenges)
 5. [Market Potential](#Market-Potential)
 6. [Future Developments](#Future-Developments)
@@ -31,7 +33,7 @@ Trading Hero is an advanced stock market analysis tool designed to streamline tr
 # **🎯 Project Motivation** <a name="Project-Motivation"></a>
 
 <p align="center">
-<img width="380" alt="Trading Motivation Image" src="image.png">
+<img width="380" alt="Trading Motivation Image" src="Assets/Trading_Motivation.png.png">
 </p>
 
 Trading Hero was inspired by the challenges faced by semi-professional retail traders who struggle with managing multiple streams of market data. These traders often rely on various platforms for technical, fundamental, and news analysis, which leads to information overload and inefficiency.
@@ -41,25 +43,81 @@ Trading Hero integrates all necessary data sources into a unified platform, help
 
 # **🧠 Overview of Trading Hero** <a name="Overview"></a>
 
-### Project Diagram <a name="Project-Diagram"></a>
+### Project Diagram (TBD) <a name="Project-Diagram"></a>
 <img width="785" alt="Project Diagram" src="path-to-your-diagram-image">
 
-### Front-End <a name="Front-End"></a>
+### Front-End (TBD) <a name="Front-End"></a>
 <img width="785" alt="Front-End" src="path-to-your-frontend-image">
 
 # 🧩 Project Components <a name="Project-Components"></a>
 
-### 📊 AI-Powered Market Insights <a name="AI-Insights"></a>
-Trading Hero provides AI-powered insights using natural language models to generate market sentiment analysis, news summarization, and stock performance forecasts.
+### 📈 Stock Overview Dashboard <a name="AI-Technical"></a>
+Users can explore real-time market data, top stock gainers and losers, and perform both fundamental and technical analysis on U.S. stocks. The dashboard features a search functionality that allows users to look up specific stock tickers across NYSE and Nasdaq exchanges, while also offering customizable historical analysis. 
 
-### 📈 Interactive Charts <a name="Charts"></a>
-Visualize historical stock price movements through customizable candlestick charts and trend indicators like VWAP and moving averages.
+The dashboard integrates financial data and visualizations from TradingView and AI-driven insights to help users make informed decisions. Additionally, users can view detailed financial metrics, company profiles, and generate an AI-powered technical summary for deeper analysis.
 
-### 💡 Earnings Surprises <a name="Earnings"></a>
-Analyze past earnings reports and compare actual performance against analyst expectations.
+<p align="center">
+<img width="380" alt="Stock Overview Dashboard" src="Assets/Trading Hero AI Technical Summary.png">
+</p>
 
-### 🔮 Price Forecasting <a name="Forecasting"></a>
+### 📋 Historical Stock and EPS Surprises  <a name="EPS"></a>
+This page provides users with a detailed historical analysis of selected stocks, featuring end-of-day stock data such as open, high, low, close prices, and trading volume. Users can observe key stock performance trends and make data-driven decisions based on past market behavior. Additionally, the Historical EPS Surprises section visualizes a stock’s earnings per share (EPS) performance, highlighting whether the company met, exceeded, or missed analyst expectations. A dedicated Trading Hero AI EPS Analysis button allows users to generate AI-powered insights on the stock’s EPS trends for further analysis.
+
+<p align="center">
+<img width="380" alt="Historical Stock and EPS Surprises" src="Assets/Trading Hero AI EPS Summary.png">
+</p>
+
+### 💡 Stock Analyst Recommendations <a name="Recommendations"></a> 
+This page presents users with a comprehensive overview of analyst recommendations for selected stocks. The page also includes a sentiment analysis that highlights the overall sentiment toward the stock based on the collective recommendations.
+
+<p align="center">
+<img width="380" alt="Historical Stock and EPS Surprises" src="Assets/Stock Analyst Recommendations.png">
+</p>
+
+### 🔮 Trading Hero AI News Analysis <a name="News-Analysis"></a>
+Trading Hero utilizes AI News Analysis to leverage state-of-the-art Natural Language Processing (NLP) model for comprehensive analysis on massive volumes of news articles across diverse domains. This tool helps in making informed investment decisions by providing insights into the sentiment of news articles related to specific stocks.
+
+Trading Hero Financial Sentiment Analysis You can find our model on our Hugging Face page 🤗: https://huggingface.co/fuchenru/Trading-Hero-LLM 
+
+To build the sentiment analysis model, we fine-tuned a pre-trained BERT-based model using sequential training on eight different datasets. Each dataset represents a unique domain or time period, ensuring that the model can generalize well across various types of financial news. The model was trained and evaluated on each dataset, and the best-performing model was selected based on evaluation metrics such as accuracy, precision, recall, and F1 score.
+
+Training Configuration
+
+Model: FinBERT (4.9 billion tokens, including: Corporate Reports (10-K & 10-Q): 2.5 billion tokens, Earnings Call Transcripts: 1.3 billion tokens, Analyst Reports: 1.1 billion tokens)
+
+Optimizer: AdamW with weight decay
+
+Learning Rate: 2e-5
+
+Batch Size: 32
+
+Epochs per Dataset: 1
+
+Datasets: The model was fine-tuned on a custom dataset of financial communication texts. The dataset was split into training, validation, and test sets as follows:
+
+Training Set: 10,918,272 tokens
+
+Validation Set: 1,213,184 tokens
+
+Test Set: 1,347,968 tokens
+
+Evaluation Metric: 
+
+Test Accuracy = 0.908469
+Test Precision = 0.927788
+Test Recall = 0.908469
+Test F1 = 0.913267
+
+<p align="center">
+<img width="380" alt="News-Analysis" src="Assets/sentinment_metrix.png">
+</p>
+
+### 🔮 Trading Hero Time Series Forecasting <a name="Time-Series"></a>
 Use the Prophet model to predict future stock prices, complete with performance metrics for evaluating forecast accuracy.
+
+### 🔮 Trading Hero Final Report <a name="Final-Report"></a>
+Use the Prophet model to predict future stock prices, complete with performance metrics for evaluating forecast accuracy.
+
 
 # **⚙️ Technical Challenges** <a name="Technical-Challenges"></a>
 1. **Data Integration**: Managing real-time updates across multiple data sources.
