@@ -86,33 +86,35 @@ Trading Hero leverages cutting-edge **Natural Language Processing (NLP)** to per
 The Trading Hero Financial Sentiment Analysis model is trained on a wide variety of financial texts, including corporate reports, earnings call transcripts, and analyst reports. By fine-tuning a pre-trained BERT-based model, the system provides accurate sentiment analysis that helps investors gauge market sentiment towards specific stocks and sectors.
 
 <p align="center">
-<img width="580" alt="Finetune" src="Assests/finetune.jpg">
+<img width="880" alt="Finetune" src="Assests/finetune.jpg">
 </p>
 
 <p align="center">
-<img width="580" alt="Bert" src="Assests/bert.jpg">
+<img width="380" alt="Bert" src="Assests/bert.jpg">
 </p>
 
 You can explore our model on our Hugging Face page 🤗:
 [Trading Hero LLM on Hugging Face](https://huggingface.co/fuchenru/Trading-Hero-LLM )
 
-Model Training and Configuration
-To build the sentiment analysis model, we used sequential fine-tuning on eight different datasets. Each dataset represents a unique financial domain or time period, allowing the model to generalize effectively across different types of financial news.
 
 <p align="center">
-<img width="580" alt="Trading Hero Financial Sentiment Analysis Model" src="Assests/Trading Hero Financial Sentiment Analysis Model.png">
+<img alt="Trading Hero Financial Sentiment Analysis Model" src="Assests/Trading Hero Financial Sentiment Analysis Model.png">
 </p>
 
 #### Evaluation Metrics
 
 The model was evaluated on several metrics to ensure high performance in analyzing financial news sentiment:
 
-| Metric         | Value   |
-|----------------|---------|
-| **Test Accuracy**  | 90.85% |
-| **Test Precision** | 92.78% |
-| **Test Recall**    | 90.85% |
-| **Test F1 Score**  | 91.33% |
+<div align="center">
+
+| Metric           |   Value   |
+|------------------|:---------:|
+| **Test Accuracy** |  90.85%   |
+| **Test Precision**|  92.78%   |
+| **Test Recall**   |  90.85%   |
+| **Test F1 Score** |  91.33%   |
+
+</div>
 
 <p align="center">
 <img width="680" alt="News-Analysis" src="Assests/sentinment_metrix.png">
@@ -151,10 +153,17 @@ Trading Hero empowers traders by integrating essential market data and AI-powere
 
 |  | Category | Tool(s) |
 |----------|----------|----------|
-| 1 | Data Visualization | ![Matplotlib](https://img.shields.io/badge/matplotlib-%23ffffff.svg?style=for-the-badge&logo=matplotlib&logoColor=black) |
-| 2 | AI Models | ![Prophet](https://img.shields.io/badge/Prophet-%2300C4CC.svg?style=for-the-badge) |
-| 3 | Backend | ![Python](https://img.shields.io/badge/python-%23ffffff.svg?style=for-the-badge&logo=python&logoColor=black) |
-| 4 | Frontend | ![Streamlit](https://img.shields.io/badge/Streamlit-%23FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white) |
+| 1 | AI Models | ![Gemini-1.5-Pro](https://img.shields.io/badge/Gemini-%23FF4500.svg?style=for-the-badge) |
+| 2 | Machine Learning | ![Prophet](https://img.shields.io/badge/Prophet-%2300C4CC.svg?style=for-the-badge), ![NeuralProphet](https://img.shields.io/badge/NeuralProphet-%2300C4CC.svg?style=for-the-badge) |
+| 3 | Backend | ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) |
+| 4 | Frontend | ![Streamlit](https://img.shields.io/badge/Streamlit-%23FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white), ![HTML5](https://img.shields.io/badge/HTML5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white), ![JavaScript](https://img.shields.io/badge/JavaScript-%23F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=black), ![Next.js](https://img.shields.io/badge/Next.js-%23000000.svg?style=for-the-badge&logo=next.js&logoColor=white) |
+| 5 | Design | ![Canva](https://img.shields.io/badge/Canva-%2300C4CC.svg?style=for-the-badge&logo=canva&logoColor=white), ![Figma](https://img.shields.io/badge/Figma-%23F24E1E.svg?style=for-the-badge&logo=figma&logoColor=white), ![DALL·E](https://img.shields.io/badge/DALL·E-%23000000.svg?style=for-the-badge&logo=openai&logoColor=white), <img width="85" alt="Screenshot 2024-08-06 at 2 34 32 PM" src="https://github.com/user-attachments/assets/fa685bf1-901c-4dec-b78c-a1afe60d2ecb"> |
+| 6 | Project Management | ![Trello](https://img.shields.io/badge/Trello-%23026AA7.svg?style=for-the-badge&logo=trello&logoColor=white) |
+| 7 | Cloud Computing | ![Google Cloud](https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white) |
+| 8 | Version Control | ![Git](https://img.shields.io/badge/Git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) |
+| 9 | APIs | ![TradingView](https://img.shields.io/badge/TradingView-%23083D8C.svg?style=for-the-badge&logo=tradingview&logoColor=white), ![Finnhub](https://img.shields.io/badge/Finnhub-%2300C4CC.svg?style=for-the-badge), ![Yahoo Finance](https://img.shields.io/badge/Yahoo%20Finance-%23700CBC.svg?style=for-the-badge&logo=yahoo&logoColor=white), ![Polygon.io](https://img.shields.io/badge/Polygon.io-%23000000.svg?style=for-the-badge) |
+| 10 | Containerization | ![Docker](https://img.shields.io/badge/Docker-%232496ED.svg?style=for-the-badge&logo=docker&logoColor=white) |
+
 
 # 📚 References <a name="References"></a>
 
