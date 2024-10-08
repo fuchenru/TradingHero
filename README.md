@@ -33,7 +33,7 @@ Trading Hero is an advanced stock market analysis tool designed to streamline tr
 # **🎯 Project Motivation** <a name="Project-Motivation"></a>
 
 <p align="center">
-<img width="380" alt="Trading Motivation Image" src="Assets/Trading_Motivation.png.png">
+<img width="380" alt="Trading Motivation Image" src="Assests/Trading_Motivation.png.png">
 </p>
 
 Trading Hero was inspired by the challenges faced by semi-professional retail traders who struggle with managing multiple streams of market data. These traders often rely on various platforms for technical, fundamental, and news analysis, which leads to information overload and inefficiency.
@@ -57,21 +57,21 @@ Users can explore real-time market data, top stock gainers and losers, and perfo
 The dashboard integrates financial data and visualizations from TradingView and AI-driven insights to help users make informed decisions. Additionally, users can view detailed financial metrics, company profiles, and generate an AI-powered technical summary for deeper analysis.
 
 <p align="center">
-<img width="380" alt="Stock Overview Dashboard" src="Assets/Trading Hero AI Technical Summary.png">
+<img width="380" alt="Stock Overview Dashboard" src="Assests/Trading Hero AI Technical Summary.png">
 </p>
 
 ### 📋 Historical Stock and EPS Surprises  <a name="EPS"></a>
 This page provides users with a detailed historical analysis of selected stocks, featuring end-of-day stock data such as open, high, low, close prices, and trading volume. Users can observe key stock performance trends and make data-driven decisions based on past market behavior. Additionally, the Historical EPS Surprises section visualizes a stock’s earnings per share (EPS) performance, highlighting whether the company met, exceeded, or missed analyst expectations. A dedicated Trading Hero AI EPS Analysis button allows users to generate AI-powered insights on the stock’s EPS trends for further analysis.
 
 <p align="center">
-<img width="380" alt="Historical Stock and EPS Surprises" src="Assets/Trading Hero AI EPS Summary.png">
+<img width="380" alt="Historical Stock and EPS Surprises" src="Assests/Trading Hero AI EPS Summary.png">
 </p>
 
 ### 💡 Stock Analyst Recommendations <a name="Recommendations"></a> 
 This page presents users with a comprehensive overview of analyst recommendations for selected stocks. The page also includes a sentiment analysis that highlights the overall sentiment toward the stock based on the collective recommendations.
 
 <p align="center">
-<img width="380" alt="Historical Stock and EPS Surprises" src="Assets/Stock Analyst Recommendations.png">
+<img width="380" alt="Historical Stock and EPS Surprises" src="Assests/Stock Analyst Recommendations.png">
 </p>
 
 ### 🔮 Trading Hero AI News Analysis <a name="News-Analysis"></a>
@@ -109,7 +109,7 @@ Test Recall = 0.908469
 Test F1 = 0.913267
 
 <p align="center">
-<img width="380" alt="News-Analysis" src="Assets/sentinment_metrix.png">
+<img width="380" alt="News-Analysis" src="Assests/sentinment_metrix.png">
 </p>
 
 ### 🔮 Trading Hero Time Series Forecasting <a name="Time-Series"></a>
