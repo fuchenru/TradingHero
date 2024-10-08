@@ -79,10 +79,19 @@ This page presents users with a comprehensive overview of analyst recommendation
 </p>
 
 ### 🔮 Trading Hero AI News Analysis <a name="News-Analysis"></a>
-Trading Hero leverages cutting-edge Natural Language Processing (NLP) to perform comprehensive sentiment analysis on a vast number of news articles across different financial domains. This tool is designed to assist investors in making informed decisions by offering insights into the sentiment of articles related to specific stocks.
+Trading Hero leverages cutting-edge **Natural Language Processing (NLP)** to perform comprehensive sentiment analysis on a vast number of news articles across different financial domains. This tool is designed to assist investors in making informed decisions by offering insights into the sentiment of articles related to specific stocks.
 
-Overview
+#### Overview
+
 The Trading Hero Financial Sentiment Analysis model is trained on a wide variety of financial texts, including corporate reports, earnings call transcripts, and analyst reports. By fine-tuning a pre-trained BERT-based model, the system provides accurate sentiment analysis that helps investors gauge market sentiment towards specific stocks and sectors.
+
+<p align="center">
+<img width="580" alt="Finetune" src="Assests/finetune.jpg">
+</p>
+
+<p align="center">
+<img width="580" alt="Bert" src="Assests/bert.jpg">
+</p>
 
 You can explore our model on our Hugging Face page 🤗:
 [Trading Hero LLM on Hugging Face](https://huggingface.co/fuchenru/Trading-Hero-LLM )
@@ -90,49 +99,20 @@ You can explore our model on our Hugging Face page 🤗:
 Model Training and Configuration
 To build the sentiment analysis model, we used sequential fine-tuning on eight different datasets. Each dataset represents a unique financial domain or time period, allowing the model to generalize effectively across different types of financial news.
 
-Model Details
+<p align="center">
+<img width="580" alt="Trading Hero Financial Sentiment Analysis Model" src="Assests/Trading Hero Financial Sentiment Analysis Model.png">
+</p>
 
-Model: FinBERT (trained on a total of 4.9 billion tokens, broken down as follows):
-Corporate Reports (10-K & 10-Q): 2.5 billion tokens
-
-Earnings Call Transcripts: 1.3 billion tokens
-
-Analyst Reports: 1.1 billion tokens
-
-Optimizer: AdamW with weight decay
-
-Learning Rate: 2e-5
-
-Model Architecture
-
-Attention Dropout Probability: 0.1 (Applies dropout to attention weights to prevent overfitting during training)
-
-Hidden Layers:
-
-Hidden Size: 768 (dimensionality of hidden layers, standard for BERT models)
-
-Number of Hidden Layers: 12 (for deep learning of complex representations)
-
-Intermediate Size: 3072 (size of the feedforward layers in each transformer block)
-
-Attention Heads: 12 (self-attention mechanism with 12 attention heads to focus on different parts of the input)
-
-Datasets
-
-The model was fine-tuned using a custom dataset of financial communication texts, including corporate reports and news articles. The dataset was split into training, validation, and test sets:
-
-Training Set: 10,918,272 tokens
-Validation Set: 1,213,184 tokens
-Test Set: 1,347,968 tokens
-
-Evaluation Metrics
+#### Evaluation Metrics
 
 The model was evaluated on several metrics to ensure high performance in analyzing financial news sentiment:
 
-Test Accuracy: 90.85%
-Test Precision: 92.78%
-Test Recall: 90.85%
-Test F1 Score: 91.33%
+| Metric         | Value   |
+|----------------|---------|
+| **Test Accuracy**  | 90.85% |
+| **Test Precision** | 92.78% |
+| **Test Recall**    | 90.85% |
+| **Test F1 Score**  | 91.33% |
 
 <p align="center">
 <img width="680" alt="News-Analysis" src="Assests/sentinment_metrix.png">
@@ -178,7 +158,10 @@ Trading Hero empowers traders by integrating essential market data and AI-powere
 
 # 📚 References <a name="References"></a>
 
+Huang, A. H., & Yi Yang, H. W. (2022, September 22). FinBERT: A Large Language Model for Extracting Information from Financial Text. https://onlinelibrary.wiley.com/doi/10.1111/1911-3846.12832 
+
 # 👤 Acknowledgements/About Us <a name="Acknowledgements"></a>
+
 - Kelvin Hsueh ([@chsuehkelvin](https://github.com/chsuehkelvin))
 - Peter Fu Chen  ([@fuchenru](https://github.com/fuchenru))  
 - Yaoning Yu  ([@yyu6](https://github.com/yyu6))
