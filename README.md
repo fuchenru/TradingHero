@@ -120,8 +120,81 @@ The model was evaluated on several metrics to ensure high performance in analyzi
 <img alt="News-Analysis" src="Assests/sentinment_metrix.png">
 </p>
 
-### 🔮 Trading Hero Time Series Forecasting <a name="Time-Series"></a>
-Use the Prophet model to predict future stock prices, complete with performance metrics for evaluating forecast accuracy.
+### 🔮 Trading Hero: Advanced Time Series Forecasting <a name="Time-Series"></a>
+
+Trading Hero leverages a sophisticated deep learning approach for sequential learning in time-series data. While Facebook's Prophet model was developed to provide a flexible, user-friendly, and explainable framework for time series prediction, it often falls short in terms of accuracy. To address these performance limitations, we integrated Neural Networks with Prophet, creating **NeuralProphet**—a hybrid model designed to enhance predictive performance while preserving the interpretability that Prophet is known for.
+
+<p align="center">
+<img alt="neuralnetwork" src="Assests/neuralnetwork.jpeg">
+</p>
+
+#### Hybrid Approach: Neural Networks + Prophet
+The core of this method is combining the strengths of a **Feed-Forward Neural Network** with Prophet's statistical time-series forecasting capabilities. By incorporating deep learning, the model can better capture complex temporal patterns, offering greater predictive accuracy and efficiency. This hybrid approach allows us to strike a balance between **model interpretability** (critical in many industries like finance and healthcare) and **state-of-the-art performance** on time-series data.
+
+| Metric               |   Facebook Prophet   |   NeuralProphet   |
+|----------------------|:--------------------:|:-----------------:|
+| **Mean Average**      |  42.10%              |  34.06%           |
+| **Median**            |  25.26%              |  19.65%           |
+| **Minimum**           |  3.98%               |  2.67%            |
+| **Maximum**           |  200%                |  200%             |
+| **Standard Deviation**|  44.95%              |  37.51%           |
+
+These improvements reflect the added capacity of neural networks to learn from complex patterns in sequential data, reducing error rates across key metrics.
+
+#### Key Model Features and Enhancements
+
+**1. Optimization with PyTorch**  
+The optimization process is powered by **Gradient Descent** using PyTorch as the backend, ensuring scalability, efficiency, and flexibility when training the model on large datasets.
+
+**2. Autocorrelation Modeling with AR-Net**  
+The model includes **AR-Net**, a neural extension for autocorrelation modeling, which significantly improves its ability to capture dependencies within time-series data (e.g., stock prices, demand forecasting).
+
+<p align="center">
+<img alt="ar" src="Assests/ar.png">
+</p>
+
+**3. Piecewise Linear Trend with Automatic Changepoints**  
+To handle non-linear data, the model uses **piecewise linear trend analysis** with automatic changepoint detection. This allows the model to adapt to sudden shifts in the data, such as seasonal changes or economic events.
+
+**4. Fourier Term Seasonality**  
+The model incorporates **Fourier terms** to capture seasonality across multiple time frames (e.g., yearly, weekly, daily, hourly). This makes it versatile for a variety of time-dependent phenomena, such as daily stock movements or yearly sales cycles.
+
+<p align="center">
+<img alt="lineartrendsea" src="Assests/lineartrendsea.png">
+</p>
+
+**5. Lagged and Future Regressors**  
+- **Lagged Regressors**: The model can include historical features such as sensor data or past stock prices as inputs to improve predictions.
+- **Future Regressors**: Known future events (e.g., temperature forecasts, planned holidays) can be added as additional variables, further improving forecast accuracy.
+
+**6. Country Holidays and Recurring Events**  
+The model has built-in support for country-specific holidays and recurring events, which can have significant effects on demand and other time-series metrics.
+
+<p align="center">
+<img alt="HolidaysReg" src="Assests/HolidaysReg.png">
+</p>
+
+**7. Regularization for Coefficient Sparsity**  
+To prevent overfitting, the model uses **regularization techniques** that enforce sparsity, ensuring that only the most important variables are emphasized in the predictions.
+
+**8. Advanced Forecasting Visualization**  
+Trading Hero provides comprehensive visualizations of forecast components (trends, seasonality, and holidays), model coefficients, and final predictions. This feature helps users understand the factors driving the predictions and makes the model’s output more transparent.
+
+**9. Hyperparameter Optimization**  
+Automatic selection of key hyperparameters related to model training ensures that the model is both highly performant and easy to use, with minimal need for manual tuning.
+
+**10. Support for Panel Data**  
+The model is designed to handle **panel data**, allowing for global forecasting across multiple entities (e.g., forecasting sales for different products or stock prices for multiple companies).
+
+**11. Robustness to Missing Data and Outliers**  
+Just like Prophet, NeuralProphet can manage missing values and outliers effectively, making it well-suited for real-world scenarios where data is often incomplete or noisy.
+
+#### Why Use NeuralProphet?
+
+By combining the statistical foundation of Facebook's Prophet with the powerful learning capabilities of Neural Networks, NeuralProphet is an excellent tool for anyone looking to tackle complex time-series forecasting problems. Whether you’re working in **finance**, **retail**, **supply chain**, or **IoT**, this hybrid model can provide accurate forecasts, handle diverse data sources, and maintain a high degree of interpretability.
+
+With the ability to capture intricate patterns in sequential data, Trading Hero offers an advanced forecasting solution that stands out for both its performance and user-centric design.
+
 
 ### 🔮 Trading Hero Final Report <a name="Final-Report"></a>
 Use the Prophet model to predict future stock prices, complete with performance metrics for evaluating forecast accuracy.
