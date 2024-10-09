@@ -117,7 +117,7 @@ The model was evaluated on several metrics to ensure high performance in analyzi
 </div>
 
 <p align="center">
-<img width="680" alt="News-Analysis" src="Assests/sentinment_metrix.png">
+<img alt="News-Analysis" src="Assests/sentinment_metrix.png">
 </p>
 
 ### 🔮 Trading Hero Time Series Forecasting <a name="Time-Series"></a>
