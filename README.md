@@ -48,10 +48,10 @@ Trading Hero integrates all necessary data sources into a unified platform, help
 # **🧠 Overview of Trading Hero** <a name="Overview"></a>
 
 ### Project Diagram (TBD) <a name="Project-Diagram"></a>
-<img width="785" alt="Project Diagram" src="path-to-your-projectdiagram-image">
+<img alt="Project Diagram" src="path-to-your-projectdiagram-image">
 
 ### Front-End (TBD) <a name="Front-End"></a>
-<img width="785" alt="Front-End" src="Assests/Front-End.png">
+<img alt="Front-End" src="Assests/Front-End.png">
 
 # 🧩 Project Components <a name="Project-Components"></a>
 
