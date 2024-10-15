@@ -16,7 +16,6 @@ Trading Hero is an advanced stock market analysis tool designed to streamline tr
 1. [Project Motivation](#Project-Motivation)
 2. [Overview of Trading Hero](#Overview)
    * [Project Diagram](#Project-Diagram)  
-   * [Front-End](#Front-End)  
 3. [Project Components](#Project-Components) 
    * [Trading Hero AI Technical Summary](#AI-Technical)
    * [Trading Hero AI EPS Summary](#EPS)
@@ -40,17 +39,14 @@ Trading Hero is an advanced stock market analysis tool designed to streamline tr
 <img width="380" alt="Trading Motivation Image" src="Assests/Trading_Motivation.png">
 </p>
 
-Trading Hero was inspired by the challenges faced by semi-professional retail traders who struggle with managing multiple streams of market data. These traders often rely on various platforms for technical, fundamental, and news analysis, which leads to information overload and inefficiency.
+Trading Hero was inspired by the challenges faced by semi-professional retail traders who struggle with managing multiple streams of market data. These traders often rely on various platforms for technical, fundamental, and news analysis...and so one. Which leads to information overload and inefficiency.
 
 **How Trading Hero helps:**  
-Trading Hero integrates all necessary data sources into a unified platform, helping traders make well-informed decisions quickly and accurately.
+Trading Hero integrates all necessary data sources into a **unified platform**, helping traders make well-informed decisions quickly and informative.
 
 # **🧠 Overview of Trading Hero** <a name="Overview"></a>
 
-### Project Diagram (TBD) <a name="Project-Diagram"></a>
-<img alt="Project Diagram" src="path-to-your-projectdiagram-image">
-
-### Front-End (TBD) <a name="Front-End"></a>
+### Project Diagram <a name="Project-Diagram"></a>
 <img alt="Front-End" src="Assests/Front-End.png">
 
 # 🧩 Project Components <a name="Project-Components"></a>
@@ -131,6 +127,8 @@ Trading Hero leverages a sophisticated deep learning approach for sequential lea
 #### Hybrid Approach: Neural Networks + Prophet
 The core of this method is combining the strengths of a **Feed-Forward Neural Network** with Prophet's statistical time-series forecasting capabilities. By incorporating deep learning, the model can better capture complex temporal patterns, offering greater predictive accuracy and efficiency. This hybrid approach allows us to strike a balance between **model interpretability** (critical in many industries like finance and healthcare) and **state-of-the-art performance** on time-series data.
 
+<div align="center">
+  
 | Metric               |   Facebook Prophet   |   NeuralProphet   |
 |----------------------|:--------------------:|:-----------------:|
 | **Mean Average**      |  42.10%              |  34.06%           |
@@ -139,6 +137,8 @@ The core of this method is combining the strengths of a **Feed-Forward Neural Ne
 | **Maximum**           |  200%                |  200%             |
 | **Standard Deviation**|  44.95%              |  37.51%           |
 
+</div>
+
 These improvements reflect the added capacity of neural networks to learn from complex patterns in sequential data, reducing error rates across key metrics.
 
 #### Key Model Features and Enhancements
@@ -146,54 +146,38 @@ These improvements reflect the added capacity of neural networks to learn from c
 **1. Optimization with PyTorch**  
 The optimization process is powered by **Gradient Descent** using PyTorch as the backend, ensuring scalability, efficiency, and flexibility when training the model on large datasets.
 
-**2. Autocorrelation Modeling with AR-Net**  
-The model includes **AR-Net**, a neural extension for autocorrelation modeling, which significantly improves its ability to capture dependencies within time-series data (e.g., stock prices, demand forecasting).
-
-<p align="center">
-<img alt="ar" src="Assests/ar.png">
-</p>
-
-**3. Piecewise Linear Trend with Automatic Changepoints**  
+**2. Piecewise Linear Trend with Automatic Changepoints**  
 To handle non-linear data, the model uses **piecewise linear trend analysis** with automatic changepoint detection. This allows the model to adapt to sudden shifts in the data, such as seasonal changes or economic events.
 
-**4. Fourier Term Seasonality**  
+**3. Fourier Term Seasonality**  
 The model incorporates **Fourier terms** to capture seasonality across multiple time frames (e.g., yearly, weekly, daily, hourly). This makes it versatile for a variety of time-dependent phenomena, such as daily stock movements or yearly sales cycles.
 
 <p align="center">
 <img alt="lineartrendsea" src="Assests/lineartrendsea.png">
 </p>
 
-**5. Lagged and Future Regressors**  
+**4. Lagged and Future Regressors**  
 - **Lagged Regressors**: The model can include historical features such as sensor data or past stock prices as inputs to improve predictions.
 - **Future Regressors**: Known future events (e.g., temperature forecasts, planned holidays) can be added as additional variables, further improving forecast accuracy.
 
-**6. Country Holidays and Recurring Events**  
+**5. Country Holidays and Recurring Events**  
 The model has built-in support for country-specific holidays and recurring events, which can have significant effects on demand and other time-series metrics.
 
 <p align="center">
 <img alt="HolidaysReg" src="Assests/HolidaysReg.png">
 </p>
 
-**7. Regularization for Coefficient Sparsity**  
-To prevent overfitting, the model uses **regularization techniques** that enforce sparsity, ensuring that only the most important variables are emphasized in the predictions.
+**6. Autocorrelation Modeling with AR-Net**  
+The model includes **AR-Net**, a neural extension for autocorrelation modeling, which significantly improves its ability to capture dependencies within time-series data (e.g., stock prices, demand forecasting).
 
-**8. Advanced Forecasting Visualization**  
-Trading Hero provides comprehensive visualizations of forecast components (trends, seasonality, and holidays), model coefficients, and final predictions. This feature helps users understand the factors driving the predictions and makes the model’s output more transparent.
+<p align="center">
+<img alt="ar" src="Assests/ar.png">
+</p>
 
-**9. Hyperparameter Optimization**  
-Automatic selection of key hyperparameters related to model training ensures that the model is both highly performant and easy to use, with minimal need for manual tuning.
-
-**10. Support for Panel Data**  
-The model is designed to handle **panel data**, allowing for global forecasting across multiple entities (e.g., forecasting sales for different products or stock prices for multiple companies).
-
-**11. Robustness to Missing Data and Outliers**  
-Just like Prophet, NeuralProphet can manage missing values and outliers effectively, making it well-suited for real-world scenarios where data is often incomplete or noisy.
 
 #### Why Use NeuralProphet?
 
-By combining the statistical foundation of Facebook's Prophet with the powerful learning capabilities of Neural Networks, NeuralProphet is an excellent tool for anyone looking to tackle complex time-series forecasting problems. Whether you’re working in **finance**, **retail**, **supply chain**, or **IoT**, this hybrid model can provide accurate forecasts, handle diverse data sources, and maintain a high degree of interpretability.
-
-With the ability to capture intricate patterns in sequential data, Trading Hero offers an advanced forecasting solution that stands out for both its performance and user-centric design.
+By combining the statistical foundation of Facebook's Prophet with the powerful learning capabilities of Neural Networks, NeuralProphet is an excellent tool for anyone looking to tackle complex time-series forecasting problems. With the ability to capture intricate patterns in sequential data, Trading Hero offers an advanced forecasting solution that stands out for both its performance and user-centric design.
 
 
 ### 🔮 Trading Hero Final Report <a name="Final-Report"></a>
