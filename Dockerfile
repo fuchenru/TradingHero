@@ -13,6 +13,10 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Create the .streamlit directory and add config.toml for dark mode
+RUN mkdir -p ~/.streamlit
+RUN echo "[theme]\nbase='dark'" > ~/.streamlit/config.toml
+
 # Copy the rest of the application code
 COPY . .
 

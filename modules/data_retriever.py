@@ -65,9 +65,12 @@ def n_days_before(date_string, n):
 
 @st.cache_data
 def get_current_stock_data(symbol, n_weeks):
+    # Replace any '.' in the symbol with '-'
+    symbol = symbol.replace('.', '-')
+    
     current_date = today()
     n_weeks_before_date = n_weeks_before(current_date, n_weeks)
-    stock_data = yf.download(symbol, start= n_weeks_before_date, end=current_date)
+    stock_data = yf.download(symbol, start=n_weeks_before_date, end=current_date)
     return stock_data
 
 

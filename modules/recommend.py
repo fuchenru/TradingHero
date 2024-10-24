@@ -6,7 +6,7 @@ from vertexai.preview.generative_models import GenerativeModel, ChatSession, Par
 import vertexai.preview.generative_models as generative_models
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 # Define the model for Gemini Pro
-model = GenerativeModel("gemini-1.5-pro-002")
+model = GenerativeModel("gemini-1.5-flash-002")
 finnhub_client = finnhub.Client(api_key="co6v709r01qj6a5mgco0co6v709r01qj6a5mgcog")
 
 def get_rec(ticker_symbol: str) -> dict:

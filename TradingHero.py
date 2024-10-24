@@ -52,7 +52,15 @@ from modules import predict
 from modules import footer
 
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
-model = GenerativeModel("gemini-1.5-pro-002")
+model = GenerativeModel("gemini-1.5-flash-002")
+
+import streamlit_lottie as st_lottie
+import requests
+def load_lottieurl(url):
+    r = requests.get(url)
+    if r.status_code != 200:
+        return None
+    return r.json()
 
     # Define the generation configuration
 generation_config = {
@@ -82,6 +90,20 @@ def get_active_symbols():
     exchange_index = exchange_names.index(exchange_name)
     exchange = data_retriever.get_exchange_codes()[exchange_index]
     return data_retriever.get_symbols(exchange)
+
+def clear_conversation():
+    # Clear all relevant session state variables
+    st.session_state['insights'] = []
+    st.session_state['last_opened'] = 'Stock Overall Information'
+    st.session_state['messages'] = []
+
+def display_card(title, content):
+    st.markdown(f"""
+    <div style="background-color: #F0F0F0; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">
+    <h3 style="color: #007ACC;">{title}</h3>
+    <p style="color: #333333;">{content}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 def run():
@@ -121,6 +143,8 @@ def run():
         #     st.session_state['last_opened'] = 'Trends'
         if st.sidebar.button('Final Equity Report'):
             st.session_state['last_opened'] = 'Final Equity Report'
+        if st.sidebar.button("🗑️ Clear All Report", on_click=clear_conversation):
+            st.rerun()
 
 
 
@@ -224,7 +248,7 @@ def show_etf():
       "grouping": "asset_class",
       "locale": "en",
       "symbolUrl": "",
-      "colorTheme": "light",
+      "colorTheme": "dark",
       "hasTopBar": false,
       "isDataSetEnabled": false,
       "isZoomEnabled": true,
@@ -449,8 +473,8 @@ def show_overall_information():
     "width": 400,
     "height": 550,
     "isTransparent": true,
-    "colorTheme": "light",
     "symbol": "{symbol}",
+    "colorTheme": "light",
     "locale": "en"
     }}
     </script>
@@ -471,8 +495,8 @@ def show_overall_information():
     "displayMode": "regular",
     "width": "400",
     "height": "550",
-    "colorTheme": "light",
     "symbol": "{symbol}",
+    "colorTheme": "light",
     "locale": "en"
     }}
     </script>
@@ -611,9 +635,10 @@ def show_overall_information():
             # Simulate more progress
             time.sleep(1)
             progress_bar.progress(90)
-            
-            st.markdown(tech_analysis)
-            
+            lottie_stock_info = load_lottieurl("https://lottie.host/1e081ec6-5f9d-422d-a6f5-2d1adc4df942/JQLHPbEFi4.json")  # Stock market animation
+            st_lottie.st_lottie(lottie_stock_info, height=200, key="stock_info")
+            # st.markdown(tech_analysis)
+            display_card("Trading Hero AI Technical Summary", tech_analysis)
             # Final progress update
             time.sleep(1)
             progress_bar.progress(100)
@@ -720,8 +745,7 @@ def show_historical_data():
     else:
         st.error("No historical stock data available for the selected symbol.")
 
-    st.write("**Trading Hero AI EPS Summary:**")     
-    with st.spinner("Trading Hero AI EPS analysis is working to generate."):
+    with st.spinner("Trading Hero AI EPS analysis is generating..."):
         if st.button("Show Trading Hero AI EPS Analysis"):
             progress_bar = st.progress(0)
             
@@ -738,7 +762,6 @@ def show_historical_data():
             Key areas to focus on:
 
             Earnings Per Share (EPS): Analyze the EPS performance, including comparisons to previous quarters and the same quarter from the previous year.
-            Guidance: Review the company's forward-looking statements or guidance and provide an interpretation of future prospects.
             Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
 
             Don't ask for more requirements to do analysis, focus on the data provided.
@@ -760,8 +783,13 @@ def show_historical_data():
             # Simulate more progress
             time.sleep(1)
             progress_bar.progress(90)
-            
-            st.markdown(earnings_summary)
+            # Load a Lottie animation
+            lottie_loading = load_lottieurl("https://assets4.lottiefiles.com/packages/lf20_jcikwtux.json")
+            st_lottie.st_lottie(lottie_loading, height=200, key="EPS")
+            # After generating the EPS summary
+            display_card("Trading Hero AI EPS Summary", earnings_summary)
+
+            # st.markdown(earnings_summary)
             
             # Final progress update
             time.sleep(1)
@@ -783,7 +811,7 @@ def show_analyst_recommendations():
     st.markdown(f"**Stock Analyst Recommendations for {symbol}**")
 
     with st.spinner("Fetching and analyzing stock analyst recommendations..."):
-        if st.button("Show Trading Hero AI Stock Analyst Recommendations Analysis"):
+        # if st.button("Show Trading Hero AI Stock Analyst Recommendations Analysis"):
             progress_bar = st.progress(0)
             
             # Simulate some initial progress
@@ -826,8 +854,10 @@ def show_analyst_recommendations():
             # Simulate progress after formatting the summary
             time.sleep(1)
             progress_bar.progress(90)
-            
-            st.markdown(analyst_summary)
+            lottie_loading = load_lottieurl("https://lottie.host/695cd830-79d8-4479-8924-b40ede405cd0/beo0acNaPj.json") 
+            st_lottie.st_lottie(lottie_loading, height=200, key="analyst_summary")
+            # st.markdown(analyst_summary)
+            display_card("Stock Analyst Recommendations Summary", analyst_summary)
             
             # Final progress update
             time.sleep(1)
@@ -927,7 +957,10 @@ def show_news():
             progress_bar.progress(90)
             
             news_summary = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
-            st.markdown(news_summary)
+            # st.markdown(news_summary)
+            lottie_loading = load_lottieurl("https://lottie.host/263bccdf-cbfa-4ec8-b06e-658481e3948a/3kgfq7skXa.json") 
+            st_lottie.st_lottie(lottie_loading, height=200, key="news_summary")
+            display_card("Trading Hero AI News Analysis", news_summary)
             
             # Final progress update
             time.sleep(1)
@@ -940,7 +973,7 @@ def show_news():
                 'summary': news_summary
             })
 
-
+#------------------ 'Time Series'
 
 def show_ts():
     """Display the time series analysis and AI-generated insights."""
@@ -1056,7 +1089,10 @@ def show_ts():
     with st.spinner("Generating Time-Series AI Analysis..."):
         progress_bar = st.progress(0)
         progress_bar.progress(50)
-        st.markdown(tsai_data)
+        lottie_loading = load_lottieurl("https://lottie.host/bd5ce757-97d6-45a4-80ca-789d77f3f9e6/496oYLqk2r.json") 
+        st_lottie.st_lottie(lottie_loading, height=200, key="news_summary")
+        display_card("Trading Hero AI Time-Series Analysis", tsai_data)
+        # st.markdown(tsai_data)
         progress_bar.progress(100)
     
     st.session_state['insights'].append({
@@ -1177,7 +1213,7 @@ def show_ts():
 
 
 def final_report():
-    with st.spinner("Trading Hero Final Report Model is working to generate..."):
+    with st.spinner("Trading Hero Final Report Model is working to generate with vast amount of data, please wait..."):
         progress_bar = st.progress(0)
         
         final_report_prompt = """
@@ -1186,6 +1222,9 @@ def final_report():
         You should evaluate the stock's overall performance and future outlook based on the insights provided from each section. 
         The report should be written in a professional yet engaging tone, with clear headings for each section, 
         and use emojis where appropriate to make the report more interactive.
+
+        If you observe I didn't provide you any company name or ticker, please discard everything below and return “Please run all the report before hit Final Equity Report.”
+        If you observe I didn't provide info to analyze information below, in that section, please return "This part of info was not run, plase run the report."
 
         Your report should include the following sections:
 
@@ -1257,8 +1296,10 @@ def final_report():
             sanitized_ai_data = report.replace('\n', '  \n')
             
             st.title("Trading Hero Equity Report")
-            st.markdown(sanitized_ai_data)
-            
+            # st.markdown(sanitized_ai_data)
+            lottie_loading = load_lottieurl("https://lottie.host/b4f0db0a-9b79-406d-a607-d1729f40498b/DLpCKx1c8R.json") 
+            st_lottie.st_lottie(lottie_loading, height=200, key="ai")
+            display_card("Trading Hero Equity Report", sanitized_ai_data)
             # Final progress update
             time.sleep(1)
             progress_bar.progress(100)

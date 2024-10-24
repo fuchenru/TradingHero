@@ -12,7 +12,7 @@ from neuralprophet import NeuralProphet, set_random_seed
 
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 # Define the model for Gemini Pro
-model = GenerativeModel("gemini-1.5-pro-002")
+model = GenerativeModel("gemini-1.5-flash-002")
 
 def transform_price(df):
     """Transform the price data for NeuralProphet model."""
