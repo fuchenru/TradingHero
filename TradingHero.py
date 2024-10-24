@@ -248,7 +248,7 @@ def show_etf():
       "grouping": "asset_class",
       "locale": "en",
       "symbolUrl": "",
-      "colorTheme": "dark",
+      "colorTheme": "light",
       "hasTopBar": false,
       "isDataSetEnabled": false,
       "isZoomEnabled": true,
