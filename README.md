@@ -249,7 +249,7 @@ Trading Hero empowers traders by integrating essential market data and AI-powere
 | 6 | Project Management | ![Trello](https://img.shields.io/badge/Trello-%23026AA7.svg?style=for-the-badge&logo=trello&logoColor=white) |
 | 7 | Cloud Computing | ![Google Cloud](https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white) |
 | 8 | Version Control | ![Git](https://img.shields.io/badge/Git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white) |
-| 9 | APIs | ![TradingView](https://img.shields.io/badge/TradingView-%23083D8C.svg?style=for-the-badge&logo=tradingview&logoColor=white), ![Finnhub](https://img.shields.io/badge/Finnhub-%2300C4CC.svg?style=for-the-badge), ![Yahoo Finance](https://img.shields.io/badge/Yahoo%20Finance-%23700CBC.svg?style=for-the-badge&logo=yahoo&logoColor=white), ![Polygon.io](https://img.shields.io/badge/Polygon.io-%23000000.svg?style=for-the-badge) |
+| 9 | APIs | ![TradingView](https://img.shields.io/badge/TradingView-%23083D8C.svg?style=for-the-badge&logo=tradingview&logoColor=white), ![Finnhub](https://img.shields.io/badge/Finnhub-%2300C4CC.svg?style=for-the-badge), ![Yahoo Finance](https://img.shields.io/badge/Yahoo%20Finance-%23700CBC.svg?style=for-the-badge&logo=yahoo&logoColor=white), ![Polygon.io](https://img.shields.io/badge/Polygon.io-%23000000.svg?style=for-the-badge), ![FMP](https://img.shields.io/badge/FMP-%23000000.svg?style=for-the-badge) |
 | 10 | Containerization | ![Docker](https://img.shields.io/badge/Docker-%232496ED.svg?style=for-the-badge&logo=docker&logoColor=white) |
 
 
