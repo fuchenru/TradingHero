@@ -75,6 +75,11 @@ This page presents users with a comprehensive overview of analyst recommendation
 </p>
 
 ### 🔮 Trading Hero AI News Analysis <a name="News-Analysis"></a>
+
+<div align="center">
+![Animation](Assests/news.gif)
+</div>
+
 Trading Hero leverages cutting-edge **Natural Language Processing (NLP)** to perform comprehensive sentiment analysis on a vast number of news articles across different financial domains. This tool is designed to assist investors in making informed decisions by offering insights into the sentiment of articles related to specific stocks.
 
 #### Overview
@@ -117,6 +122,10 @@ The model was evaluated on several metrics to ensure high performance in analyzi
 </p>
 
 ### 🔮 Trading Hero: Advanced Time Series Forecasting <a name="Time-Series"></a>
+
+<div align="center">
+![Animation](Assests/time.gif)
+</div>
 
 Trading Hero leverages a sophisticated deep learning approach for sequential learning in time-series data. While Facebook's Prophet model was developed to provide a flexible, user-friendly, and explainable framework for time series prediction, it often falls short in terms of accuracy. To address these performance limitations, we integrated Neural Networks with Prophet, creating **NeuralProphet**—a hybrid model designed to enhance predictive performance while preserving the interpretability that Prophet is known for.
 
@@ -182,7 +191,9 @@ By combining the statistical foundation of Facebook's Prophet with the powerful 
 
 ### 🔮 Trading Hero Final Report: Empowering Traders with AI Insights <a name="Final-Report"></a>
 
+<div align="center">
 ![Animation](Assests/Animation-1729957361757.gif)
+</div>
 
 The **Trading Hero Final Report** provides traders with a concise, AI-driven summary of key insights, offering a clear and actionable view of market trends and stock performance.
 
