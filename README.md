@@ -1,8 +1,7 @@
 <h1 align="center">
-
-<a href="https://kelvinsa0528.wixsite.com/tradinghero" target="_blank">Trading Hero</a> : Empowering Traders with AI Market Analysis
-
+  <a href="https://kelvinsa0528.wixsite.com/tradinghero" target="_blank">Trading Hero</a> <br> Empowering Traders with AI Stock Analysis
 </h1>
+
 
 <!-- ![Result](https://i.postimg.cc/cLMsKfTw/Art.png) -->
 <p align="center">
