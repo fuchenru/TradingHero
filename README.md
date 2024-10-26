@@ -182,6 +182,8 @@ By combining the statistical foundation of Facebook's Prophet with the powerful 
 
 ### 🔮 Trading Hero Final Report: Empowering Traders with AI Insights <a name="Final-Report"></a>
 
+![Animation](Assests/Animation-1729957361757.gif)
+
 The **Trading Hero Final Report** provides traders with a concise, AI-driven summary of key insights, offering a clear and actionable view of market trends and stock performance.
 
 #### **How the Final Report Helps Traders:**
