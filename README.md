@@ -42,14 +42,15 @@ Trading Hero is an advanced stock market analysis tool designed to streamline tr
 <img width="380" alt="Trading Motivation Image" src="Assests/Trading_Motivation.png">
 </p>
 
-Trading Hero was inspired by the challenges faced by semi-professional retail traders who struggle with managing multiple streams of market data. These traders often rely on various platforms for technical, fundamental, and news analysis...and so one. Which leads to information overload and inefficiency.
+Trading Hero was inspired by the challenges faced by semi-professional retail traders who often juggle multiple platforms / screens to conduct technical, fundamental, and news analysis...etc. This scattered approach frequently leads to information overload, inefficiencies, and missed opportunities.
 
 <div align="center">
   <img src="Assests/intro.gif" alt="Animation">
 </div>
 
 ### **How Trading Hero Makes a Difference**  
-Trading Hero unifies essential data sources, empowering traders to make informed decisions quickly and effectively. With our AI-driven insights, we provide a **simplified report** that consolidates complex data into actionable guidance, making it easier to analyze and respond to market trends. Ultimately, Trading Hero strives to be your comprehensive **AI Financial Advisor**—helping you navigate the market with confidence and clarity.
+Trading Hero unifies essential data sources, empowering traders to make informed decisions quickly and effectively. With our AI-driven insights, we provide a **simplified report** that consolidates complex data into actionable guidance, making it easier to analyze and respond to market trends.
+Ultimately, Trading Hero strives to be your comprehensive **AI Financial Advisor**—helping you navigate the market with confidence and clarity.
 
 # **🧠 Overview of Trading Hero** <a name="Overview"></a>
 
