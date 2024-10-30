@@ -4,9 +4,13 @@
 
 
 <!-- ![Result](https://i.postimg.cc/cLMsKfTw/Art.png) -->
-<p align="center">
+<!--<p align="center">
 <img width="350" alt="TR logo 1" src="https://i.postimg.cc/8zhnNjvs/tr-logo1.png">
-</p>
+</p>-->
+
+<div align="center">
+  <img src="Assests/open.gif" alt="Animation">
+</div>
 
 Trading Hero is an advanced stock market analysis tool designed to streamline trading processes, reduce information overload, and enhance decision-making for semi-professional retail traders.
 
