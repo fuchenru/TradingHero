@@ -24,9 +24,10 @@ def transform_price(df):
 def train_neuralprophet_model(df):
     """Train the NeuralProphet model with the given data."""
     np_model = NeuralProphet(
-    yearly_seasonality=True,
-    weekly_seasonality=True,
-    trend_reg=0.1)  # L2 regularization for trend components
+        yearly_seasonality=True,
+        weekly_seasonality=True,
+        trend_reg=1.0,      # Increased trend regularization
+        n_changepoints=5)   # Reduced number of changepoints
     np_model.fit(df, freq='D', progress='off')
     return np_model
 

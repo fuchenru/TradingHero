@@ -945,7 +945,7 @@ def show_news():
             as well as the projected trajectory factoring in future risks and prospects. Put more weights on most recent news sentiments, and less
             weights on the least recent news.
 
-            The provided summaries contain all necessary details to perform this comprehensive review.  
+            Please make your summary report concise, professional, easy to read.
             Don't include any of your suggestion on if I can provide any more data to you. Make the summary as concise as possible.
             """
 
