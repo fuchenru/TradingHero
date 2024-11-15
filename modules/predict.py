@@ -14,21 +14,108 @@ vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 # Define the model for Gemini Pro
 model = GenerativeModel("gemini-1.5-pro-002")
 
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
 def transform_price(df):
     """Transform the price data for NeuralProphet model."""
-    df = df[['Adj Close']].reset_index()
-    df = df.rename(columns={'Date': 'ds', 'Adj Close': 'y'})
-    df['ds'] = pd.to_datetime(df['ds'])
-    return df
+    try:
+        # Ensure we have a proper DataFrame
+        if not isinstance(df, pd.DataFrame):
+            logging.error(f"Input is not a DataFrame: {type(df)}")
+            raise TypeError("Input must be a pandas DataFrame")
+            
+        # Log initial state
+        logging.info(f"Initial DataFrame columns: {df.columns.tolist()}")
+        logging.info(f"Initial DataFrame index: {df.index.name}")
+        
+        # Check if the DataFrame has an index
+        if df.index.name is None:
+            logging.warning("DataFrame index has no name, attempting to reset index")
+            df = df.reset_index()
+        
+        # Ensure we have the required data
+        if 'Adj Close' not in df.columns:
+            available_cols = df.columns.tolist()
+            logging.error(f"'Adj Close' not found. Available columns: {available_cols}")
+            raise KeyError("'Adj Close' column not found in DataFrame")
+            
+        # Create a clean DataFrame with only required columns
+        if isinstance(df.index, pd.DatetimeIndex):
+            temp_df = pd.DataFrame({
+                'ds': df.index,
+                'y': df['Adj Close']
+            })
+        else:
+            # If index is not DatetimeIndex, try to use 'Date' column
+            if 'Date' in df.columns:
+                temp_df = pd.DataFrame({
+                    'ds': df['Date'],
+                    'y': df['Adj Close']
+                })
+            else:
+                raise KeyError("Neither DatetimeIndex nor 'Date' column found")
+        
+        # Ensure datetime type
+        temp_df['ds'] = pd.to_datetime(temp_df['ds'])
+        
+        # Sort by date
+        temp_df = temp_df.sort_values('ds').reset_index(drop=True)
+        
+        # Verify final structure
+        logging.info(f"Final DataFrame columns: {temp_df.columns.tolist()}")
+        logging.info(f"Final DataFrame shape: {temp_df.shape}")
+        
+        return temp_df
+        
+    except Exception as e:
+        logging.error(f"Error in transform_price: {str(e)}", exc_info=True)
+        raise
 
 def train_neuralprophet_model(df):
     """Train the NeuralProphet model with the given data."""
-    np_model = NeuralProphet(
-    yearly_seasonality=True,
-    weekly_seasonality=True,
-    trend_reg=0.1)  # L2 regularization for trend components
-    np_model.fit(df, freq='D', progress='off')
-    return np_model
+    try:
+        # Validate input
+        if not isinstance(df, pd.DataFrame):
+            raise TypeError("Input must be a pandas DataFrame")
+            
+        # Check required columns
+        required_cols = ['ds', 'y']
+        missing_cols = [col for col in required_cols if col not in df.columns]
+        if missing_cols:
+            raise KeyError(f"Missing required columns: {missing_cols}")
+            
+        # Ensure data types
+        df['ds'] = pd.to_datetime(df['ds'])
+        df['y'] = pd.to_numeric(df['y'], errors='coerce')
+        
+        # Remove any NaN values
+        df = df.dropna()
+        
+        if len(df) == 0:
+            raise ValueError("No valid data points after processing")
+            
+        logging.info(f"Training model with {len(df)} data points")
+        
+        # Initialize and train model
+        np_model = NeuralProphet(
+            yearly_seasonality=True,
+            weekly_seasonality=True,
+            trend_reg=0.1,
+            daily_seasonality=False  # Add this to reduce complexity
+        )
+        
+        np_model.fit(df, freq='D', progress='off')
+        return np_model
+        
+    except Exception as e:
+        logging.error(f"Error in train_neuralprophet_model: {str(e)}", exc_info=True)
+        raise
 
 def make_forecast(model, df, periods):
     """Make future predictions using the trained NeuralProphet model."""

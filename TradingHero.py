@@ -666,84 +666,83 @@ def show_historical_data():
         st.session_state.selected_symbol_hist = symbol
 
     if not st.session_state.symbol_prices_hist.empty:
-        symbol_prices_hist = st.session_state.symbol_prices_hist[::-1]
-        col1, col2 = st.columns(2)
+        # symbol_prices_hist = st.session_state.symbol_prices_hist[::-1]
+        # col1, col2 = st.columns(2)
 
         # with col1:
         #     st.markdown(f"**End-of-Day Historical Stock Data for {symbol}**")
         #     st.dataframe(symbol_prices_hist, width=1000)
 
-        with col1:
-            st.markdown(f"**Historical EPS Surprises for {symbol}**")
-            earnings_data = get_earnings.get_earnings(symbol)
-            if earnings_data:
-                # Reverse the data for chronological order (oldest to newest)
-                earnings_data = earnings_data[::-1]
-                actuals = [item['actual'] for item in earnings_data]
-                estimates = [item['estimate'] for item in earnings_data]
-                periods = [item['period'] for item in earnings_data]
-                surprisePercents = [item['surprisePercent'] for item in earnings_data]
-                surpriseText = ['Beat: {:.2f}'.format(item['surprise']) if item['surprise'] > 0 else 'Missed: {:.2f}'.format(item['surprise']) for item in earnings_data]
+        # with col1:
+        st.markdown(f"**Historical EPS Surprises for {symbol}**")
+        earnings_data = get_earnings.get_earnings(symbol)
+        if earnings_data:
+            # Reverse the data for chronological order (oldest to newest)
+            earnings_data = earnings_data[::-1]
+            actuals = [item['actual'] for item in earnings_data]
+            estimates = [item['estimate'] for item in earnings_data]
+            periods = [item['period'] for item in earnings_data]
+            surprisePercents = [item['surprisePercent'] for item in earnings_data]
+            surpriseText = ['Beat: {:.2f}'.format(item['surprise']) if item['surprise'] > 0 else 'Missed: {:.2f}'.format(item['surprise']) for item in earnings_data]
 
-                # Create the bubble chart for EPS surprises
-                fig = go.Figure()
+            # Create the bubble chart for EPS surprises
+            fig = go.Figure()
 
-                # Add actual EPS values with marker sizes based on surprise
-                fig.add_trace(go.Scatter(
-                    x=periods,
-                    y=actuals,
-                    mode='markers+text',
-                    name='Actual',
-                    text=surpriseText,
-                    textposition="bottom center",
-                    marker=dict(
-                        size=[max(10, abs(s) * 10) for s in surprisePercents],  # Dynamically size markers, minimum size of 10
-                        color='LightSkyBlue',
-                        line=dict(
-                            color='MediumPurple',
-                            width=2
-                        ),
-                        sizemode='diameter'
-                    )
-                ))
-
-                # Add estimated EPS values as smaller, semi-transparent markers
-                fig.add_trace(go.Scatter(
-                    x=periods,
-                    y=estimates,
-                    mode='markers',
-                    name='Estimate',
-                    marker=dict(
-                        size=15,  # Fixed size for all estimate markers
+            # Add actual EPS values with marker sizes based on surprise
+            fig.add_trace(go.Scatter(
+                x=periods,
+                y=actuals,
+                mode='markers+text',
+                name='Actual',
+                text=surpriseText,
+                textposition="bottom center",
+                marker=dict(
+                    size=[max(10, abs(s) * 10) for s in surprisePercents],  # Dynamically size markers, minimum size of 10
+                    color='LightSkyBlue',
+                    line=dict(
                         color='MediumPurple',
-                        opacity=0.5,
-                        line=dict(
-                            color='MediumPurple',
-                            width=2
-                        )
-                    )
-                ))
-
-                # Customize the layout
-                fig.update_layout(
-                    title='Historical EPS Surprises',
-                    xaxis_title='Period',
-                    yaxis_title='Quarterly EPS',
-                    xaxis=dict(
-                        type='category',
-                        tickmode='array',
-                        tickvals=periods,
-                        ticktext=periods
+                        width=2
                     ),
-                    yaxis=dict(showgrid=False),
-                    plot_bgcolor='rgba(0,0,0,0)'
+                    sizemode='diameter'
                 )
+            ))
 
-                st.plotly_chart(fig)
-            else:
-                st.error("No EPS data available for the selected symbol.")
-    else:
-        st.error("No historical stock data available for the selected symbol.")
+            # Add estimated EPS values as smaller, semi-transparent markers
+            fig.add_trace(go.Scatter(
+                x=periods,
+                y=estimates,
+                mode='markers',
+                name='Estimate',
+                marker=dict(
+                    size=15,  # Fixed size for all estimate markers
+                    color='MediumPurple',
+                    opacity=0.5,
+                    line=dict(
+                        color='MediumPurple',
+                        width=2
+                    )
+                )
+            ))
+
+            # Customize the layout
+            fig.update_layout(
+                title='Historical EPS Surprises',
+                xaxis_title='Period',
+                yaxis_title='Quarterly EPS',
+                xaxis=dict(
+                    type='category',
+                    tickmode='array',
+                    tickvals=periods,
+                    ticktext=periods
+                ),
+                yaxis=dict(showgrid=False),
+                plot_bgcolor='rgba(0,0,0,0)'
+            )
+
+            st.plotly_chart(fig)
+        else:
+            st.error("No EPS data available for the selected symbol.")
+
 
     # st.write("**Trading Hero AI EPS Summary:**")     
     with st.spinner("Trading Hero AI EPS analysis is working to generate."):
@@ -955,7 +954,6 @@ def show_news():
             })
 
 #------------------ 'Time Series'
-
 def show_ts():
     """Display the time series analysis and AI-generated insights."""
     

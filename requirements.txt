@@ -8,11 +8,10 @@ plotly
 numpy
 scipy
 vertexai
-neuralprophet
+prophet
 scikit-learn
 transformers
 chardet
 huggingface_hub
-transformers
 torch
 streamlit_lottie
