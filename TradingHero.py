@@ -116,7 +116,7 @@ def run():
         """,
         unsafe_allow_html=True,
     )
-    st.sidebar.image("https://i.postimg.cc/8zhnNjvs/tr-logo1.png", use_column_width=True)
+    st.sidebar.image("https://i.postimg.cc/8zhnNjvs/tr-logo1.png")
     st.sidebar.title("Menu 🌐")
     st.image("https://i.imgur.com/WQE6iLY.jpeg", width=805)
     if 'insights' not in st.session_state:
@@ -669,11 +669,11 @@ def show_historical_data():
         symbol_prices_hist = st.session_state.symbol_prices_hist[::-1]
         col1, col2 = st.columns(2)
 
-        with col1:
-            st.markdown(f"**End-of-Day Historical Stock Data for {symbol}**")
-            st.dataframe(symbol_prices_hist, width=1000)
+        # with col1:
+        #     st.markdown(f"**End-of-Day Historical Stock Data for {symbol}**")
+        #     st.dataframe(symbol_prices_hist, width=1000)
 
-        with col2:
+        with col1:
             st.markdown(f"**Historical EPS Surprises for {symbol}**")
             earnings_data = get_earnings.get_earnings(symbol)
             if earnings_data:
@@ -745,7 +745,8 @@ def show_historical_data():
     else:
         st.error("No historical stock data available for the selected symbol.")
 
-    with st.spinner("Trading Hero AI EPS analysis is generating..."):
+    # st.write("**Trading Hero AI EPS Summary:**")     
+    with st.spinner("Trading Hero AI EPS analysis is working to generate."):
         if st.button("Show Trading Hero AI EPS Analysis"):
             progress_bar = st.progress(0)
             
@@ -979,7 +980,7 @@ def show_ts():
     """)
 
 
-    with st.spinner('Fetching and training deep learning time series model, It can take a while...'):
+    with st.spinner('Fetching and training deep learning time series model...'):
         df = predict.transform_price(symbol_prices)
         model_np = predict.train_neuralprophet_model(df)
         forecast = predict.make_forecast(model_np, df, days_to_forecast)
