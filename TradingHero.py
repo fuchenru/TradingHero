@@ -746,61 +746,60 @@ def show_historical_data():
 
     # st.write("**Trading Hero AI EPS Summary:**")     
     with st.spinner("Trading Hero AI EPS analysis is working to generate."):
-        if st.button("Show Trading Hero AI EPS Analysis"):
-            progress_bar = st.progress(0)
-            
-            # Simulate some initial progress
-            time.sleep(1)
-            progress_bar.progress(10)
-            
-            earnings_data = get_earnings.get_earnings(symbol)
-            
-            earnings_prompt = f"""
-            You are a financial analyst tasked with providing a detailed earnings analysis for the company with the ticker symbol {symbol}. 
-            The specific earnings data is as follows:{earnings_data}
+        progress_bar = st.progress(0)
+        
+        # Simulate some initial progress
+        time.sleep(1)
+        progress_bar.progress(10)
+        
+        earnings_data = get_earnings.get_earnings(symbol)
+        
+        earnings_prompt = f"""
+        You are a financial analyst tasked with providing a detailed earnings analysis for the company with the ticker symbol {symbol}. 
+        The specific earnings data is as follows:{earnings_data}
 
-            Key areas to focus on:
+        Key areas to focus on:
 
-            Earnings Per Share (EPS): Analyze the EPS performance, including comparisons to previous quarters and the same quarter from the previous year.
-            Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
+        Earnings Per Share (EPS): Analyze the EPS performance, including comparisons to previous quarters and the same quarter from the previous year.
+        Overall Scoring: Provide an overall score or rating for the company's current status and future outlook on a scale of 1-10. 
 
-            Don't ask for more requirements to do analysis, focus on the data provided.
-            You can add some emoji in this report if you want to make it interactive.
-            Try not to mention any numbers as people call all view the numbers, more focus on non-technical person."""
-            
-            # Simulate more progress
-            time.sleep(1)
-            progress_bar.progress(30)
-            
-            eps_report = vertex.eps_response(earnings_prompt, symbol, earnings_data)
-            
-            # Simulate more progress
-            time.sleep(1)
-            progress_bar.progress(60)
-            
-            earnings_summary = eps_report.replace('\n', '  \n')
-            
-            # Simulate more progress
-            time.sleep(1)
-            progress_bar.progress(90)
-            # Load a Lottie animation
-            lottie_loading = load_lottieurl("https://assets4.lottiefiles.com/packages/lf20_jcikwtux.json")
-            st_lottie.st_lottie(lottie_loading, height=200, key="EPS")
-            # After generating the EPS summary
-            display_card("Trading Hero AI EPS Summary", earnings_summary)
+        Don't ask for more requirements to do analysis, focus on the data provided.
+        You can add some emoji in this report if you want to make it interactive.
+        Try not to mention any numbers as people call all view the numbers, more focus on non-technical person."""
+        
+        # Simulate more progress
+        time.sleep(1)
+        progress_bar.progress(30)
+        
+        eps_report = vertex.eps_response(earnings_prompt, symbol, earnings_data)
+        
+        # Simulate more progress
+        time.sleep(1)
+        progress_bar.progress(60)
+        
+        earnings_summary = eps_report.replace('\n', '  \n')
+        
+        # Simulate more progress
+        time.sleep(1)
+        progress_bar.progress(90)
+        # Load a Lottie animation
+        lottie_loading = load_lottieurl("https://assets4.lottiefiles.com/packages/lf20_jcikwtux.json")
+        st_lottie.st_lottie(lottie_loading, height=200, key="EPS")
+        # After generating the EPS summary
+        display_card("Trading Hero AI EPS Summary", earnings_summary)
 
-            # st.markdown(earnings_summary)
-            
-            # Final progress update
-            time.sleep(1)
-            progress_bar.progress(100)
-            
-            footer.add_footer()
+        # st.markdown(earnings_summary)
+        
+        # Final progress update
+        time.sleep(1)
+        progress_bar.progress(100)
+        
+        footer.add_footer()
 
-            st.session_state['insights'].append({
-                'section': 'EPS Summary',
-                'summary': earnings_summary
-            })
+        st.session_state['insights'].append({
+            'section': 'EPS Summary',
+            'summary': earnings_summary
+        })
 
 #------------------ 'Stock Analyst Recommendations'
 
@@ -956,13 +955,12 @@ def show_news():
 #------------------ 'Time Series'
 def show_ts():
     """Display the time series analysis and AI-generated insights."""
-    
     symbols = get_active_symbols()
     symbol = st.session_state.get('selected_symbol', symbols[0])
     
     st.markdown(f"**Time Series Forecasting for {symbol}**")
 
-    # User inputs for trend analysis and forecasting
+    # User inputs
     period = st.slider('Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
     days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
     years_back = st.number_input('Number of years look-back:', value=1, min_value=1, max_value=10)
@@ -971,17 +969,15 @@ def show_ts():
     # Fetch and transform stock data
     symbol_prices = data_retriever.get_current_stock_data(symbol, weeks_back)
 
-    # Display forecast plot
     st.caption("""
-    Trading Hero's Time Series model revolutionizes forecasting by combining PyTorch-based deep learning with traditional time series techniques. 
-    It incorporates local context through auto-regression and covariate modules, providing more accurate and insightful predictions.
+    Trading Hero's Time Series model uses Facebook's Prophet, which excels at forecasting time series data with strong seasonal patterns 
+    and multiple seasonality levels. It automatically handles missing data and outliers while providing uncertainty intervals.
     """)
 
-
-    with st.spinner('Fetching and training deep learning time series model...'):
+    with st.spinner('Fetching and training Prophet model...'):
         df = predict.transform_price(symbol_prices)
-        model_np = predict.train_neuralprophet_model(df)
-        forecast = predict.make_forecast(model_np, df, days_to_forecast)
+        model = predict.train_prophet_model(df)
+        forecast = predict.make_forecast(model, df, days_to_forecast)
 
         # Plot the forecast using Plotly
         fig = go.Figure()
@@ -996,29 +992,28 @@ def show_ts():
 
         # Add forecasted data
         fig.add_trace(go.Scatter(
-            x=forecast['ds'], y=forecast['yhat1'],
+            x=forecast['ds'], y=forecast['yhat'],
             mode='lines', name='Forecast',
             line=dict(color='firebrick', width=2, dash='dash'),
             hovertemplate='%{y:.2f}<extra></extra>',
         ))
 
-        # If confidence intervals are available, plot them
-        if 'yhat1_lower' in forecast.columns and 'yhat1_upper' in forecast.columns:
-            fig.add_trace(go.Scatter(
-                x=forecast['ds'], y=forecast['yhat1_upper'],
-                mode='lines', name='Upper Bound',
-                line=dict(color='lightgray', width=1),
-                hoverinfo='skip',
-            ))
-            fig.add_trace(go.Scatter(
-                x=forecast['ds'], y=forecast['yhat1_lower'],
-                mode='lines', name='Lower Bound',
-                line=dict(color='lightgray', width=1),
-                fill='tonexty', fillcolor='rgba(255, 0, 0, 0.1)',
-                hoverinfo='skip',
-            ))
+        # Add confidence intervals
+        fig.add_trace(go.Scatter(
+            x=forecast['ds'], y=forecast['yhat_upper'],
+            mode='lines', name='Upper Bound',
+            line=dict(color='lightgray', width=1),
+            hoverinfo='skip',
+        ))
+        fig.add_trace(go.Scatter(
+            x=forecast['ds'], y=forecast['yhat_lower'],
+            mode='lines', name='Lower Bound',
+            line=dict(color='lightgray', width=1),
+            fill='tonexty', fillcolor='rgba(255, 0, 0, 0.1)',
+            hoverinfo='skip',
+        ))
 
-        # Update the layout for a more professional look
+        # Update layout
         fig.update_layout(
             title=f'{symbol} Price Forecast',
             xaxis_title='Date',
@@ -1031,48 +1026,43 @@ def show_ts():
             margin=dict(l=40, r=40, t=50, b=40),
         )
 
-        # Show the plot in Streamlit
+        # Show the plot
         st.plotly_chart(fig)
 
-        # Calculate and display performance metrics
+        # Calculate and display metrics
         actual = df['y']
-        predicted = forecast.loc[forecast['ds'].isin(df['ds']), 'yhat1']
+        predicted = forecast.loc[forecast['ds'].isin(df['ds']), 'yhat']
         metrics = predict.calculate_performance_metrics(actual, predicted)
         
         st.subheader('Performance Metrics')
-
-        metrics_data = {
+        metrics_df = pd.DataFrame({
             "Metric": ["Mean Absolute Error (MAE)", "Mean Squared Error (MSE)", "Root Mean Squared Error (RMSE)"],
             "Value": [metrics['MAE'], metrics['MSE'], metrics['RMSE']]
-        }
-
-        metrics_df = pd.DataFrame(metrics_data)
+        })
         metrics_df.set_index("Metric", inplace=True)
         st.table(metrics_df)
 
-    # AI analysis
-    future_price = forecast[['ds', 'yhat1']].tail(days_to_forecast)
-    metrics_data_str = "Keys: {}, Values: {}".format(list(metrics.keys()), list(metrics.values()))
-    tsprompt = f"""
-    The following data reflects the future stock price forecast and the model's accuracy:
-    - Future Price Trend: {future_price.to_string(index=False)}
-    - Performance Metrics (MAE: {metrics['MAE']}, RMSE: {metrics['RMSE']}, etc.)
+        # Generate AI analysis
+        future_price = forecast[['ds', 'yhat']].tail(days_to_forecast)
+        metrics_data_str = "Keys: {}, Values: {}".format(list(metrics.keys()), list(metrics.values()))
+        tsprompt = f"""
+        The following data reflects the future stock price forecast and the model's accuracy:
+        - Future Price Trend: {future_price.to_string(index=False)}
+        - Performance Metrics (MAE: {metrics['MAE']}, RMSE: {metrics['RMSE']}, etc.)
 
-    Analyze the trend in light of the performance metrics. Provide actionable insights on whether the stock is likely to rise, fall, 
-    or remain stable in the next {days_to_forecast} days.
-    """
+        Analyze the trend in light of the performance metrics. Provide actionable insights on whether the stock is likely to rise, fall, 
+        or remain stable in the next {days_to_forecast} days.
+        """
 
-
-    tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
-    
-    with st.spinner("Generating Time-Series AI Analysis..."):
-        progress_bar = st.progress(0)
-        progress_bar.progress(50)
-        lottie_loading = load_lottieurl("https://lottie.host/bd5ce757-97d6-45a4-80ca-789d77f3f9e6/496oYLqk2r.json") 
-        st_lottie.st_lottie(lottie_loading, height=200, key="news_summary")
-        display_card("Trading Hero AI Time-Series Analysis", tsai_data)
-        # st.markdown(tsai_data)
-        progress_bar.progress(100)
+        tsai_data = predict.generate_vertexai_tsresponse(tsprompt, future_price, metrics_data_str)
+        
+        with st.spinner("Generating Time-Series AI Analysis..."):
+            progress_bar = st.progress(0)
+            progress_bar.progress(50)
+            lottie_loading = load_lottieurl("https://lottie.host/bd5ce757-97d6-45a4-80ca-789d77f3f9e6/496oYLqk2r.json") 
+            st_lottie.st_lottie(lottie_loading, height=200, key="news_summary")
+            display_card("Trading Hero AI Time-Series Analysis", tsai_data)
+            progress_bar.progress(100)
     
     st.session_state['insights'].append({
                 'section': 'Time-Series Analysis',

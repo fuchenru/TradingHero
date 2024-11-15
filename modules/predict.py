@@ -13,7 +13,7 @@ from neuralprophet import NeuralProphet, set_random_seed
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 # Define the model for Gemini Pro
 model = GenerativeModel("gemini-1.5-pro-002")
-
+from prophet import Prophet
 import logging
 
 # Configure logging
@@ -23,7 +23,7 @@ logging.basicConfig(
 )
 
 def transform_price(df):
-    """Transform the price data for NeuralProphet model."""
+    """Transform the price data for Prophet model."""
     try:
         # Ensure we have a proper DataFrame
         if not isinstance(df, pd.DataFrame):
@@ -34,29 +34,20 @@ def transform_price(df):
         logging.info(f"Initial DataFrame columns: {df.columns.tolist()}")
         logging.info(f"Initial DataFrame index: {df.index.name}")
         
-        # Check if the DataFrame has an index
-        if df.index.name is None:
-            logging.warning("DataFrame index has no name, attempting to reset index")
-            df = df.reset_index()
+        # Flatten the Adj Close column if it's 2D
+        adj_close = df['Adj Close'].values.flatten() if isinstance(df['Adj Close'].values, np.ndarray) else df['Adj Close']
         
-        # Ensure we have the required data
-        if 'Adj Close' not in df.columns:
-            available_cols = df.columns.tolist()
-            logging.error(f"'Adj Close' not found. Available columns: {available_cols}")
-            raise KeyError("'Adj Close' column not found in DataFrame")
-            
-        # Create a clean DataFrame with only required columns
+        # Create a clean DataFrame with Prophet's required columns (ds and y)
         if isinstance(df.index, pd.DatetimeIndex):
             temp_df = pd.DataFrame({
                 'ds': df.index,
-                'y': df['Adj Close']
+                'y': adj_close
             })
         else:
-            # If index is not DatetimeIndex, try to use 'Date' column
             if 'Date' in df.columns:
                 temp_df = pd.DataFrame({
                     'ds': df['Date'],
-                    'y': df['Adj Close']
+                    'y': adj_close
                 })
             else:
                 raise KeyError("Neither DatetimeIndex nor 'Date' column found")
@@ -66,6 +57,9 @@ def transform_price(df):
         
         # Sort by date
         temp_df = temp_df.sort_values('ds').reset_index(drop=True)
+        
+        # Convert to float if necessary
+        temp_df['y'] = temp_df['y'].astype(float)
         
         # Verify final structure
         logging.info(f"Final DataFrame columns: {temp_df.columns.tolist()}")
@@ -77,8 +71,8 @@ def transform_price(df):
         logging.error(f"Error in transform_price: {str(e)}", exc_info=True)
         raise
 
-def train_neuralprophet_model(df):
-    """Train the NeuralProphet model with the given data."""
+def train_prophet_model(df):
+    """Train the Prophet model with the given data."""
     try:
         # Validate input
         if not isinstance(df, pd.DataFrame):
@@ -102,25 +96,35 @@ def train_neuralprophet_model(df):
             
         logging.info(f"Training model with {len(df)} data points")
         
-        # Initialize and train model
-        np_model = NeuralProphet(
+        # Initialize and train Prophet model
+        model = Prophet(
             yearly_seasonality=True,
             weekly_seasonality=True,
-            trend_reg=0.1,
-            daily_seasonality=False  # Add this to reduce complexity
+            daily_seasonality=False,
+            changepoint_prior_scale=0.05,  # Controls flexibility of the trend
+            seasonality_prior_scale=10.0,  # Controls flexibility of seasonality
+            seasonality_mode='multiplicative'  # Better for stock prices
         )
         
-        np_model.fit(df, freq='D', progress='off')
-        return np_model
+        model.fit(df)
+        return model
         
     except Exception as e:
-        logging.error(f"Error in train_neuralprophet_model: {str(e)}", exc_info=True)
+        logging.error(f"Error in train_prophet_model: {str(e)}", exc_info=True)
         raise
 
 def make_forecast(model, df, periods):
-    """Make future predictions using the trained NeuralProphet model."""
-    future = model.make_future_dataframe(df=df, periods=periods, n_historic_predictions=True)
+    """Make future predictions using the trained Prophet model."""
+    # Create future dataframe
+    future = model.make_future_dataframe(periods=periods)
+    
+    # Make predictions
     forecast = model.predict(future)
+    
+    # Add historical predictions
+    historical_dates = df['ds']
+    historical_predictions = forecast[forecast['ds'].isin(historical_dates)]
+    
     return forecast
 
 def calculate_performance_metrics(actual, predicted):
