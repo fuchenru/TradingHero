@@ -872,13 +872,12 @@ def show_analyst_recommendations():
 
 
 #------------------ 'Latest News'
-
+from datetime import date
 def show_news():
     symbols = get_active_symbols()
     symbol = st.session_state.get('selected_symbol', symbols[0])
     
     st.markdown(f"**News Analysis for {symbol}**")
-    # Information about the NLP model and AI News Analysis
     st.caption("""
     Trading Hero utilizes AI News Analysis to leverage state-of-the-art Natural Language Processing (NLP) model for comprehensive analysis 
     on massive volumes of news articles across diverse domains. This tool helps in making informed investment decisions 
@@ -892,45 +891,34 @@ def show_news():
         if st.button("Show Trading Hero AI News analysis"):
             progress_bar = st.progress(0)
             
-            today_str = data_retriever.today()
-            # Convert today's date string to a datetime.date object
-            today_date = datetime.strptime(today_str, '%Y-%m-%d').date()
-
-            # Calculate the date 60 days ago
+            # Calculate dates
+            today_date = date.today()
             sixty_days_ago = today_date - timedelta(days=60)
-
-            # Format dates into 'YYYY-MM-DD' string format for function call
+            
+            # Format dates
             today_formatted = today_date.strftime('%Y-%m-%d')
             sixty_days_ago_formatted = sixty_days_ago.strftime('%Y-%m-%d')
-
-            # Fetch news data
-            news_data = get_news.get_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
             
-            # Simulate progress after fetching news data
-            time.sleep(1)
+            # Fetch and filter news data
+            news_data = get_news.get_filtered_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
+            
             progress_bar.progress(30)
             
             if not news_data.empty:
-                news_data.set_index("headline", inplace=True)
                 st.table(news_data)
-                
-                # Simulate progress after displaying news table
-                time.sleep(1)
                 progress_bar.progress(60)
             else:
-                st.error("No news data available for the selected symbol.")
+                st.error("No relevant news data available for the selected symbol.")
                 progress_bar.progress(100)
                 return
             
-            # Fetch all stock news data for AI analysis
-            news_data_80 = get_news.get_all_stock_news(symbol, sixty_days_ago_formatted, today_formatted)
+            # Generate AI analysis
+            news_data_for_analysis = news_data['headline'].tolist()
             
-            # Simulate progress after fetching all news data
-            time.sleep(1)
             progress_bar.progress(70)
             
             newsprompt = f"""
-            You have been provided with the full text of summaries for recent news articles about a specific company {symbol}. 
+            You have been provided with the full text of summaries for recent news articles about {symbol}. 
             Utilize this data to conduct a detailed analysis of the company's current status and future outlook. 
             You can add some emoji in this report if you want to make it interactive.
 
@@ -942,28 +930,20 @@ def show_news():
 
             Please justify and explain your scoring rationale in detail, drawing evidence from the specific details, facts, 
             and narratives portrayed across the news summaries. Your scoring should encompass both the company's present circumstances 
-            as well as the projected trajectory factoring in future risks and prospects. Put more weights on most recent news sentiments, and less
-            weights on the least recent news.
+            as well as the projected trajectory factoring in future risks and prospects.
 
             Please make your summary report concise, professional, easy to read.
-            Don't include any of your suggestion on if I can provide any more data to you. Make the summary as concise as possible.
             """
 
-            # Generate AI analysis based on the news prompt
-            newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_80)
+            newsai_data = get_news.generate_vertexai_newsresponse(newsprompt, news_data_for_analysis)
             
-            # Simulate progress after generating AI analysis
-            time.sleep(1)
             progress_bar.progress(90)
             
-            news_summary = newsai_data.replace('\n', '  \n') # Ensure newlines are treated as line breaks in Markdown
-            # st.markdown(news_summary)
+            news_summary = newsai_data.replace('\n', '  \n')
             lottie_loading = load_lottieurl("https://lottie.host/263bccdf-cbfa-4ec8-b06e-658481e3948a/3kgfq7skXa.json") 
             st_lottie.st_lottie(lottie_loading, height=200, key="news_summary")
             display_card("Trading Hero AI News Analysis", news_summary)
             
-            # Final progress update
-            time.sleep(1)
             progress_bar.progress(100)
 
             footer.add_footer()
