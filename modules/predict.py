@@ -8,7 +8,7 @@ from vertexai.preview.generative_models import GenerativeModel, ChatSession, Par
 import vertexai.preview.generative_models as generative_models
 
 # Import NeuralProphet
-from neuralprophet import NeuralProphet, set_random_seed
+# from neuralprophet import NeuralProphet, set_random_seed
 
 vertexai.init(project="adsp-capstone-trading-hero", location="us-central1")
 # Define the model for Gemini Pro
@@ -39,21 +39,22 @@ def transform_price(df):
         
         # Create a clean DataFrame with Prophet's required columns (ds and y)
         if isinstance(df.index, pd.DatetimeIndex):
+            # Convert timezone-aware timestamps to timezone-naive
             temp_df = pd.DataFrame({
-                'ds': df.index,
+                'ds': df.index.tz_localize(None),  # Remove timezone information
                 'y': adj_close
             })
         else:
             if 'Date' in df.columns:
                 temp_df = pd.DataFrame({
-                    'ds': df['Date'],
+                    'ds': pd.to_datetime(df['Date']).dt.tz_localize(None),  # Remove timezone information
                     'y': adj_close
                 })
             else:
                 raise KeyError("Neither DatetimeIndex nor 'Date' column found")
         
-        # Ensure datetime type
-        temp_df['ds'] = pd.to_datetime(temp_df['ds'])
+        # Ensure datetime type (without timezone)
+        temp_df['ds'] = pd.to_datetime(temp_df['ds']).dt.tz_localize(None)
         
         # Sort by date
         temp_df = temp_df.sort_values('ds').reset_index(drop=True)
@@ -64,6 +65,8 @@ def transform_price(df):
         # Verify final structure
         logging.info(f"Final DataFrame columns: {temp_df.columns.tolist()}")
         logging.info(f"Final DataFrame shape: {temp_df.shape}")
+        logging.info(f"DS column dtype: {temp_df['ds'].dtype}")
+        logging.info(f"DS timezone info: {temp_df['ds'].dt.tz}")  # Should be None
         
         return temp_df
         
@@ -84,8 +87,8 @@ def train_prophet_model(df):
         if missing_cols:
             raise KeyError(f"Missing required columns: {missing_cols}")
             
-        # Ensure data types
-        df['ds'] = pd.to_datetime(df['ds'])
+        # Ensure data types and remove timezone if present
+        df['ds'] = pd.to_datetime(df['ds']).dt.tz_localize(None)
         df['y'] = pd.to_numeric(df['y'], errors='coerce')
         
         # Remove any NaN values
@@ -101,9 +104,9 @@ def train_prophet_model(df):
             yearly_seasonality=True,
             weekly_seasonality=True,
             daily_seasonality=False,
-            changepoint_prior_scale=0.05,  # Controls flexibility of the trend
-            seasonality_prior_scale=10.0,  # Controls flexibility of seasonality
-            seasonality_mode='multiplicative'  # Better for stock prices
+            changepoint_prior_scale=0.05,
+            seasonality_prior_scale=10.0,
+            seasonality_mode='multiplicative'
         )
         
         model.fit(df)
@@ -113,9 +116,10 @@ def train_prophet_model(df):
         logging.error(f"Error in train_prophet_model: {str(e)}", exc_info=True)
         raise
 
+
 def make_forecast(model, df, periods):
     """Make future predictions using the trained Prophet model."""
-    # Create future dataframe
+    # Create future dataframe (will be timezone-naive by default)
     future = model.make_future_dataframe(periods=periods)
     
     # Make predictions
