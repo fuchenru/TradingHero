@@ -1,4 +1,4 @@
-FROM python:3.12.2-bullseye
+FROM python:3.8.13-bullseye
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
