@@ -315,7 +315,9 @@ def get_filtered_stock_news(ticker_symbol, start_date, end_date):
             return total_score - (irrelevant_score * 2)  # Higher penalty for irrelevant matches
         
         # Add relevance score and datetime conversion
-        df['datetime'] = pd.to_datetime(df['datetime'], unit='s')
+        df = df[df['datetime'] > 0]
+        df['datetime'] = pd.to_datetime(df['datetime'], unit='s', errors='coerce')
+        df = df.dropna(subset=['datetime'])
         df['relevance_score'] = df.apply(calculate_relevance_score, axis=1)
         
         # Filter and sort
