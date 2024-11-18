@@ -440,8 +440,8 @@ def show_overall_information():
             key='overall_info_symbol'
         )
 
-        st.text_input('No. of years look-back:', value=1, key="years_back")
-        years_back = int(st.session_state.years_back)
+        # st.text_input('No. of years look-back:', value=1, key="years_back")
+        years_back = 1
         weeks_back = years_back * 52
 
     st.markdown("---")
@@ -963,7 +963,7 @@ def show_ts():
     # User inputs
     period = st.slider('Select Period for Trend Analysis (Days)', min_value=7, max_value=140, value=14, step=7)
     days_to_forecast = st.slider('Days to Forecast:', min_value=30, max_value=365, value=90)
-    years_back = st.number_input('Number of years look-back:', value=1, min_value=1, max_value=10)
+    years_back = 1
     weeks_back = int(years_back * 52)
 
     # Fetch and transform stock data
