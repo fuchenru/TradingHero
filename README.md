@@ -18,23 +18,24 @@ Trading Hero is an advanced stock market analysis tool designed to streamline tr
 
 1. [Project Motivation](#Project-Motivation)
 2. [Overview of Trading Hero](#Overview)
+   * [Project Flow](#Project-Flow)  
    * [Project Diagram](#Project-Diagram)  
-3. [Project Components](#Project-Components) 
+4. [Project Components](#Project-Components) 
    * [Trading Hero AI Technical Summary](#AI-Technical)
    * [Trading Hero AI EPS Summary](#EPS)
    * [Stock Analyst Recommendations](#Recommendations)
    * [Trading Hero AI News Analysis](#News-Analysis)
    * [Trading Hero Time Series Forecasting](#Time-Series)
    * [Trading Hero Final Report](#Final-Report)
-4. [Technical Challenges](#Technical-Challenges)
-5. [Market Potential](#Market-Potential)
-6. [Future Developments](#Future-Developments)
+5. [Technical Challenges](#Technical-Challenges)
+6. [Market Potential](#Market-Potential)
+7. [Future Developments](#Future-Developments)
    * [Additional Features](#Additional-Features)
    * [Next Steps Timeline](#Next-Steps)
-7. [Conclusion](#Conclusion)
-8. [Tools Utilized](#Tools-Utilized)
-9. [References](#References)
-10. [Acknowledgements/About Us](#Acknowledgements)
+8. [Conclusion](#Conclusion)
+9. [Tools Utilized](#Tools-Utilized)
+10. [References](#References)
+11. [Acknowledgements/About Us](#Acknowledgements)
 
 # **🎯 Project Motivation** <a name="Project-Motivation"></a>
 
@@ -53,6 +54,9 @@ Trading Hero unifies essential data sources, empowering traders to make informed
 Ultimately, Trading Hero strives to be your comprehensive **AI Financial Advisor**—helping you navigate the market with confidence and clarity.
 
 # **🧠 Overview of Trading Hero** <a name="Overview"></a>
+
+### Project Flow <a name="Project-Flow"></a>
+<img alt="Front-End" src="Assests/Project-Flow.png">
 
 ### Project Diagram <a name="Project-Diagram"></a>
 <img alt="Front-End" src="Assests/Front-End.png">
