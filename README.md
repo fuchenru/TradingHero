@@ -56,7 +56,7 @@ Ultimately, Trading Hero strives to be your comprehensive **AI Financial Advisor
 # **🧠 Overview of Trading Hero** <a name="Overview"></a>
 
 ### Project Flow <a name="Project-Flow"></a>
-<img alt="Front-End" src="Assests/Project-Flow.png">
+<img alt="Project Flow" src="Assests/Project Flow.png">
 
 ### Project Diagram <a name="Project-Diagram"></a>
 <img alt="Front-End" src="Assests/Front-End.png">
