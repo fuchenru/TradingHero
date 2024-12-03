@@ -253,7 +253,6 @@ Trading Hero is poised to lead the AI trading revolution, meeting today’s need
 5. **Social Trading Features**: Introducing community-driven functionalities where users can share insights, strategies, and collaborate on market analysis.
 
 ### Next Steps Timeline <a name="Next-Steps"></a>
-<img width="650" alt="Next Steps" src="path-to-your-timeline-image">
 
 #### **Q1 2025: Mobile App Launch**
 - Develop and launch mobile applications for iOS and Android platforms.
